@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-06T19:14:41.956Z",
+    "last_updated_et": "2026-06-06T19:20:51.317Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -14,42 +14,42 @@
       "summary": "USD Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": ""
+          "direction": "BULLISH_LEAN",
+          "conviction": 55,
+          "reason": "USD shows a bullish lean as rising US 2-year yields signal hawkish expectations, but DXY momentum is negative and the VIX indicates risk-on conditions which usually weigh against USD strength. Multiple key inputs are missing, reducing confidence. Primary drivers show some conflict, limiting conviction to a lean bullish bias."
         },
         "3d": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": ""
+          "direction": "BULLISH_LEAN",
+          "conviction": 58,
+          "reason": "USD shows a bullish lean as rising US 2-year yields signal hawkish expectations, but DXY momentum is negative and the VIX indicates risk-on conditions which usually weigh against USD strength. Multiple key inputs are missing, reducing confidence. Primary drivers show some conflict, limiting conviction to a lean bullish bias."
         },
         "current_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": ""
+          "direction": "BULLISH_LEAN",
+          "conviction": 60,
+          "reason": "USD shows a bullish lean as rising US 2-year yields signal hawkish expectations, but DXY momentum is negative and the VIX indicates risk-on conditions which usually weigh against USD strength. Multiple key inputs are missing, reducing confidence. Primary drivers show some conflict, limiting conviction to a lean bullish bias."
         },
         "next_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": ""
+          "direction": "BULLISH_LEAN",
+          "conviction": 55,
+          "reason": "USD shows a bullish lean as rising US 2-year yields signal hawkish expectations, but DXY momentum is negative and the VIX indicates risk-on conditions which usually weigh against USD strength. Multiple key inputs are missing, reducing confidence. Primary drivers show some conflict, limiting conviction to a lean bullish bias."
         },
         "current_month": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": ""
+          "direction": "BULLISH_LEAN",
+          "conviction": 58,
+          "reason": "USD shows a bullish lean as rising US 2-year yields signal hawkish expectations, but DXY momentum is negative and the VIX indicates risk-on conditions which usually weigh against USD strength. Multiple key inputs are missing, reducing confidence. Primary drivers show some conflict, limiting conviction to a lean bullish bias."
         }
       },
       "key_factors": [
-        "F1 VIX: [object Object]",
-        "F8 Fed Bias: [object Object]",
-        "F9 Dollar Smile: [object Object]",
-        "F5 DXY 5-Day Delta: [object Object]",
-        "F6 Gold 5-Day Delta: [object Object]",
-        "F2 US 2Y Yield Delta: [object Object]",
-        "F7 US Economic Surprise: [object Object]",
-        "F3 US/DE 2Y Spread Delta: [object Object]",
-        "F4 US 10Y Real Yield Delta: [object Object]",
-        "F10 Equity Direction vs USD: [object Object]"
+        "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (Risk-on conditions reduce USD safe-haven demand)",
+        "F8 Fed Bias: NEUTRAL — Missing input: fed_bias (Fed bias change unknown)",
+        "F9 Dollar Smile: NEUTRAL — Insufficient growth or crisis data (No added regime signal beyond VIX factor)",
+        "F5 DXY 5-Day Delta: BEARISH — DXY -0.41% over 5 days (DXY down suggests weakening USD momentum)",
+        "F6 Gold 5-Day Delta: NEUTRAL — Missing input: gold_d5_pct (No data to confirm anti-USD signal)",
+        "F2 US 2Y Yield Delta: BULLISH — US 2Y yield +6 bps over 5 days (Rising US 2-year yield signals hawkish Fed expectations)",
+        "F7 US Economic Surprise: NEUTRAL — Missing input: latest_us_event (No recent US economic surprise data)",
+        "F3 US/DE 2Y Spread Delta: NEUTRAL — Missing input: us_de_2y_spread_d5_bps (No data to assess relative yield changes)",
+        "F4 US 10Y Real Yield Delta: NEUTRAL — US 10y real yield +5 bps just below 5 bps threshold (Movement nearly bullish but insufficient for strong signal)",
+        "F10 Equity Direction vs USD: NEUTRAL — Missing equity regime inputs (Unable to assess equity-USD correlation regime)"
       ],
       "warnings": []
     },
