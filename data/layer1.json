@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-06T19:11:26.734Z",
+    "last_updated_et": "2026-06-06T19:14:41.956Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -39,7 +39,18 @@
           "reason": ""
         }
       },
-      "key_factors": [],
+      "key_factors": [
+        "F1 VIX: [object Object]",
+        "F8 Fed Bias: [object Object]",
+        "F9 Dollar Smile: [object Object]",
+        "F5 DXY 5-Day Delta: [object Object]",
+        "F6 Gold 5-Day Delta: [object Object]",
+        "F2 US 2Y Yield Delta: [object Object]",
+        "F7 US Economic Surprise: [object Object]",
+        "F3 US/DE 2Y Spread Delta: [object Object]",
+        "F4 US 10Y Real Yield Delta: [object Object]",
+        "F10 Equity Direction vs USD: [object Object]"
+      ],
       "warnings": []
     },
     {
