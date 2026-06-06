@@ -1,0 +1,192 @@
+{
+  "dashboard_meta": {
+    "system_timezone": "America/New_York",
+    "execution_clock": "07:00 ET primary run",
+    "last_updated_et": "pending",
+    "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
+  },
+  "agents": [
+    {
+      "agent": "USD",
+      "status": "pending",
+      "market_status": "closed",
+      "last_run_et": null,
+      "summary": "Awaiting first USD agent run.",
+      "calls": {
+        "24h": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "3d": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "next_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_month": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        }
+      },
+      "key_factors": [],
+      "warnings": []
+    },
+    {
+      "agent": "EUR",
+      "status": "pending",
+      "market_status": "closed",
+      "last_run_et": null,
+      "summary": "Awaiting first EUR agent run.",
+      "calls": {
+        "24h": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "3d": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "next_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_month": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        }
+      },
+      "key_factors": [],
+      "warnings": []
+    },
+    {
+      "agent": "GOLD",
+      "status": "pending",
+      "market_status": "closed",
+      "last_run_et": null,
+      "summary": "Awaiting first Gold agent run.",
+      "calls": {
+        "24h": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "3d": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "next_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_month": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        }
+      },
+      "key_factors": [],
+      "warnings": []
+    },
+    {
+      "agent": "NQ",
+      "status": "pending",
+      "market_status": "closed",
+      "last_run_et": null,
+      "summary": "Awaiting first NQ agent run.",
+      "calls": {
+        "24h": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "3d": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "next_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_month": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        }
+      },
+      "key_factors": [],
+      "warnings": []
+    },
+    {
+      "agent": "BTC",
+      "status": "pending",
+      "market_status": "open",
+      "last_run_et": null,
+      "summary": "Awaiting first BTC agent run.",
+      "calls": {
+        "24h": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "3d": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "next_week": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        },
+        "current_month": {
+          "direction": "PENDING",
+          "conviction": null,
+          "reason": "Awaiting data"
+        }
+      },
+      "key_factors": [],
+      "warnings": [
+        "BTC trades 24/7. Weekend liquidity risk should be flagged by the BTC agent where relevant."
+      ]
+    }
+  ]
+}
