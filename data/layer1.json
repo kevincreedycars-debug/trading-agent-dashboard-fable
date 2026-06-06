@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-06T19:25:24.528Z",
+    "last_updated_et": "2026-06-06T19:27:42.117Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -15,43 +15,50 @@
       "calls": {
         "24h": {
           "direction": "BULLISH_LEAN",
-          "conviction": 58,
-          "reason": "USD shows a bullish lean due to rising US 2-year yields and moderate 10Y real yield increases despite bearish DXY momentum and risk-on VIX levels. Many inputs are missing, and conflicts between DXY bearish momentum and yield strength reduce conviction. Factor participation is limited, capping confidence at a lean bullish stance."
+          "conviction": 54,
+          "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         },
         "3d": {
           "direction": "BULLISH_LEAN",
-          "conviction": 60,
-          "reason": "USD shows a bullish lean due to rising US 2-year yields and moderate 10Y real yield increases despite bearish DXY momentum and risk-on VIX levels. Many inputs are missing, and conflicts between DXY bearish momentum and yield strength reduce conviction. Factor participation is limited, capping confidence at a lean bullish stance."
+          "conviction": 54,
+          "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         },
         "current_week": {
           "direction": "BULLISH_LEAN",
-          "conviction": 62,
-          "reason": "USD shows a bullish lean due to rising US 2-year yields and moderate 10Y real yield increases despite bearish DXY momentum and risk-on VIX levels. Many inputs are missing, and conflicts between DXY bearish momentum and yield strength reduce conviction. Factor participation is limited, capping confidence at a lean bullish stance."
+          "conviction": 56,
+          "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         },
         "next_week": {
           "direction": "BULLISH_LEAN",
-          "conviction": 56,
-          "reason": "USD shows a bullish lean due to rising US 2-year yields and moderate 10Y real yield increases despite bearish DXY momentum and risk-on VIX levels. Many inputs are missing, and conflicts between DXY bearish momentum and yield strength reduce conviction. Factor participation is limited, capping confidence at a lean bullish stance."
+          "conviction": 53,
+          "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         },
         "current_month": {
           "direction": "BULLISH_LEAN",
-          "conviction": 57,
-          "reason": "USD shows a bullish lean due to rising US 2-year yields and moderate 10Y real yield increases despite bearish DXY momentum and risk-on VIX levels. Many inputs are missing, and conflicts between DXY bearish momentum and yield strength reduce conviction. Factor participation is limited, capping confidence at a lean bullish stance."
+          "conviction": 53,
+          "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         }
       },
       "key_factors": [
         "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (Risk-on conditions reduce USD safe-haven demand)",
-        "F8 Fed Bias Delta: NEUTRAL — Missing fed_bias (Fed bias change unknown, cannot factor central bank stance)",
-        "F5 DXY 5-Day Delta: BEARISH — DXY down 0.41% over 5 days (DXY momentum bearish, indicating weakening USD)",
-        "F6 Gold 5-Day Delta: NEUTRAL — Missing input gold_d5_pct (Gold delta unavailable, cannot assess anti-USD pressure)",
-        "F2 US 2Y Yield Delta: BULLISH — US 2Y yield up 6 bps over 5 days (Rising 2Y yield signals hawkish Fed expectations and supports USD)",
-        "F9 Dollar Smile Regime: NEUTRAL — Insufficient growth and Fed evidence besides VIX (Avoid double-counting risk regime already captured by Factor 1)",
-        "F3 US/DE 2Y Spread Delta: NEUTRAL — Missing input us_de_2y_spread_d5_bps (Cannot determine relative yield changes without data)",
-        "F4 US 10Y Real Yield Delta: NEUTRAL — US 10Y real yield up 5 bps over 5 days (Rising real yields, but just at threshold; borderline signal)",
-        "F7 US Economic Surprise Direction: NEUTRAL — Missing latest_us_event (No recent US data surprise available)",
-        "F10 Equity Direction vs USD Correlation Regime: NEUTRAL — Missing equities_regime and nq_d1_pct (Insufficient inputs to assess equity-USD correlation)"
+        "F8 Fed Bias Delta: NEUTRAL — Missing input: fed_bias (Fed bias trend unavailable)",
+        "F5 DXY 5-Day Delta: BEARISH — DXY down 0.41% over 5 days (DXY weakening signals USD weakness)",
+        "F6 Gold 5-Day Delta: NEUTRAL — Missing input: gold_d5_pct (Gold signal unavailable)",
+        "F2 US 2Y Yield Delta: BULLISH — US 2Y yield up 6 bps over 5 days (US 2Y yield rising by more than 5 bps supports USD)",
+        "F9 Dollar Smile Regime: NEUTRAL — Risk-on regime with VIX < 16 and no growth or Fed bias data (No clear additional regime evidence beyond Factor 1)",
+        "F7 US Economic Surprise: NEUTRAL — Missing input: latest_us_event (No recent US economic surprise data)",
+        "F3 US/DE 2Y Spread Delta: NEUTRAL — Missing input: us_de_2y_spread_d5_bps (No spread data to assess USD relative yield advantage)",
+        "F4 US 10Y Real Yield Delta: NEUTRAL — US 10Y real yield up 5 bps (borderline) (Real yield rise just below threshold for full bullish)",
+        "F10 Equity Direction vs USD Correlation: NEUTRAL — Missing inputs: equities_regime, nq_d1_pct (Equity regime or movement data unavailable)"
       ],
-      "warnings": []
+      "warnings": [
+        "Missing US-DE 2Y spread",
+        "Missing latest US economic event",
+        "Missing Fed bias",
+        "Missing gold 5d delta",
+        "Missing equity regime and NQ 1d pct",
+        "Primary drivers conflicted: DXY bearish vs US 2Y yield bullish"
+      ]
     },
     {
       "agent": "EUR",
