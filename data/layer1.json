@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-06T19:27:42.117Z",
+    "last_updated_et": "2026-06-06T20:44:38.124Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -39,6 +39,58 @@
           "reason": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious."
         }
       },
+      "factor_breakdown": {
+        "F1 VIX": {
+          "reason": "Risk-on conditions reduce USD safe-haven demand",
+          "signal": "BEARISH",
+          "evidence": "VIX 15.4, d1 -0.66, d5 -0.34"
+        },
+        "F8 Fed Bias Delta": {
+          "reason": "Fed bias trend unavailable",
+          "signal": "NEUTRAL",
+          "evidence": "Missing input: fed_bias"
+        },
+        "F5 DXY 5-Day Delta": {
+          "reason": "DXY weakening signals USD weakness",
+          "signal": "BEARISH",
+          "evidence": "DXY down 0.41% over 5 days"
+        },
+        "F6 Gold 5-Day Delta": {
+          "reason": "Gold signal unavailable",
+          "signal": "NEUTRAL",
+          "evidence": "Missing input: gold_d5_pct"
+        },
+        "F2 US 2Y Yield Delta": {
+          "reason": "US 2Y yield rising by more than 5 bps supports USD",
+          "signal": "BULLISH",
+          "evidence": "US 2Y yield up 6 bps over 5 days"
+        },
+        "F9 Dollar Smile Regime": {
+          "reason": "No clear additional regime evidence beyond Factor 1",
+          "signal": "NEUTRAL",
+          "evidence": "Risk-on regime with VIX < 16 and no growth or Fed bias data"
+        },
+        "F7 US Economic Surprise": {
+          "reason": "No recent US economic surprise data",
+          "signal": "NEUTRAL",
+          "evidence": "Missing input: latest_us_event"
+        },
+        "F3 US/DE 2Y Spread Delta": {
+          "reason": "No spread data to assess USD relative yield advantage",
+          "signal": "NEUTRAL",
+          "evidence": "Missing input: us_de_2y_spread_d5_bps"
+        },
+        "F4 US 10Y Real Yield Delta": {
+          "reason": "Real yield rise just below threshold for full bullish",
+          "signal": "NEUTRAL",
+          "evidence": "US 10Y real yield up 5 bps (borderline)"
+        },
+        "F10 Equity Direction vs USD Correlation": {
+          "reason": "Equity regime or movement data unavailable",
+          "signal": "NEUTRAL",
+          "evidence": "Missing inputs: equities_regime, nq_d1_pct"
+        }
+      },
       "key_factors": [
         "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (Risk-on conditions reduce USD safe-haven demand)",
         "F8 Fed Bias Delta: NEUTRAL — Missing input: fed_bias (Fed bias trend unavailable)",
@@ -58,7 +110,123 @@
         "Missing gold 5d delta",
         "Missing equity regime and NQ 1d pct",
         "Primary drivers conflicted: DXY bearish vs US 2Y yield bullish"
-      ]
+      ],
+      "reasoning_summary": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious.",
+      "score_bullish": 3,
+      "score_bearish": 1,
+      "score_neutral": 6,
+      "non_neutral_count": 4,
+      "logic_document": "agent_usd_direction.md",
+      "logic_document_version": "2.0",
+      "conviction_model": {
+        "agreement_boost": 0,
+        "alignment_ratio": 0.75,
+        "base_conviction": 75,
+        "conflict_penalty": -5,
+        "missing_input_penalty": -7,
+        "final_conviction_logic": "Base conviction 75% reduced by participation cap to 64%, minus missing inputs penalty and conflict penalty (total -12%) resulting in final conviction 54%",
+        "participation_modifier": "cap at 64 due to 4 active factors"
+      },
+      "full_output": {
+        "asset": "USD",
+        "layer": "layer_1_raw",
+        "created_at": "2026-06-06T16:43:32.252Z",
+        "risk_flags": [
+          "Missing US-DE 2Y spread",
+          "Missing latest US economic event",
+          "Missing Fed bias",
+          "Missing gold 5d delta",
+          "Missing equity regime and NQ 1d pct",
+          "Primary drivers conflicted: DXY bearish vs US 2Y yield bullish"
+        ],
+        "direction_24h": "BULLISH_LEAN",
+        "score_bearish": 1,
+        "score_bullish": 3,
+        "score_neutral": 6,
+        "snapshot_date": "2026-06-06",
+        "conviction_24h": 54,
+        "logic_document": "agent_usd_direction.md",
+        "missing_inputs": [
+          "us_de_2y_spread_d5_bps",
+          "latest_us_event",
+          "fed_bias",
+          "gold_d5_pct",
+          "nq_d1_pct",
+          "equities_regime"
+        ],
+        "direction_3_day": "BULLISH_LEAN",
+        "conviction_3_day": 54,
+        "conviction_model": {
+          "agreement_boost": 0,
+          "alignment_ratio": 0.75,
+          "base_conviction": 75,
+          "conflict_penalty": -5,
+          "missing_input_penalty": -7,
+          "final_conviction_logic": "Base conviction 75% reduced by participation cap to 64%, minus missing inputs penalty and conflict penalty (total -12%) resulting in final conviction 54%",
+          "participation_modifier": "cap at 64 due to 4 active factors"
+        },
+        "factor_breakdown": {
+          "F1 VIX": {
+            "reason": "Risk-on conditions reduce USD safe-haven demand",
+            "signal": "BEARISH",
+            "evidence": "VIX 15.4, d1 -0.66, d5 -0.34"
+          },
+          "F8 Fed Bias Delta": {
+            "reason": "Fed bias trend unavailable",
+            "signal": "NEUTRAL",
+            "evidence": "Missing input: fed_bias"
+          },
+          "F5 DXY 5-Day Delta": {
+            "reason": "DXY weakening signals USD weakness",
+            "signal": "BEARISH",
+            "evidence": "DXY down 0.41% over 5 days"
+          },
+          "F6 Gold 5-Day Delta": {
+            "reason": "Gold signal unavailable",
+            "signal": "NEUTRAL",
+            "evidence": "Missing input: gold_d5_pct"
+          },
+          "F2 US 2Y Yield Delta": {
+            "reason": "US 2Y yield rising by more than 5 bps supports USD",
+            "signal": "BULLISH",
+            "evidence": "US 2Y yield up 6 bps over 5 days"
+          },
+          "F9 Dollar Smile Regime": {
+            "reason": "No clear additional regime evidence beyond Factor 1",
+            "signal": "NEUTRAL",
+            "evidence": "Risk-on regime with VIX < 16 and no growth or Fed bias data"
+          },
+          "F7 US Economic Surprise": {
+            "reason": "No recent US economic surprise data",
+            "signal": "NEUTRAL",
+            "evidence": "Missing input: latest_us_event"
+          },
+          "F3 US/DE 2Y Spread Delta": {
+            "reason": "No spread data to assess USD relative yield advantage",
+            "signal": "NEUTRAL",
+            "evidence": "Missing input: us_de_2y_spread_d5_bps"
+          },
+          "F4 US 10Y Real Yield Delta": {
+            "reason": "Real yield rise just below threshold for full bullish",
+            "signal": "NEUTRAL",
+            "evidence": "US 10Y real yield up 5 bps (borderline)"
+          },
+          "F10 Equity Direction vs USD Correlation": {
+            "reason": "Equity regime or movement data unavailable",
+            "signal": "NEUTRAL",
+            "evidence": "Missing inputs: equities_regime, nq_d1_pct"
+          }
+        },
+        "non_neutral_count": 4,
+        "reasoning_summary": "USD is given a bullish lean because the US 2-year yield is rising strongly, indicating Fed policy tightening expectations. However, risk-on conditions (VIX below 16 with falling VIX) and weakening DXY momentum provide bearish pressure, creating some conflict among primary drivers and limiting conviction. Several key inputs including US/Germany spread, US economic data surprise, and Fed bias are missing, further capping confidence. Overall, the directional lean is bullish but cautious.",
+        "direction_next_week": "BULLISH_LEAN",
+        "conviction_next_week": 53,
+        "direction_current_week": "BULLISH_LEAN",
+        "logic_document_version": "2.0",
+        "conviction_current_week": 56,
+        "direction_current_month": "BULLISH_LEAN",
+        "conviction_current_month": 53
+      }
     },
     {
       "agent": "EUR",
@@ -93,8 +261,16 @@
           "reason": "Awaiting data"
         }
       },
+      "factor_breakdown": {},
       "key_factors": [],
-      "warnings": []
+      "warnings": [],
+      "reasoning_summary": "",
+      "score_bullish": null,
+      "score_bearish": null,
+      "score_neutral": null,
+      "logic_document": null,
+      "logic_document_version": null,
+      "full_output": {}
     },
     {
       "agent": "GOLD",
@@ -129,8 +305,16 @@
           "reason": "Awaiting data"
         }
       },
+      "factor_breakdown": {},
       "key_factors": [],
-      "warnings": []
+      "warnings": [],
+      "reasoning_summary": "",
+      "score_bullish": null,
+      "score_bearish": null,
+      "score_neutral": null,
+      "logic_document": null,
+      "logic_document_version": null,
+      "full_output": {}
     },
     {
       "agent": "NQ",
@@ -165,8 +349,16 @@
           "reason": "Awaiting data"
         }
       },
+      "factor_breakdown": {},
       "key_factors": [],
-      "warnings": []
+      "warnings": [],
+      "reasoning_summary": "",
+      "score_bullish": null,
+      "score_bearish": null,
+      "score_neutral": null,
+      "logic_document": null,
+      "logic_document_version": null,
+      "full_output": {}
     },
     {
       "agent": "BTC",
@@ -201,8 +393,16 @@
           "reason": "Awaiting data"
         }
       },
+      "factor_breakdown": {},
       "key_factors": [],
-      "warnings": []
+      "warnings": [],
+      "reasoning_summary": "",
+      "score_bullish": null,
+      "score_bearish": null,
+      "score_neutral": null,
+      "logic_document": null,
+      "logic_document_version": null,
+      "full_output": {}
     }
   ]
 }
