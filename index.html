@@ -13,7 +13,7 @@
         <p class="eyebrow">Independent Agentic Trading Intelligence</p>
         <h1>Layered Directional Command Dashboard</h1>
         <p class="subcopy">
-          Layer 1 agents publish sealed raw directional calls. Layer 2 reviews eco-event outcomes and adjusts after the fact.
+          Layer 1 agents publish sealed raw directional calls. Click into each agent to inspect the factor engine, conviction logic, warnings and interpretation.
         </p>
       </div>
       <div class="clock-card">
@@ -23,32 +23,48 @@
       </div>
     </section>
 
+    <nav id="agentTabs" class="tab-bar" aria-label="Dashboard tabs">
+      <button class="tab-button active" data-tab="overview">Overview</button>
+      <button class="tab-button" data-tab="USD">USD</button>
+      <button class="tab-button" data-tab="EUR">EUR</button>
+      <button class="tab-button" data-tab="GOLD">Gold</button>
+      <button class="tab-button" data-tab="NQ">NQ</button>
+      <button class="tab-button" data-tab="BTC">BTC</button>
+      <button class="tab-button" data-tab="layer2">Layer 2</button>
+    </nav>
+
     <section class="rules-strip">
       <div><strong>Layer 1:</strong> Independent raw calls only</div>
       <div><strong>No contamination:</strong> agents cannot read each other</div>
-      <div><strong>Layer 2:</strong> event-adjusted review</div>
+      <div><strong>Conviction:</strong> numeric percentage weighting</div>
       <div><strong>Primary run:</strong> 07:00 ET</div>
     </section>
 
-    <section class="section-header">
-      <div>
-        <p class="eyebrow">Layer 1</p>
-        <h2>Raw Independent Agent Calls</h2>
-      </div>
-      <p id="layer1Updated">Last updated: pending</p>
+    <section id="overviewView" class="view active-view">
+      <section class="section-header">
+        <div>
+          <p class="eyebrow">Layer 1</p>
+          <h2>Raw Independent Agent Calls</h2>
+        </div>
+        <p id="layer1Updated">Last updated: pending</p>
+      </section>
+
+      <section id="overviewStats" class="overview-stats"></section>
+      <section id="layer1Grid" class="agent-grid"></section>
     </section>
 
-    <section id="layer1Grid" class="agent-grid"></section>
+    <section id="agentView" class="view"></section>
 
-    <section class="section-header layer2-title">
-      <div>
-        <p class="eyebrow">Layer 2</p>
-        <h2>Eco Event Adjusted Calls</h2>
-      </div>
-      <p id="layer2Updated">Last updated: pending</p>
+    <section id="layer2View" class="view">
+      <section class="section-header layer2-title">
+        <div>
+          <p class="eyebrow">Layer 2</p>
+          <h2>Eco Event Adjusted Calls</h2>
+        </div>
+        <p id="layer2Updated">Last updated: pending</p>
+      </section>
+      <section id="layer2Panel" class="layer2-panel"></section>
     </section>
-
-    <section id="layer2Panel" class="layer2-panel"></section>
   </main>
 
   <script src="script.js"></script>
