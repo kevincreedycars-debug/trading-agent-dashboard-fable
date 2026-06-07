@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T20:08:34.074Z",
+    "last_updated_et": "2026-06-07T20:52:56.701Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -3347,10 +3347,10 @@
     },
     {
       "agent": "GOLD",
-      "status": "pending",
+      "status": "live",
       "market_status": "closed",
-      "last_run_et": null,
-      "summary": "Awaiting first GOLD agent run.",
+      "last_run_et": "2026-06-07T19:55:38.604+00:00",
+      "summary": "GOLD Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
           "direction": "NO 24H CALL",
@@ -3359,24 +3359,444 @@
           "status": "market_closed"
         },
         "3d": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
+          "direction": "BEARISH",
+          "conviction": 40,
+          "reason": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+          "conviction_model": {
+            "net_edge": -34,
+            "bear_case": 67,
+            "bull_case": 33,
+            "neutral_pct": 40,
+            "net_edge_pct": -34,
+            "winning_side": "BEARISH",
+            "participation": 60,
+            "weighted_edge": 0.34,
+            "raw_conviction": 40,
+            "agreement_boost": 0,
+            "base_conviction": 40,
+            "conflict_penalty": 0,
+            "final_conviction": 40,
+            "verdict_strength": "STRONG",
+            "participation_cap": 60,
+            "bearish_argument_pct": 67,
+            "bullish_argument_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 60,
+            "directional_participation": 60,
+            "neutral_evidence_pct": 40,
+            "directional_participation_pct": 60,
+            "bull_case_weight": 20,
+            "bear_case_weight": 40,
+            "neutral_weight": 40,
+            "weighted_score": {
+              "bullish_weight": 20,
+              "bearish_weight": 40,
+              "neutral_weight": 40,
+              "active_weight": 60,
+              "weight_margin": 20
+            },
+            "alignment": 33
+          },
+          "weighted_score": {
+            "active_weight": 60,
+            "weight_margin": 20,
+            "bearish_weight": 40,
+            "bullish_weight": 20,
+            "neutral_weight": 40
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 24,
+              "evidence": "Real yield 4.999999999999982bps"
+            },
+            "F2": {
+              "reason": "Dollar weakness supports Gold",
+              "signal": "BULLISH",
+              "weight": 20,
+              "evidence": "DXY -0.41107825314780544%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 14,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 5.999999999999961bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 6,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 1,
+              "evidence": "neutral"
+            }
+          }
         },
         "current_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
+          "direction": "BEARISH",
+          "conviction": 41,
+          "reason": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+          "conviction_model": {
+            "net_edge": -38,
+            "bear_case": 69,
+            "bull_case": 31,
+            "neutral_pct": 41,
+            "net_edge_pct": -38,
+            "winning_side": "BEARISH",
+            "participation": 59,
+            "weighted_edge": 0.38,
+            "raw_conviction": 41,
+            "agreement_boost": 0,
+            "base_conviction": 41,
+            "conflict_penalty": 0,
+            "final_conviction": 41,
+            "verdict_strength": "STRONG",
+            "participation_cap": 59,
+            "bearish_argument_pct": 69,
+            "bullish_argument_pct": 31,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 59,
+            "directional_participation": 59,
+            "neutral_evidence_pct": 41,
+            "directional_participation_pct": 59,
+            "bull_case_weight": 18,
+            "bear_case_weight": 41,
+            "neutral_weight": 41,
+            "weighted_score": {
+              "bullish_weight": 18,
+              "bearish_weight": 41,
+              "neutral_weight": 41,
+              "active_weight": 59,
+              "weight_margin": 23
+            },
+            "alignment": 31
+          },
+          "weighted_score": {
+            "active_weight": 59,
+            "weight_margin": 23,
+            "bearish_weight": 41,
+            "bullish_weight": 18,
+            "neutral_weight": 41
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 22,
+              "evidence": "Real yield 4.999999999999982bps"
+            },
+            "F2": {
+              "reason": "Dollar weakness supports Gold",
+              "signal": "BULLISH",
+              "weight": 18,
+              "evidence": "DXY -0.41107825314780544%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 16,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 5.999999999999961bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "neutral"
+            }
+          }
         },
         "next_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
+          "direction": "BEARISH",
+          "conviction": 60,
+          "reason": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "conviction_model": {
+            "net_edge": -100,
+            "bear_case": 100,
+            "bull_case": 0,
+            "neutral_pct": 40,
+            "net_edge_pct": -100,
+            "winning_side": "BEARISH",
+            "participation": 60,
+            "weighted_edge": 1,
+            "raw_conviction": 60,
+            "agreement_boost": 0,
+            "base_conviction": 60,
+            "conflict_penalty": 0,
+            "final_conviction": 60,
+            "verdict_strength": "STRONG",
+            "participation_cap": 60,
+            "bearish_argument_pct": 100,
+            "bullish_argument_pct": 0,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 60,
+            "directional_participation": 60,
+            "neutral_evidence_pct": 40,
+            "directional_participation_pct": 60,
+            "bull_case_weight": 0,
+            "bear_case_weight": 60,
+            "neutral_weight": 40,
+            "weighted_score": {
+              "bullish_weight": 0,
+              "bearish_weight": 60,
+              "neutral_weight": 40,
+              "active_weight": 60,
+              "weight_margin": 60
+            },
+            "alignment": 0
+          },
+          "weighted_score": {
+            "active_weight": 60,
+            "weight_margin": 60,
+            "bearish_weight": 60,
+            "bullish_weight": 0,
+            "neutral_weight": 40
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Rising real yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Real yield 16.999999999999993bps"
+            },
+            "F2": {
+              "reason": "DXY move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "DXY 0.17468463230274403%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 17.99999999999997bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 4,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "neutral"
+            }
+          }
         },
         "current_month": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
+          "direction": "BEARISH",
+          "conviction": 56,
+          "reason": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "conviction_model": {
+            "net_edge": -100,
+            "bear_case": 100,
+            "bull_case": 0,
+            "neutral_pct": 44,
+            "net_edge_pct": -100,
+            "winning_side": "BEARISH",
+            "participation": 56,
+            "weighted_edge": 1,
+            "raw_conviction": 56,
+            "agreement_boost": 0,
+            "base_conviction": 56,
+            "conflict_penalty": 0,
+            "final_conviction": 56,
+            "verdict_strength": "STRONG",
+            "participation_cap": 56,
+            "bearish_argument_pct": 100,
+            "bullish_argument_pct": 0,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 56,
+            "directional_participation": 56,
+            "neutral_evidence_pct": 44,
+            "directional_participation_pct": 56,
+            "bull_case_weight": 0,
+            "bear_case_weight": 56,
+            "neutral_weight": 44,
+            "weighted_score": {
+              "bullish_weight": 0,
+              "bearish_weight": 56,
+              "neutral_weight": 44,
+              "active_weight": 56,
+              "weight_margin": 56
+            },
+            "alignment": 0
+          },
+          "weighted_score": {
+            "active_weight": 56,
+            "weight_margin": 56,
+            "bearish_weight": 56,
+            "bullish_weight": 0,
+            "neutral_weight": 44
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Rising real yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Real yield 16.999999999999993bps"
+            },
+            "F2": {
+              "reason": "DXY move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "DXY 0.17468463230274403%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 17.99999999999997bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 6,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 4,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 10,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "neutral"
+            }
+          }
         }
       },
       "priority_timeframe": "24h",
@@ -3386,31 +3806,1246 @@
         "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
         "status": "market_closed"
       },
-      "factor_breakdown": {},
-      "key_factors": [],
+      "factor_breakdown": {
+        "F1": {
+          "reason": "Real yield move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 26,
+          "evidence": "Real yield 4.999999999999982bps"
+        },
+        "F2": {
+          "reason": "DXY move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 22,
+          "evidence": "DXY -0.1289571358242152%"
+        },
+        "F3": {
+          "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+          "signal": "BEARISH",
+          "weight": 12,
+          "evidence": "Fed bias hawkish"
+        },
+        "F4": {
+          "reason": "Rising front-end yields pressure Gold",
+          "signal": "BEARISH",
+          "weight": 10,
+          "evidence": "US 2Y 5.999999999999961bps"
+        },
+        "F5": {
+          "reason": "Gold price move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 10,
+          "evidence": "Gold 0%"
+        },
+        "F6": {
+          "reason": "Risk-on conditions reduce defensive Gold demand",
+          "signal": "BEARISH",
+          "weight": 8,
+          "evidence": "VIX 15.4"
+        },
+        "F7": {
+          "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+          "signal": "BEARISH",
+          "weight": 8,
+          "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+        },
+        "F8": {
+          "reason": "Missing input",
+          "signal": "NEUTRAL",
+          "weight": 2,
+          "evidence": "Inflation signal unknown"
+        },
+        "F9": {
+          "reason": "No active safe-haven demand signal",
+          "signal": "NEUTRAL",
+          "weight": 1,
+          "evidence": "normal"
+        },
+        "F10": {
+          "reason": "No clear growth or liquidity signal",
+          "signal": "NEUTRAL",
+          "weight": 1,
+          "evidence": "neutral"
+        }
+      },
+      "key_factors": [
+        "F1 [26]: NEUTRAL — Real yield 4.999999999999982bps (Real yield move below threshold)",
+        "F2 [22]: NEUTRAL — DXY -0.1289571358242152% (DXY move below threshold)",
+        "F3 [12]: BEARISH — Fed bias hawkish (Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations)",
+        "F4 [10]: BEARISH — US 2Y 5.999999999999961bps (Rising front-end yields pressure Gold)",
+        "F5 [10]: NEUTRAL — Gold 0% (Gold price move below threshold)",
+        "F6 [8]: BEARISH — VIX 15.4 (Risk-on conditions reduce defensive Gold demand)",
+        "F7 [8]: BEARISH — {\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09} (Positive US surprise pressures Gold through higher yield and Fed repricing risk)",
+        "F8 [2]: NEUTRAL — Inflation signal unknown (Missing input)",
+        "F9 [1]: NEUTRAL — normal (No active safe-haven demand signal)",
+        "F10 [1]: NEUTRAL — neutral (No clear growth or liquidity signal)"
+      ],
       "warnings": [],
-      "reasoning_summary": "",
-      "score_bullish": null,
-      "score_bearish": null,
-      "score_neutral": null,
+      "reasoning_summary": "GOLD weighted verdicts calculated deterministically by timeframe. 24h BEARISH_LEAN 38%, 3d BEARISH 40%, current week BEARISH 41%, next week BEARISH 60%, current month BEARISH 56%.",
+      "score_bullish": 0,
+      "score_bearish": 4,
+      "score_neutral": 6,
       "non_neutral_count": null,
-      "logic_document": null,
-      "logic_document_version": null,
-      "conviction_model": {},
-      "timeframe_models": {},
+      "logic_document": "agent_gold_direction.md",
+      "logic_document_version": "2.0_weighted_engine",
+      "conviction_model": {
+        "bullish_argument_pct": null,
+        "bearish_argument_pct": null,
+        "neutral_pct": null,
+        "neutral_evidence_pct": null,
+        "directional_participation_pct": null,
+        "active_participation_pct": null,
+        "net_edge_pct": null,
+        "final_conviction": null,
+        "verdict_strength": "MARKET_CLOSED",
+        "winning_side": "MARKET_CLOSED",
+        "final_conviction_logic": "24H priority timeframe is closed by weekend rule.",
+        "bull_case_weight": null,
+        "bear_case_weight": null,
+        "neutral_weight": null
+      },
+      "timeframe_models": {
+        "3d": {
+          "reason": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+          "direction": "BEARISH",
+          "conviction": 40,
+          "score_bearish": 4,
+          "score_bullish": 1,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 60,
+            "weight_margin": 20,
+            "bearish_weight": 40,
+            "bullish_weight": 20,
+            "neutral_weight": 40
+          },
+          "conviction_model": {
+            "net_edge": -34,
+            "bear_case": 67,
+            "bull_case": 33,
+            "neutral_pct": 40,
+            "net_edge_pct": -34,
+            "winning_side": "BEARISH",
+            "participation": 60,
+            "weighted_edge": 0.34,
+            "raw_conviction": 40,
+            "agreement_boost": 0,
+            "base_conviction": 40,
+            "conflict_penalty": 0,
+            "final_conviction": 40,
+            "verdict_strength": "STRONG",
+            "participation_cap": 60,
+            "bearish_argument_pct": 67,
+            "bullish_argument_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 60,
+            "directional_participation": 60
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 24,
+              "evidence": "Real yield 4.999999999999982bps"
+            },
+            "F2": {
+              "reason": "Dollar weakness supports Gold",
+              "signal": "BULLISH",
+              "weight": 20,
+              "evidence": "DXY -0.41107825314780544%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 14,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 5.999999999999961bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 6,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 1,
+              "evidence": "neutral"
+            }
+          }
+        },
+        "24h": {
+          "reason": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 38,
+          "score_bearish": 4,
+          "score_bullish": 0,
+          "score_neutral": 6,
+          "weighted_score": {
+            "active_weight": 38,
+            "weight_margin": 38,
+            "bearish_weight": 38,
+            "bullish_weight": 0,
+            "neutral_weight": 62
+          },
+          "conviction_model": {
+            "net_edge": -100,
+            "bear_case": 100,
+            "bull_case": 0,
+            "neutral_pct": 62,
+            "net_edge_pct": -100,
+            "winning_side": "BEARISH",
+            "participation": 38,
+            "weighted_edge": 1,
+            "raw_conviction": 38,
+            "agreement_boost": 0,
+            "base_conviction": 38,
+            "conflict_penalty": 0,
+            "final_conviction": 38,
+            "verdict_strength": "MODERATE",
+            "participation_cap": 38,
+            "bearish_argument_pct": 100,
+            "bullish_argument_pct": 0,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 38,
+            "directional_participation": 38
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 26,
+              "evidence": "Real yield 4.999999999999982bps"
+            },
+            "F2": {
+              "reason": "DXY move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 22,
+              "evidence": "DXY -0.1289571358242152%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 12,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 5.999999999999961bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 10,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 1,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 1,
+              "evidence": "neutral"
+            }
+          }
+        },
+        "next_week": {
+          "reason": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "direction": "BEARISH",
+          "conviction": 60,
+          "score_bearish": 5,
+          "score_bullish": 0,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 60,
+            "weight_margin": 60,
+            "bearish_weight": 60,
+            "bullish_weight": 0,
+            "neutral_weight": 40
+          },
+          "conviction_model": {
+            "net_edge": -100,
+            "bear_case": 100,
+            "bull_case": 0,
+            "neutral_pct": 40,
+            "net_edge_pct": -100,
+            "winning_side": "BEARISH",
+            "participation": 60,
+            "weighted_edge": 1,
+            "raw_conviction": 60,
+            "agreement_boost": 0,
+            "base_conviction": 60,
+            "conflict_penalty": 0,
+            "final_conviction": 60,
+            "verdict_strength": "STRONG",
+            "participation_cap": 60,
+            "bearish_argument_pct": 100,
+            "bullish_argument_pct": 0,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 60,
+            "directional_participation": 60
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Rising real yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Real yield 16.999999999999993bps"
+            },
+            "F2": {
+              "reason": "DXY move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "DXY 0.17468463230274403%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 17.99999999999997bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 4,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "neutral"
+            }
+          }
+        },
+        "current_week": {
+          "reason": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+          "direction": "BEARISH",
+          "conviction": 41,
+          "score_bearish": 4,
+          "score_bullish": 1,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 59,
+            "weight_margin": 23,
+            "bearish_weight": 41,
+            "bullish_weight": 18,
+            "neutral_weight": 41
+          },
+          "conviction_model": {
+            "net_edge": -38,
+            "bear_case": 69,
+            "bull_case": 31,
+            "neutral_pct": 41,
+            "net_edge_pct": -38,
+            "winning_side": "BEARISH",
+            "participation": 59,
+            "weighted_edge": 0.38,
+            "raw_conviction": 41,
+            "agreement_boost": 0,
+            "base_conviction": 41,
+            "conflict_penalty": 0,
+            "final_conviction": 41,
+            "verdict_strength": "STRONG",
+            "participation_cap": 59,
+            "bearish_argument_pct": 69,
+            "bullish_argument_pct": 31,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 59,
+            "directional_participation": 59
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 22,
+              "evidence": "Real yield 4.999999999999982bps"
+            },
+            "F2": {
+              "reason": "Dollar weakness supports Gold",
+              "signal": "BULLISH",
+              "weight": 18,
+              "evidence": "DXY -0.41107825314780544%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 16,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 5.999999999999961bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "neutral"
+            }
+          }
+        },
+        "current_month": {
+          "reason": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "direction": "BEARISH",
+          "conviction": 56,
+          "score_bearish": 5,
+          "score_bullish": 0,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 56,
+            "weight_margin": 56,
+            "bearish_weight": 56,
+            "bullish_weight": 0,
+            "neutral_weight": 44
+          },
+          "conviction_model": {
+            "net_edge": -100,
+            "bear_case": 100,
+            "bull_case": 0,
+            "neutral_pct": 44,
+            "net_edge_pct": -100,
+            "winning_side": "BEARISH",
+            "participation": 56,
+            "weighted_edge": 1,
+            "raw_conviction": 56,
+            "agreement_boost": 0,
+            "base_conviction": 56,
+            "conflict_penalty": 0,
+            "final_conviction": 56,
+            "verdict_strength": "STRONG",
+            "participation_cap": 56,
+            "bearish_argument_pct": 100,
+            "bullish_argument_pct": 0,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "active_participation_pct": 56,
+            "directional_participation": 56
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Rising real yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Real yield 16.999999999999993bps"
+            },
+            "F2": {
+              "reason": "DXY move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "DXY 0.17468463230274403%"
+            },
+            "F3": {
+              "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+              "signal": "BEARISH",
+              "weight": 18,
+              "evidence": "Fed bias hawkish"
+            },
+            "F4": {
+              "reason": "Rising front-end yields pressure Gold",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "US 2Y 17.99999999999997bps"
+            },
+            "F5": {
+              "reason": "Gold price move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "Gold 0%"
+            },
+            "F6": {
+              "reason": "Risk-on conditions reduce defensive Gold demand",
+              "signal": "BEARISH",
+              "weight": 6,
+              "evidence": "VIX 15.4"
+            },
+            "F7": {
+              "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+              "signal": "BEARISH",
+              "weight": 4,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "Missing input",
+              "signal": "NEUTRAL",
+              "weight": 10,
+              "evidence": "Inflation signal unknown"
+            },
+            "F9": {
+              "reason": "No active safe-haven demand signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "normal"
+            },
+            "F10": {
+              "reason": "No clear growth or liquidity signal",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "neutral"
+            }
+          }
+        }
+      },
       "display_metrics": {
         "bull_case": null,
         "bear_case": null,
-        "winning_side": null,
+        "winning_side": "MARKET_CLOSED",
         "conviction": null,
         "net_edge": null,
         "directional_participation": null,
         "neutral": null,
-        "verdict_strength": null,
+        "verdict_strength": "MARKET_CLOSED",
         "bull_case_weight": null,
         "bear_case_weight": null
       },
-      "full_output": {}
+      "full_output": {
+        "asset": "GOLD",
+        "layer": "layer_1_raw",
+        "agent_name": "GOLD",
+        "reason_24h": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+        "risk_flags": [],
+        "reason_3_day": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+        "direction_24h": "BEARISH_LEAN",
+        "score_bearish": 4,
+        "score_bullish": 0,
+        "score_neutral": 6,
+        "conviction_24h": 38,
+        "logic_document": "agent_gold_direction.md",
+        "missing_inputs": [
+          "gold_d5_pct",
+          "gold_d20_pct",
+          "inflation_signal",
+          "growth_regime",
+          "risk_headline_context"
+        ],
+        "weighted_score": {
+          "active_weight": 38,
+          "weight_margin": 38,
+          "bearish_weight": 38,
+          "bullish_weight": 0,
+          "neutral_weight": 62
+        },
+        "direction_3_day": "BEARISH",
+        "conviction_3_day": 40,
+        "conviction_model": {
+          "net_edge": -100,
+          "bear_case": 100,
+          "bull_case": 0,
+          "neutral_pct": 62,
+          "net_edge_pct": -100,
+          "winning_side": "BEARISH",
+          "participation": 38,
+          "weighted_edge": 1,
+          "raw_conviction": 38,
+          "agreement_boost": 0,
+          "base_conviction": 38,
+          "conflict_penalty": 0,
+          "final_conviction": 38,
+          "verdict_strength": "MODERATE",
+          "participation_cap": 38,
+          "bearish_argument_pct": 100,
+          "bullish_argument_pct": 0,
+          "missing_input_penalty": 0,
+          "final_conviction_logic": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+          "active_participation_pct": 38,
+          "directional_participation": 38
+        },
+        "factor_breakdown": {
+          "F1": {
+            "reason": "Real yield move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 26,
+            "evidence": "Real yield 4.999999999999982bps"
+          },
+          "F2": {
+            "reason": "DXY move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 22,
+            "evidence": "DXY -0.1289571358242152%"
+          },
+          "F3": {
+            "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+            "signal": "BEARISH",
+            "weight": 12,
+            "evidence": "Fed bias hawkish"
+          },
+          "F4": {
+            "reason": "Rising front-end yields pressure Gold",
+            "signal": "BEARISH",
+            "weight": 10,
+            "evidence": "US 2Y 5.999999999999961bps"
+          },
+          "F5": {
+            "reason": "Gold price move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 10,
+            "evidence": "Gold 0%"
+          },
+          "F6": {
+            "reason": "Risk-on conditions reduce defensive Gold demand",
+            "signal": "BEARISH",
+            "weight": 8,
+            "evidence": "VIX 15.4"
+          },
+          "F7": {
+            "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+            "signal": "BEARISH",
+            "weight": 8,
+            "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+          },
+          "F8": {
+            "reason": "Missing input",
+            "signal": "NEUTRAL",
+            "weight": 2,
+            "evidence": "Inflation signal unknown"
+          },
+          "F9": {
+            "reason": "No active safe-haven demand signal",
+            "signal": "NEUTRAL",
+            "weight": 1,
+            "evidence": "normal"
+          },
+          "F10": {
+            "reason": "No clear growth or liquidity signal",
+            "signal": "NEUTRAL",
+            "weight": 1,
+            "evidence": "neutral"
+          }
+        },
+        "reason_next_week": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+        "timeframe_models": {
+          "3d": {
+            "reason": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+            "direction": "BEARISH",
+            "conviction": 40,
+            "score_bearish": 4,
+            "score_bullish": 1,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 60,
+              "weight_margin": 20,
+              "bearish_weight": 40,
+              "bullish_weight": 20,
+              "neutral_weight": 40
+            },
+            "conviction_model": {
+              "net_edge": -34,
+              "bear_case": 67,
+              "bull_case": 33,
+              "neutral_pct": 40,
+              "net_edge_pct": -34,
+              "winning_side": "BEARISH",
+              "participation": 60,
+              "weighted_edge": 0.34,
+              "raw_conviction": 40,
+              "agreement_boost": 0,
+              "base_conviction": 40,
+              "conflict_penalty": 0,
+              "final_conviction": 40,
+              "verdict_strength": "STRONG",
+              "participation_cap": 60,
+              "bearish_argument_pct": 67,
+              "bullish_argument_pct": 33,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "3d deterministic Gold score: bull case 33%, bear case 67%, directional participation 60%, neutral/inactive 40%, net edge -34. Real yields and DXY remain the highest-priority Gold drivers.",
+              "active_participation_pct": 60,
+              "directional_participation": 60
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 24,
+                "evidence": "Real yield 4.999999999999982bps"
+              },
+              "F2": {
+                "reason": "Dollar weakness supports Gold",
+                "signal": "BULLISH",
+                "weight": 20,
+                "evidence": "DXY -0.41107825314780544%"
+              },
+              "F3": {
+                "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+                "signal": "BEARISH",
+                "weight": 14,
+                "evidence": "Fed bias hawkish"
+              },
+              "F4": {
+                "reason": "Rising front-end yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "US 2Y 5.999999999999961bps"
+              },
+              "F5": {
+                "reason": "Gold price move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 8,
+                "evidence": "Gold 0%"
+              },
+              "F6": {
+                "reason": "Risk-on conditions reduce defensive Gold demand",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "VIX 15.4"
+              },
+              "F7": {
+                "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+                "signal": "BEARISH",
+                "weight": 6,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "Missing input",
+                "signal": "NEUTRAL",
+                "weight": 4,
+                "evidence": "Inflation signal unknown"
+              },
+              "F9": {
+                "reason": "No active safe-haven demand signal",
+                "signal": "NEUTRAL",
+                "weight": 3,
+                "evidence": "normal"
+              },
+              "F10": {
+                "reason": "No clear growth or liquidity signal",
+                "signal": "NEUTRAL",
+                "weight": 1,
+                "evidence": "neutral"
+              }
+            }
+          },
+          "24h": {
+            "reason": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "direction": "BEARISH_LEAN",
+            "conviction": 38,
+            "score_bearish": 4,
+            "score_bullish": 0,
+            "score_neutral": 6,
+            "weighted_score": {
+              "active_weight": 38,
+              "weight_margin": 38,
+              "bearish_weight": 38,
+              "bullish_weight": 0,
+              "neutral_weight": 62
+            },
+            "conviction_model": {
+              "net_edge": -100,
+              "bear_case": 100,
+              "bull_case": 0,
+              "neutral_pct": 62,
+              "net_edge_pct": -100,
+              "winning_side": "BEARISH",
+              "participation": 38,
+              "weighted_edge": 1,
+              "raw_conviction": 38,
+              "agreement_boost": 0,
+              "base_conviction": 38,
+              "conflict_penalty": 0,
+              "final_conviction": 38,
+              "verdict_strength": "MODERATE",
+              "participation_cap": 38,
+              "bearish_argument_pct": 100,
+              "bullish_argument_pct": 0,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "24h deterministic Gold score: bull case 0%, bear case 100%, directional participation 38%, neutral/inactive 62%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+              "active_participation_pct": 38,
+              "directional_participation": 38
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 26,
+                "evidence": "Real yield 4.999999999999982bps"
+              },
+              "F2": {
+                "reason": "DXY move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 22,
+                "evidence": "DXY -0.1289571358242152%"
+              },
+              "F3": {
+                "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+                "signal": "BEARISH",
+                "weight": 12,
+                "evidence": "Fed bias hawkish"
+              },
+              "F4": {
+                "reason": "Rising front-end yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "US 2Y 5.999999999999961bps"
+              },
+              "F5": {
+                "reason": "Gold price move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 10,
+                "evidence": "Gold 0%"
+              },
+              "F6": {
+                "reason": "Risk-on conditions reduce defensive Gold demand",
+                "signal": "BEARISH",
+                "weight": 8,
+                "evidence": "VIX 15.4"
+              },
+              "F7": {
+                "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+                "signal": "BEARISH",
+                "weight": 8,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "Missing input",
+                "signal": "NEUTRAL",
+                "weight": 2,
+                "evidence": "Inflation signal unknown"
+              },
+              "F9": {
+                "reason": "No active safe-haven demand signal",
+                "signal": "NEUTRAL",
+                "weight": 1,
+                "evidence": "normal"
+              },
+              "F10": {
+                "reason": "No clear growth or liquidity signal",
+                "signal": "NEUTRAL",
+                "weight": 1,
+                "evidence": "neutral"
+              }
+            }
+          },
+          "next_week": {
+            "reason": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "direction": "BEARISH",
+            "conviction": 60,
+            "score_bearish": 5,
+            "score_bullish": 0,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 60,
+              "weight_margin": 60,
+              "bearish_weight": 60,
+              "bullish_weight": 0,
+              "neutral_weight": 40
+            },
+            "conviction_model": {
+              "net_edge": -100,
+              "bear_case": 100,
+              "bull_case": 0,
+              "neutral_pct": 40,
+              "net_edge_pct": -100,
+              "winning_side": "BEARISH",
+              "participation": 60,
+              "weighted_edge": 1,
+              "raw_conviction": 60,
+              "agreement_boost": 0,
+              "base_conviction": 60,
+              "conflict_penalty": 0,
+              "final_conviction": 60,
+              "verdict_strength": "STRONG",
+              "participation_cap": 60,
+              "bearish_argument_pct": 100,
+              "bullish_argument_pct": 0,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "next_week deterministic Gold score: bull case 0%, bear case 100%, directional participation 60%, neutral/inactive 40%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+              "active_participation_pct": 60,
+              "directional_participation": 60
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Rising real yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 20,
+                "evidence": "Real yield 16.999999999999993bps"
+              },
+              "F2": {
+                "reason": "DXY move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 16,
+                "evidence": "DXY 0.17468463230274403%"
+              },
+              "F3": {
+                "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+                "signal": "BEARISH",
+                "weight": 18,
+                "evidence": "Fed bias hawkish"
+              },
+              "F4": {
+                "reason": "Rising front-end yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "US 2Y 17.99999999999997bps"
+              },
+              "F5": {
+                "reason": "Gold price move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "Gold 0%"
+              },
+              "F6": {
+                "reason": "Risk-on conditions reduce defensive Gold demand",
+                "signal": "BEARISH",
+                "weight": 8,
+                "evidence": "VIX 15.4"
+              },
+              "F7": {
+                "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+                "signal": "BEARISH",
+                "weight": 4,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "Missing input",
+                "signal": "NEUTRAL",
+                "weight": 8,
+                "evidence": "Inflation signal unknown"
+              },
+              "F9": {
+                "reason": "No active safe-haven demand signal",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "normal"
+              },
+              "F10": {
+                "reason": "No clear growth or liquidity signal",
+                "signal": "NEUTRAL",
+                "weight": 4,
+                "evidence": "neutral"
+              }
+            }
+          },
+          "current_week": {
+            "reason": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+            "direction": "BEARISH",
+            "conviction": 41,
+            "score_bearish": 4,
+            "score_bullish": 1,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 59,
+              "weight_margin": 23,
+              "bearish_weight": 41,
+              "bullish_weight": 18,
+              "neutral_weight": 41
+            },
+            "conviction_model": {
+              "net_edge": -38,
+              "bear_case": 69,
+              "bull_case": 31,
+              "neutral_pct": 41,
+              "net_edge_pct": -38,
+              "winning_side": "BEARISH",
+              "participation": 59,
+              "weighted_edge": 0.38,
+              "raw_conviction": 41,
+              "agreement_boost": 0,
+              "base_conviction": 41,
+              "conflict_penalty": 0,
+              "final_conviction": 41,
+              "verdict_strength": "STRONG",
+              "participation_cap": 59,
+              "bearish_argument_pct": 69,
+              "bullish_argument_pct": 31,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+              "active_participation_pct": 59,
+              "directional_participation": 59
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 22,
+                "evidence": "Real yield 4.999999999999982bps"
+              },
+              "F2": {
+                "reason": "Dollar weakness supports Gold",
+                "signal": "BULLISH",
+                "weight": 18,
+                "evidence": "DXY -0.41107825314780544%"
+              },
+              "F3": {
+                "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+                "signal": "BEARISH",
+                "weight": 16,
+                "evidence": "Fed bias hawkish"
+              },
+              "F4": {
+                "reason": "Rising front-end yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "US 2Y 5.999999999999961bps"
+              },
+              "F5": {
+                "reason": "Gold price move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 8,
+                "evidence": "Gold 0%"
+              },
+              "F6": {
+                "reason": "Risk-on conditions reduce defensive Gold demand",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "VIX 15.4"
+              },
+              "F7": {
+                "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+                "signal": "BEARISH",
+                "weight": 5,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "Missing input",
+                "signal": "NEUTRAL",
+                "weight": 5,
+                "evidence": "Inflation signal unknown"
+              },
+              "F9": {
+                "reason": "No active safe-haven demand signal",
+                "signal": "NEUTRAL",
+                "weight": 4,
+                "evidence": "normal"
+              },
+              "F10": {
+                "reason": "No clear growth or liquidity signal",
+                "signal": "NEUTRAL",
+                "weight": 2,
+                "evidence": "neutral"
+              }
+            }
+          },
+          "current_month": {
+            "reason": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+            "direction": "BEARISH",
+            "conviction": 56,
+            "score_bearish": 5,
+            "score_bullish": 0,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 56,
+              "weight_margin": 56,
+              "bearish_weight": 56,
+              "bullish_weight": 0,
+              "neutral_weight": 44
+            },
+            "conviction_model": {
+              "net_edge": -100,
+              "bear_case": 100,
+              "bull_case": 0,
+              "neutral_pct": 44,
+              "net_edge_pct": -100,
+              "winning_side": "BEARISH",
+              "participation": 56,
+              "weighted_edge": 1,
+              "raw_conviction": 56,
+              "agreement_boost": 0,
+              "base_conviction": 56,
+              "conflict_penalty": 0,
+              "final_conviction": 56,
+              "verdict_strength": "STRONG",
+              "participation_cap": 56,
+              "bearish_argument_pct": 100,
+              "bullish_argument_pct": 0,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+              "active_participation_pct": 56,
+              "directional_participation": 56
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Rising real yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 18,
+                "evidence": "Real yield 16.999999999999993bps"
+              },
+              "F2": {
+                "reason": "DXY move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 16,
+                "evidence": "DXY 0.17468463230274403%"
+              },
+              "F3": {
+                "reason": "Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations",
+                "signal": "BEARISH",
+                "weight": 18,
+                "evidence": "Fed bias hawkish"
+              },
+              "F4": {
+                "reason": "Rising front-end yields pressure Gold",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "US 2Y 17.99999999999997bps"
+              },
+              "F5": {
+                "reason": "Gold price move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "Gold 0%"
+              },
+              "F6": {
+                "reason": "Risk-on conditions reduce defensive Gold demand",
+                "signal": "BEARISH",
+                "weight": 6,
+                "evidence": "VIX 15.4"
+              },
+              "F7": {
+                "reason": "Positive US surprise pressures Gold through higher yield and Fed repricing risk",
+                "signal": "BEARISH",
+                "weight": 4,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "Missing input",
+                "signal": "NEUTRAL",
+                "weight": 10,
+                "evidence": "Inflation signal unknown"
+              },
+              "F9": {
+                "reason": "No active safe-haven demand signal",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "normal"
+              },
+              "F10": {
+                "reason": "No clear growth or liquidity signal",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "neutral"
+              }
+            }
+          }
+        },
+        "reasoning_summary": "GOLD weighted verdicts calculated deterministically by timeframe. 24h BEARISH_LEAN 38%, 3d BEARISH 40%, current week BEARISH 41%, next week BEARISH 60%, current month BEARISH 56%.",
+        "direction_next_week": "BEARISH",
+        "reason_current_week": "current_week deterministic Gold score: bull case 31%, bear case 69%, directional participation 59%, neutral/inactive 41%, net edge -38. Real yields and DXY remain the highest-priority Gold drivers.",
+        "conviction_next_week": 60,
+        "reason_current_month": "current_month deterministic Gold score: bull case 0%, bear case 100%, directional participation 56%, neutral/inactive 44%, net edge -100. Real yields and DXY remain the highest-priority Gold drivers.",
+        "direction_current_week": "BEARISH",
+        "logic_document_version": "2.0_weighted_engine",
+        "conviction_current_week": 41,
+        "direction_current_month": "BEARISH",
+        "conviction_current_month": 56
+      }
     },
     {
       "agent": "NQ",
