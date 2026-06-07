@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T17:09:45.979Z",
+    "last_updated_et": "2026-06-07T17:18:41.248Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -430,6 +430,13 @@
           }
         }
       },
+      "priority_timeframe": "24h",
+      "priority_call": {
+        "direction": "NO 24H CALL",
+        "conviction": null,
+        "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
+        "status": "market_closed"
+      },
       "factor_breakdown": {
         "F1": {
           "reason": "Risk-on rotation away from USD",
@@ -505,44 +512,27 @@
         "F10 [1]: BULLISH — NQ -4.8001% risk-on (Equity weakness supports USD)"
       ],
       "warnings": [
-        "Primary drivers include mixed signals (US-DE spread narrowing bearish while Fed bias hawkish bullish)",
-        "Risk regime indicators bearish for USD",
-        "DXY 5-day delta bearish reduces momentum confirmation"
+        "Primary drivers partially conflicted: US-DE 2Y spread bearish vs Fed bias bullish",
+        "Dollar Smile regime bearish contrasts with overall hawkish Fed and economic surprise",
+        "DXY 5-day delta bearish conflicts with some rates/yields bullish signals"
       ],
       "reasoning_summary": "USD weighted verdicts calculated deterministically by timeframe. 24h BULLISH 60%, 3d BEARISH_LEAN 52%, current week BEARISH_LEAN 54%, next week BULLISH 70%, current month BULLISH 73%.",
       "score_bullish": 4,
       "score_bearish": 2,
       "score_neutral": 4,
-      "non_neutral_count": 8,
+      "non_neutral_count": 7,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
-        "neutral_pct": 35,
-        "net_edge_pct": 20,
-        "participation": 65,
-        "weighted_edge": 0.2,
-        "raw_conviction": 60,
-        "agreement_boost": 0,
-        "base_conviction": 60,
-        "conflict_penalty": 0,
-        "final_conviction": 60,
-        "verdict_strength": "MODERATE",
-        "participation_cap": 65,
-        "bearish_argument_pct": 40,
-        "bullish_argument_pct": 60,
-        "missing_input_penalty": 0,
-        "final_conviction_logic": "24h deterministic score: bullish argument 60%, bearish argument 40%, neutral/inactive 35%, net edge +20 bullish.",
-        "active_participation_pct": 65,
-        "directional_participation_pct": 65,
-        "winning_side": "BULLISH",
-        "weighted_score": {
-          "bullish_weight": 39,
-          "bearish_weight": 26,
-          "neutral_weight": 35,
-          "active_weight": 65,
-          "weight_margin": 13
-        },
-        "alignment": 60
+        "bullish_argument_pct": null,
+        "bearish_argument_pct": null,
+        "neutral_pct": null,
+        "directional_participation_pct": null,
+        "net_edge_pct": null,
+        "final_conviction": null,
+        "verdict_strength": "MARKET_CLOSED",
+        "winning_side": "MARKET_CLOSED",
+        "final_conviction_logic": "24H priority timeframe is closed by weekend rule."
       },
       "timeframe_models": {
         "3d": {
@@ -1022,24 +1012,24 @@
         }
       },
       "display_metrics": {
-        "bull_case": 60,
-        "bear_case": 40,
-        "winning_side": "BULLISH",
-        "conviction": 60,
-        "net_edge": 20,
-        "directional_participation": 65,
-        "neutral": 35,
-        "verdict_strength": "MODERATE"
+        "bull_case": null,
+        "bear_case": null,
+        "winning_side": "MARKET_CLOSED",
+        "conviction": null,
+        "net_edge": null,
+        "directional_participation": null,
+        "neutral": null,
+        "verdict_strength": "MARKET_CLOSED"
       },
       "full_output": {
         "asset": "USD",
         "layer": "layer_1_raw",
-        "created_at": null,
+        "created_at": "2026-06-07T14:27:31.793Z",
         "reason_24h": "24h deterministic score: bullish argument 60%, bearish argument 40%, neutral/inactive 35%, net edge +20 bullish.",
         "risk_flags": [
-          "Primary drivers include mixed signals (US-DE spread narrowing bearish while Fed bias hawkish bullish)",
-          "Risk regime indicators bearish for USD",
-          "DXY 5-day delta bearish reduces momentum confirmation"
+          "Primary drivers partially conflicted: US-DE 2Y spread bearish vs Fed bias bullish",
+          "Dollar Smile regime bearish contrasts with overall hawkish Fed and economic surprise",
+          "DXY 5-day delta bearish conflicts with some rates/yields bullish signals"
         ],
         "reason_3_day": "3d deterministic score: bullish argument 48%, bearish argument 52%, neutral/inactive 27%, net edge -4 bearish.",
         "direction_24h": "BULLISH",
@@ -1617,7 +1607,7 @@
             }
           }
         },
-        "non_neutral_count": 8,
+        "non_neutral_count": 7,
         "reasoning_summary": "USD weighted verdicts calculated deterministically by timeframe. 24h BULLISH 60%, 3d BEARISH_LEAN 52%, current week BEARISH_LEAN 54%, next week BULLISH 70%, current month BULLISH 73%.",
         "direction_next_week": "BULLISH",
         "reason_current_week": "current_week deterministic score: bullish argument 46%, bearish argument 54%, neutral/inactive 30%, net edge -8 bearish.",
