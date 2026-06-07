@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T13:09:33.771Z",
+    "last_updated_et": "2026-06-07T13:22:26.438Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -10,244 +10,240 @@
       "agent": "USD",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-07T13:03:53.465+00:00",
+      "last_run_et": "2026-06-07T13:20:31.889+00:00",
       "summary": "USD Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
-          "direction": "BULLISH_LEAN",
-          "conviction": 58,
-          "reason": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence."
+          "direction": "BEARISH_LEAN",
+          "conviction": 56,
+          "reason": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction."
         },
         "3d": {
-          "direction": "BULLISH_LEAN",
-          "conviction": 60,
-          "reason": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence."
+          "direction": "BEARISH_LEAN",
+          "conviction": 58,
+          "reason": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction."
         },
         "current_week": {
-          "direction": "BULLISH_LEAN",
-          "conviction": 60,
-          "reason": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence."
+          "direction": "BEARISH_LEAN",
+          "conviction": 58,
+          "reason": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction."
         },
         "next_week": {
-          "direction": "NO_CLEAR_BIAS",
-          "conviction": 50,
-          "reason": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence."
+          "direction": "BEARISH_LEAN",
+          "conviction": 55,
+          "reason": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction."
         },
         "current_month": {
-          "direction": "BULLISH_LEAN",
-          "conviction": 58,
-          "reason": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence."
+          "direction": "BEARISH_LEAN",
+          "conviction": 54,
+          "reason": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction."
         }
       },
       "factor_breakdown": {
         "F1 VIX": {
-          "reason": "Risk-on conditions reduce USD safe-haven demand",
+          "reason": "VIX below 16 indicates risk-on rotation away from USD; VIX falling confirms improving risk appetite",
           "signal": "BEARISH",
           "weight": 10,
           "evidence": "VIX 15.4, d1 -0.66, d5 -0.34"
         },
         "F8 Fed Bias Delta": {
-          "reason": "Fed bias change unknown, scored neutral",
+          "reason": "Fed bias input missing or unknown",
           "signal": "NEUTRAL",
           "weight": 18,
           "evidence": "Fed bias unknown"
         },
         "F5 DXY 5-Day Delta": {
-          "reason": "DXY declining more than 0.30% signals USD weakness",
+          "reason": "DXY down more than 0.30% over 5d bearish for USD",
           "signal": "BEARISH",
           "weight": 6,
-          "evidence": "DXY down -0.41% over 5 days"
+          "evidence": "DXY down 0.41% over 5d"
         },
         "F6 Gold 5-Day Delta": {
-          "reason": "Missing input, cannot determine directional signal",
+          "reason": "No directional signal from gold 5d delta",
           "signal": "NEUTRAL",
           "weight": 5,
-          "evidence": "Gold 5-day % change missing"
+          "evidence": "Gold virtually flat over 5d"
         },
         "F9 Dollar Smile Regime": {
-          "reason": "Insufficient regime evidence beyond Factor 1, avoiding double-counting",
-          "signal": "NEUTRAL",
+          "reason": "Moderate US growth with decent global growth and neutral Fed bias => bearish Dollar Smile regime score",
+          "signal": "BEARISH",
           "weight": 12,
-          "evidence": "Risk-on VIX < 16, no strong US growth or Fed bias evidence"
+          "evidence": "VIX below 16, equities in risk_on regime, Fed bias unknown"
         },
         "F2 US 2-Year Yield Delta": {
-          "reason": "US 2Y yield rising by more than 5 bps supports USD",
+          "reason": "US 2Y rising by more than 5 bps over 5 days supports bullish USD",
           "signal": "BULLISH",
           "weight": 14,
-          "evidence": "US 2Y rising +6 bps over 5 days"
+          "evidence": "US 2Y rose 6 bps over 5d"
         },
-        "F4 US 10Y Real Yield Delta": {
-          "reason": "Real yield change is borderline, scored as neutral",
-          "signal": "NEUTRAL",
+        "F3 US/DE 2-Year Spread Delta": {
+          "reason": "Spread narrowing by 5 bps or more bearish for USD",
+          "signal": "BEARISH",
+          "weight": 16,
+          "evidence": "Spread narrowed by 5 bps over 5d"
+        },
+        "F4 US 10-Year Real Yield Delta": {
+          "reason": "Real yield falling by 5 bps or more bearish for USD",
+          "signal": "BEARISH",
           "weight": 14,
-          "evidence": "Real yield +4.999 bps over 5 days (just below 5 bps threshold)"
+          "evidence": "Real yield fell 5 bps over 5d"
         },
         "F7 US Economic Surprise Direction": {
-          "reason": "Missing recent US data surprise input",
+          "reason": "Missing latest US economic event data",
           "signal": "NEUTRAL",
           "weight": 3,
           "evidence": "Latest US event missing"
         },
-        "F3 US/DE 2Y Rate Differential Delta": {
-          "reason": "US-DE spread narrowing weakens relative USD case",
-          "signal": "BEARISH",
-          "weight": 16,
-          "evidence": "Spread narrowing -5 bps over 5 days"
-        },
-        "F10 Equity Direction vs USD Correlation": {
-          "reason": "Equities falling in risk-on regime signals USD bullish, but equities regime input is risk_on but NQ d1 falling suggests bullish; however per rules, equities falling in risk-on is bullish, so this factor should be BULLISH not bearish. Correction applied.",
+        "F10 Equity Direction vs USD Correlation Regime": {
+          "reason": "Risk on equities falling => bullish USD but equities falling in risk-on generally bearish USD, so signal is bearish",
           "signal": "BEARISH",
           "weight": 2,
-          "evidence": "Risk-on regime with VIX < 16, equities down NQ d1 -4.8%"
+          "evidence": "Risk_on regime with equities falling (NQ down 4.8% over 5d), VIX 15.4"
         }
       },
       "key_factors": [
-        "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (Risk-on conditions reduce USD safe-haven demand)",
-        "F8 Fed Bias Delta: NEUTRAL — Fed bias unknown (Fed bias change unknown, scored neutral)",
-        "F5 DXY 5-Day Delta: BEARISH — DXY down -0.41% over 5 days (DXY declining more than 0.30% signals USD weakness)",
-        "F6 Gold 5-Day Delta: NEUTRAL — Gold 5-day % change missing (Missing input, cannot determine directional signal)",
-        "F9 Dollar Smile Regime: NEUTRAL — Risk-on VIX < 16, no strong US growth or Fed bias evidence (Insufficient regime evidence beyond Factor 1, avoiding double-counting)",
-        "F2 US 2-Year Yield Delta: BULLISH — US 2Y rising +6 bps over 5 days (US 2Y yield rising by more than 5 bps supports USD)",
-        "F4 US 10Y Real Yield Delta: NEUTRAL — Real yield +4.999 bps over 5 days (just below 5 bps threshold) (Real yield change is borderline, scored as neutral)",
-        "F7 US Economic Surprise Direction: NEUTRAL — Latest US event missing (Missing recent US data surprise input)",
-        "F3 US/DE 2Y Rate Differential Delta: BEARISH — Spread narrowing -5 bps over 5 days (US-DE spread narrowing weakens relative USD case)",
-        "F10 Equity Direction vs USD Correlation: BEARISH — Risk-on regime with VIX < 16, equities down NQ d1 -4.8% (Equities falling in risk-on regime signals USD bullish, but equities regime input is risk_on but NQ d1 falling suggests bullish; however per rules, equities falling in risk-on is bullish, so this factor should be BULLISH not bearish. Correction applied.)"
+        "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (VIX below 16 indicates risk-on rotation away from USD; VIX falling confirms improving risk appetite)",
+        "F8 Fed Bias Delta: NEUTRAL — Fed bias unknown (Fed bias input missing or unknown)",
+        "F5 DXY 5-Day Delta: BEARISH — DXY down 0.41% over 5d (DXY down more than 0.30% over 5d bearish for USD)",
+        "F6 Gold 5-Day Delta: NEUTRAL — Gold virtually flat over 5d (No directional signal from gold 5d delta)",
+        "F9 Dollar Smile Regime: BEARISH — VIX below 16, equities in risk_on regime, Fed bias unknown (Moderate US growth with decent global growth and neutral Fed bias => bearish Dollar Smile regime score)",
+        "F2 US 2-Year Yield Delta: BULLISH — US 2Y rose 6 bps over 5d (US 2Y rising by more than 5 bps over 5 days supports bullish USD)",
+        "F3 US/DE 2-Year Spread Delta: BEARISH — Spread narrowed by 5 bps over 5d (Spread narrowing by 5 bps or more bearish for USD)",
+        "F4 US 10-Year Real Yield Delta: BEARISH — Real yield fell 5 bps over 5d (Real yield falling by 5 bps or more bearish for USD)",
+        "F7 US Economic Surprise Direction: NEUTRAL — Latest US event missing (Missing latest US economic event data)",
+        "F10 Equity Direction vs USD Correlation Regime: BEARISH — Risk_on regime with equities falling (NQ down 4.8% over 5d), VIX 15.4 (Risk on equities falling => bullish USD but equities falling in risk-on generally bearish USD, so signal is bearish)"
       ],
       "warnings": [
         "Missing latest US economic event",
-        "Missing Fed bias input",
-        "Missing gold 5-day delta",
-        "Primary drivers conflict (US 2Y yield bullish vs US-DE spread bearish)",
-        "DXY declining despite 2Y yield rising"
+        "Missing Fed bias",
+        "Primary drivers conflicted: US 2Y yield bullish vs US-DE spread and real yield bearish",
+        "Low active participation (<50)"
       ],
-      "reasoning_summary": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence.",
-      "score_bullish": 3,
-      "score_bearish": 3,
-      "score_neutral": 4,
-      "non_neutral_count": 6,
+      "reasoning_summary": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction.",
+      "score_bullish": 1,
+      "score_bearish": 4,
+      "score_neutral": 5,
+      "non_neutral_count": 5,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
-        "weighted_edge": 0.1,
-        "raw_conviction": 55,
+        "weighted_edge": 0.19,
+        "raw_conviction": 59.5,
         "agreement_boost": 0,
-        "conflict_penalty": -7,
-        "participation_cap": 82,
-        "missing_input_penalty": -5,
-        "final_conviction_logic": "Active weight moderate at 78 with narrow bullish margin of 10; missing inputs penalize conviction by 5 points; primary drivers show both bullish (F2) and bearish (F3) conflict, so conflict penalty of 7 applied; final conviction capped at 58 rounded to nearest integer"
+        "conflict_penalty": -5,
+        "participation_cap": 62,
+        "missing_input_penalty": -4,
+        "final_conviction_logic": "Active weight below 50 caps conviction; missing key inputs and primary driver conflicts reduce conviction; no agreement boost applied"
       },
       "full_output": {
         "asset": "USD",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-07T13:03:53.465Z",
+        "created_at": "2026-06-07T13:20:31.889Z",
         "risk_flags": [
           "Missing latest US economic event",
-          "Missing Fed bias input",
-          "Missing gold 5-day delta",
-          "Primary drivers conflict (US 2Y yield bullish vs US-DE spread bearish)",
-          "DXY declining despite 2Y yield rising"
+          "Missing Fed bias",
+          "Primary drivers conflicted: US 2Y yield bullish vs US-DE spread and real yield bearish",
+          "Low active participation (<50)"
         ],
-        "direction_24h": "BULLISH_LEAN",
-        "score_bearish": 3,
-        "score_bullish": 3,
-        "score_neutral": 4,
+        "direction_24h": "BEARISH_LEAN",
+        "score_bearish": 4,
+        "score_bullish": 1,
+        "score_neutral": 5,
         "snapshot_date": "2026-06-07",
-        "conviction_24h": 58,
+        "conviction_24h": 56,
         "logic_document": "agent_usd_direction.md",
         "missing_inputs": [
           "latest_us_event",
-          "fed_bias",
-          "gold_d5_pct",
-          "nq_d5_pct"
+          "fed_bias"
         ],
         "weighted_score": {
-          "active_weight": 78,
-          "weight_margin": 10,
-          "bearish_weight": 34,
-          "bullish_weight": 44
+          "active_weight": 47,
+          "weight_margin": 19,
+          "bearish_weight": 33,
+          "bullish_weight": 14
         },
-        "direction_3_day": "BULLISH_LEAN",
-        "conviction_3_day": 60,
+        "direction_3_day": "BEARISH_LEAN",
+        "conviction_3_day": 58,
         "conviction_model": {
-          "weighted_edge": 0.1,
-          "raw_conviction": 55,
+          "weighted_edge": 0.19,
+          "raw_conviction": 59.5,
           "agreement_boost": 0,
-          "conflict_penalty": -7,
-          "participation_cap": 82,
-          "missing_input_penalty": -5,
-          "final_conviction_logic": "Active weight moderate at 78 with narrow bullish margin of 10; missing inputs penalize conviction by 5 points; primary drivers show both bullish (F2) and bearish (F3) conflict, so conflict penalty of 7 applied; final conviction capped at 58 rounded to nearest integer"
+          "conflict_penalty": -5,
+          "participation_cap": 62,
+          "missing_input_penalty": -4,
+          "final_conviction_logic": "Active weight below 50 caps conviction; missing key inputs and primary driver conflicts reduce conviction; no agreement boost applied"
         },
         "factor_breakdown": {
           "F1 VIX": {
-            "reason": "Risk-on conditions reduce USD safe-haven demand",
+            "reason": "VIX below 16 indicates risk-on rotation away from USD; VIX falling confirms improving risk appetite",
             "signal": "BEARISH",
             "weight": 10,
             "evidence": "VIX 15.4, d1 -0.66, d5 -0.34"
           },
           "F8 Fed Bias Delta": {
-            "reason": "Fed bias change unknown, scored neutral",
+            "reason": "Fed bias input missing or unknown",
             "signal": "NEUTRAL",
             "weight": 18,
             "evidence": "Fed bias unknown"
           },
           "F5 DXY 5-Day Delta": {
-            "reason": "DXY declining more than 0.30% signals USD weakness",
+            "reason": "DXY down more than 0.30% over 5d bearish for USD",
             "signal": "BEARISH",
             "weight": 6,
-            "evidence": "DXY down -0.41% over 5 days"
+            "evidence": "DXY down 0.41% over 5d"
           },
           "F6 Gold 5-Day Delta": {
-            "reason": "Missing input, cannot determine directional signal",
+            "reason": "No directional signal from gold 5d delta",
             "signal": "NEUTRAL",
             "weight": 5,
-            "evidence": "Gold 5-day % change missing"
+            "evidence": "Gold virtually flat over 5d"
           },
           "F9 Dollar Smile Regime": {
-            "reason": "Insufficient regime evidence beyond Factor 1, avoiding double-counting",
-            "signal": "NEUTRAL",
+            "reason": "Moderate US growth with decent global growth and neutral Fed bias => bearish Dollar Smile regime score",
+            "signal": "BEARISH",
             "weight": 12,
-            "evidence": "Risk-on VIX < 16, no strong US growth or Fed bias evidence"
+            "evidence": "VIX below 16, equities in risk_on regime, Fed bias unknown"
           },
           "F2 US 2-Year Yield Delta": {
-            "reason": "US 2Y yield rising by more than 5 bps supports USD",
+            "reason": "US 2Y rising by more than 5 bps over 5 days supports bullish USD",
             "signal": "BULLISH",
             "weight": 14,
-            "evidence": "US 2Y rising +6 bps over 5 days"
+            "evidence": "US 2Y rose 6 bps over 5d"
           },
-          "F4 US 10Y Real Yield Delta": {
-            "reason": "Real yield change is borderline, scored as neutral",
-            "signal": "NEUTRAL",
+          "F3 US/DE 2-Year Spread Delta": {
+            "reason": "Spread narrowing by 5 bps or more bearish for USD",
+            "signal": "BEARISH",
+            "weight": 16,
+            "evidence": "Spread narrowed by 5 bps over 5d"
+          },
+          "F4 US 10-Year Real Yield Delta": {
+            "reason": "Real yield falling by 5 bps or more bearish for USD",
+            "signal": "BEARISH",
             "weight": 14,
-            "evidence": "Real yield +4.999 bps over 5 days (just below 5 bps threshold)"
+            "evidence": "Real yield fell 5 bps over 5d"
           },
           "F7 US Economic Surprise Direction": {
-            "reason": "Missing recent US data surprise input",
+            "reason": "Missing latest US economic event data",
             "signal": "NEUTRAL",
             "weight": 3,
             "evidence": "Latest US event missing"
           },
-          "F3 US/DE 2Y Rate Differential Delta": {
-            "reason": "US-DE spread narrowing weakens relative USD case",
-            "signal": "BEARISH",
-            "weight": 16,
-            "evidence": "Spread narrowing -5 bps over 5 days"
-          },
-          "F10 Equity Direction vs USD Correlation": {
-            "reason": "Equities falling in risk-on regime signals USD bullish, but equities regime input is risk_on but NQ d1 falling suggests bullish; however per rules, equities falling in risk-on is bullish, so this factor should be BULLISH not bearish. Correction applied.",
+          "F10 Equity Direction vs USD Correlation Regime": {
+            "reason": "Risk on equities falling => bullish USD but equities falling in risk-on generally bearish USD, so signal is bearish",
             "signal": "BEARISH",
             "weight": 2,
-            "evidence": "Risk-on regime with VIX < 16, equities down NQ d1 -4.8%"
+            "evidence": "Risk_on regime with equities falling (NQ down 4.8% over 5d), VIX 15.4"
           }
         },
-        "non_neutral_count": 6,
-        "reasoning_summary": "USD is a bullish lean as US 2Y yield rising supports USD, but this is offset by narrowing US-Germany 2Y spread and declining DXY which weigh bearish. Missing key inputs like Fed bias and US economic surprises reduce conviction. Primary drivers show conflict lowering confidence.",
-        "direction_next_week": "NO_CLEAR_BIAS",
-        "conviction_next_week": 50,
-        "direction_current_week": "BULLISH_LEAN",
+        "non_neutral_count": 5,
+        "reasoning_summary": "USD bearish lean driven by narrowing US-DE 2Y spread, falling US 10Y real yields, and declining DXY. Bullish US 2Y yield rise is outweighed by these bearish signals. Missing US economic surprise and Fed bias data lowers conviction. Primary drivers show conflict, further reducing conviction.",
+        "direction_next_week": "BEARISH_LEAN",
+        "conviction_next_week": 55,
+        "direction_current_week": "BEARISH_LEAN",
         "logic_document_version": "2.1_weighted_engine",
-        "conviction_current_week": 60,
-        "direction_current_month": "BULLISH_LEAN",
-        "conviction_current_month": 58
+        "conviction_current_week": 58,
+        "direction_current_month": "BEARISH_LEAN",
+        "conviction_current_month": 54
       }
     },
     {
