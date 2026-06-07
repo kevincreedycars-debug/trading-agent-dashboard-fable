@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T15:43:24.178Z",
+    "last_updated_et": "2026-06-07T15:44:20.981Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -24,22 +24,22 @@
         "3d": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction."
+          "reason": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution."
         },
         "current_week": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction."
+          "reason": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution."
         },
         "next_week": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction."
+          "reason": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution."
         },
         "current_month": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction."
+          "reason": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution."
         }
       },
       "factor_breakdown": {
@@ -53,133 +53,133 @@
           "reason": "Fed bias moved more hawkish supports USD",
           "signal": "BULLISH",
           "weight": 18,
-          "evidence": "Current Fed bias hawkish"
+          "evidence": "Fed bias is hawkish"
         },
         "F5 DXY 5-Day Delta": {
-          "reason": "DXY falling over 5 days indicates USD weakness",
+          "reason": "DXY down more than 0.3% over 5 days is bearish",
           "signal": "BEARISH",
           "weight": 6,
           "evidence": "DXY down 0.41% over 5 days"
         },
         "F6 Gold 5-Day Delta": {
-          "reason": "Gold 5-day change negligible, no directional signal",
+          "reason": "Gold flat over 5 days",
           "signal": "NEUTRAL",
           "weight": 5,
-          "evidence": "Gold flat over 5 days"
+          "evidence": "Gold 5-day change approximately 0%"
         },
         "F9 Dollar Smile Regime": {
-          "reason": "Dollar Smile not strongly signaled beyond Factor 1 and Fed bias",
-          "signal": "NEUTRAL",
+          "reason": "Dollar Smile regime bearish due to moderate US/global growth and low risk",
+          "signal": "BEARISH",
           "weight": 12,
-          "evidence": "VIX low, US growth and Fed hawkishness present but limited regime evidence"
+          "evidence": "VIX < 16 and equities risk-on regime"
         },
         "F2 US 2-Year Yield Delta": {
-          "reason": "US 2-Year yield rising over 5 days supports USD",
+          "reason": "US 2Y rising by more than 5 bps supports USD",
           "signal": "BULLISH",
           "weight": 14,
-          "evidence": "US 2Y up 6 bps over 5 days"
+          "evidence": "US 2Y yield rose by 6 bps over 5 days"
         },
         "F4 US 10-Year Real Yield Delta": {
-          "reason": "Real yield increase marginally below bullish threshold",
+          "reason": "Real yield move within neutral band (-5 to +5 bps)",
           "signal": "NEUTRAL",
           "weight": 14,
-          "evidence": "Real yield up 4.999 bps (just below 5 bps threshold)"
+          "evidence": "US 10Y real yield rose by 4.999 bps, just under 5 bps threshold"
         },
         "F7 US Economic Surprise Direction": {
-          "reason": "US data beat consensus, supporting USD",
+          "reason": "Recent US data beat consensus",
           "signal": "BULLISH",
           "weight": 3,
-          "evidence": "Positive surprise in recent NFP data"
+          "evidence": "NFP actual 172k vs forecast 85k, positive surprise"
         },
-        "F3 US/DE 2-Year Rate Differential Delta": {
-          "reason": "US-DE 2Y spread narrowing weakens USD",
+        "F3 US/Germany 2Y Rate Differential Delta": {
+          "reason": "Spread narrowing over 5 bps reduces USD relative attractiveness",
           "signal": "BEARISH",
           "weight": 16,
-          "evidence": "Spread narrowing by 5 bps over 5 days"
+          "evidence": "US-DE 2Y spread narrowed by 5 bps"
         },
         "F10 Equity Direction vs USD Correlation Regime": {
-          "reason": "Equities falling in risk-on regime signals USD bullishness",
+          "reason": "Equities falling in risk-on regime supports USD",
           "signal": "BULLISH",
           "weight": 2,
-          "evidence": "Equities falling in risk_on regime with VIX < 16"
+          "evidence": "Risk-on regime with equities falling"
         }
       },
       "key_factors": [
         "F1 VIX: BEARISH — VIX 15.4, d1 -0.66, d5 -0.34 (Risk-on conditions reduce USD safe-haven demand)",
-        "F8 Fed Bias Delta: BULLISH — Current Fed bias hawkish (Fed bias moved more hawkish supports USD)",
-        "F5 DXY 5-Day Delta: BEARISH — DXY down 0.41% over 5 days (DXY falling over 5 days indicates USD weakness)",
-        "F6 Gold 5-Day Delta: NEUTRAL — Gold flat over 5 days (Gold 5-day change negligible, no directional signal)",
-        "F9 Dollar Smile Regime: NEUTRAL — VIX low, US growth and Fed hawkishness present but limited regime evidence (Dollar Smile not strongly signaled beyond Factor 1 and Fed bias)",
-        "F2 US 2-Year Yield Delta: BULLISH — US 2Y up 6 bps over 5 days (US 2-Year yield rising over 5 days supports USD)",
-        "F4 US 10-Year Real Yield Delta: NEUTRAL — Real yield up 4.999 bps (just below 5 bps threshold) (Real yield increase marginally below bullish threshold)",
-        "F7 US Economic Surprise Direction: BULLISH — Positive surprise in recent NFP data (US data beat consensus, supporting USD)",
-        "F3 US/DE 2-Year Rate Differential Delta: BEARISH — Spread narrowing by 5 bps over 5 days (US-DE 2Y spread narrowing weakens USD)",
-        "F10 Equity Direction vs USD Correlation Regime: BULLISH — Equities falling in risk_on regime with VIX < 16 (Equities falling in risk-on regime signals USD bullishness)"
+        "F8 Fed Bias Delta: BULLISH — Fed bias is hawkish (Fed bias moved more hawkish supports USD)",
+        "F5 DXY 5-Day Delta: BEARISH — DXY down 0.41% over 5 days (DXY down more than 0.3% over 5 days is bearish)",
+        "F6 Gold 5-Day Delta: NEUTRAL — Gold 5-day change approximately 0% (Gold flat over 5 days)",
+        "F9 Dollar Smile Regime: BEARISH — VIX < 16 and equities risk-on regime (Dollar Smile regime bearish due to moderate US/global growth and low risk)",
+        "F2 US 2-Year Yield Delta: BULLISH — US 2Y yield rose by 6 bps over 5 days (US 2Y rising by more than 5 bps supports USD)",
+        "F4 US 10-Year Real Yield Delta: NEUTRAL — US 10Y real yield rose by 4.999 bps, just under 5 bps threshold (Real yield move within neutral band (-5 to +5 bps))",
+        "F7 US Economic Surprise Direction: BULLISH — NFP actual 172k vs forecast 85k, positive surprise (Recent US data beat consensus)",
+        "F3 US/Germany 2Y Rate Differential Delta: BEARISH — US-DE 2Y spread narrowed by 5 bps (Spread narrowing over 5 bps reduces USD relative attractiveness)",
+        "F10 Equity Direction vs USD Correlation Regime: BULLISH — Risk-on regime with equities falling (Equities falling in risk-on regime supports USD)"
       ],
       "warnings": [
         "Primary drivers partially conflicted",
-        "Mixed signals between US rates/yields and currency spreads",
-        "DXY and VIX signals bearish while Fed bias and economic surprise bullish"
+        "Bearish signal from US-DE 2Y spread narrowing",
+        "Bearish signal from DXY 5-day delta and VIX level"
       ],
-      "reasoning_summary": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction.",
+      "reasoning_summary": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution.",
       "score_bullish": 4,
-      "score_bearish": 3,
-      "score_neutral": 3,
-      "non_neutral_count": 6,
+      "score_bearish": 4,
+      "score_neutral": 2,
+      "non_neutral_count": 8,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
-        "weighted_edge": 0.05,
-        "raw_conviction": 53,
+        "weighted_edge": 0.07,
+        "raw_conviction": 54,
         "agreement_boost": 0,
         "conflict_penalty": -10,
-        "participation_cap": 72,
+        "participation_cap": 82,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "Bullish weight 37 vs bearish weight 32; Active weight 69; Raw conviction 53 capped at 72; Conflict penalty -10; Primary driver conflict detected; Primary drivers materially split",
-        "alignment": 5,
-        "base_conviction": 53,
-        "participation": 72,
+        "final_conviction_logic": "Bullish weight 37 vs bearish weight 44; Active weight 81; Raw conviction 54 capped at 82; Conflict penalty -10; Primary driver conflict detected; Primary drivers materially split",
+        "alignment": 7,
+        "base_conviction": 54,
+        "participation": 82,
         "weighted_score": {
           "bullish_weight": 37,
-          "bearish_weight": 32,
-          "active_weight": 69,
-          "weight_margin": 5
+          "bearish_weight": 44,
+          "active_weight": 81,
+          "weight_margin": 7
         }
       },
       "full_output": {
         "asset": "USD",
         "layer": "layer_1_raw",
-        "created_at": null,
+        "created_at": "2026-06-07T14:27:31.793+00:00",
         "risk_flags": [
           "Primary drivers partially conflicted",
-          "Mixed signals between US rates/yields and currency spreads",
-          "DXY and VIX signals bearish while Fed bias and economic surprise bullish"
+          "Bearish signal from US-DE 2Y spread narrowing",
+          "Bearish signal from DXY 5-day delta and VIX level"
         ],
         "direction_24h": "BULLISH_LEAN",
-        "score_bearish": 3,
+        "score_bearish": 4,
         "score_bullish": 4,
-        "score_neutral": 3,
+        "score_neutral": 2,
         "snapshot_date": "2026-06-07",
         "conviction_24h": 50,
         "logic_document": "agent_usd_direction.md",
         "missing_inputs": [],
         "weighted_score": {
-          "active_weight": 69,
-          "weight_margin": 5,
-          "bearish_weight": 32,
+          "active_weight": 81,
+          "weight_margin": 7,
+          "bearish_weight": 44,
           "bullish_weight": 37,
-          "neutral_weight": 31
+          "neutral_weight": 19
         },
         "direction_3_day": "BULLISH_LEAN",
         "conviction_3_day": 50,
         "conviction_model": {
-          "weighted_edge": 0.05,
-          "raw_conviction": 53,
+          "weighted_edge": 0.07,
+          "raw_conviction": 54,
           "agreement_boost": 0,
           "conflict_penalty": -10,
-          "participation_cap": 72,
+          "participation_cap": 82,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "Bullish weight 37 vs bearish weight 32; Active weight 69; Raw conviction 53 capped at 72; Conflict penalty -10; Primary driver conflict detected; Primary drivers materially split"
+          "final_conviction_logic": "Bullish weight 37 vs bearish weight 44; Active weight 81; Raw conviction 54 capped at 82; Conflict penalty -10; Primary driver conflict detected; Primary drivers materially split"
         },
         "factor_breakdown": {
           "F1 VIX": {
@@ -192,59 +192,59 @@
             "reason": "Fed bias moved more hawkish supports USD",
             "signal": "BULLISH",
             "weight": 18,
-            "evidence": "Current Fed bias hawkish"
+            "evidence": "Fed bias is hawkish"
           },
           "F5 DXY 5-Day Delta": {
-            "reason": "DXY falling over 5 days indicates USD weakness",
+            "reason": "DXY down more than 0.3% over 5 days is bearish",
             "signal": "BEARISH",
             "weight": 6,
             "evidence": "DXY down 0.41% over 5 days"
           },
           "F6 Gold 5-Day Delta": {
-            "reason": "Gold 5-day change negligible, no directional signal",
+            "reason": "Gold flat over 5 days",
             "signal": "NEUTRAL",
             "weight": 5,
-            "evidence": "Gold flat over 5 days"
+            "evidence": "Gold 5-day change approximately 0%"
           },
           "F9 Dollar Smile Regime": {
-            "reason": "Dollar Smile not strongly signaled beyond Factor 1 and Fed bias",
-            "signal": "NEUTRAL",
+            "reason": "Dollar Smile regime bearish due to moderate US/global growth and low risk",
+            "signal": "BEARISH",
             "weight": 12,
-            "evidence": "VIX low, US growth and Fed hawkishness present but limited regime evidence"
+            "evidence": "VIX < 16 and equities risk-on regime"
           },
           "F2 US 2-Year Yield Delta": {
-            "reason": "US 2-Year yield rising over 5 days supports USD",
+            "reason": "US 2Y rising by more than 5 bps supports USD",
             "signal": "BULLISH",
             "weight": 14,
-            "evidence": "US 2Y up 6 bps over 5 days"
+            "evidence": "US 2Y yield rose by 6 bps over 5 days"
           },
           "F4 US 10-Year Real Yield Delta": {
-            "reason": "Real yield increase marginally below bullish threshold",
+            "reason": "Real yield move within neutral band (-5 to +5 bps)",
             "signal": "NEUTRAL",
             "weight": 14,
-            "evidence": "Real yield up 4.999 bps (just below 5 bps threshold)"
+            "evidence": "US 10Y real yield rose by 4.999 bps, just under 5 bps threshold"
           },
           "F7 US Economic Surprise Direction": {
-            "reason": "US data beat consensus, supporting USD",
+            "reason": "Recent US data beat consensus",
             "signal": "BULLISH",
             "weight": 3,
-            "evidence": "Positive surprise in recent NFP data"
+            "evidence": "NFP actual 172k vs forecast 85k, positive surprise"
           },
-          "F3 US/DE 2-Year Rate Differential Delta": {
-            "reason": "US-DE 2Y spread narrowing weakens USD",
+          "F3 US/Germany 2Y Rate Differential Delta": {
+            "reason": "Spread narrowing over 5 bps reduces USD relative attractiveness",
             "signal": "BEARISH",
             "weight": 16,
-            "evidence": "Spread narrowing by 5 bps over 5 days"
+            "evidence": "US-DE 2Y spread narrowed by 5 bps"
           },
           "F10 Equity Direction vs USD Correlation Regime": {
-            "reason": "Equities falling in risk-on regime signals USD bullishness",
+            "reason": "Equities falling in risk-on regime supports USD",
             "signal": "BULLISH",
             "weight": 2,
-            "evidence": "Equities falling in risk_on regime with VIX < 16"
+            "evidence": "Risk-on regime with equities falling"
           }
         },
-        "non_neutral_count": 6,
-        "reasoning_summary": "USD bullish lean due to strong bullish signals from US 2Y yield, Fed bias, recent positive US economic surprise, and equity regime, offset by bearish signals from VIX, DXY, and US-DE 2Y spread narrowing. Mixed signals from real yields and Dollar Smile regime, with no missing key inputs, result in moderate conviction and leaning bullish direction.",
+        "non_neutral_count": 8,
+        "reasoning_summary": "USD bullish overall driven by strong primary drivers including US 2Y yield rise, hawkish Fed bias, positive US economic surprise, and equities weakness in risk-on regime. However, bearish signals from VIX level, US-DE rate differential narrowing, DXY weakness, and Dollar Smile regime temper conviction. Real yield and gold signals are neutral. The mix of bullish and bearish primary drivers and moderate active participation lead to a strong bullish direction but with some caution.",
         "direction_next_week": "BULLISH_LEAN",
         "conviction_next_week": 50,
         "direction_current_week": "BULLISH_LEAN",
