@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T18:59:55.798Z",
+    "last_updated_et": "2026-06-07T19:37:58.031Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -42,8 +42,12 @@
             "missing_input_penalty": 0,
             "final_conviction_logic": "3d deterministic score: bullish argument 48%, bearish argument 52%, neutral/inactive 27%, net edge -4 bearish.",
             "active_participation_pct": 73,
+            "neutral_evidence_pct": 27,
             "directional_participation_pct": 73,
             "winning_side": "BEARISH",
+            "bull_case_weight": 35,
+            "bear_case_weight": 38,
+            "neutral_weight": 27,
             "weighted_score": {
               "bullish_weight": 35,
               "bearish_weight": 38,
@@ -144,8 +148,12 @@
             "missing_input_penalty": 0,
             "final_conviction_logic": "current_week deterministic score: bullish argument 46%, bearish argument 54%, neutral/inactive 30%, net edge -8 bearish.",
             "active_participation_pct": 70,
+            "neutral_evidence_pct": 30,
             "directional_participation_pct": 70,
             "winning_side": "BEARISH",
+            "bull_case_weight": 32,
+            "bear_case_weight": 38,
+            "neutral_weight": 30,
             "weighted_score": {
               "bullish_weight": 32,
               "bearish_weight": 38,
@@ -246,8 +254,12 @@
             "missing_input_penalty": 0,
             "final_conviction_logic": "next_week deterministic score: bullish argument 70%, bearish argument 30%, neutral/inactive 21%, net edge +40 bullish.",
             "active_participation_pct": 79,
+            "neutral_evidence_pct": 21,
             "directional_participation_pct": 79,
             "winning_side": "BULLISH",
+            "bull_case_weight": 55,
+            "bear_case_weight": 24,
+            "neutral_weight": 21,
             "weighted_score": {
               "bullish_weight": 55,
               "bearish_weight": 24,
@@ -348,8 +360,12 @@
             "missing_input_penalty": 0,
             "final_conviction_logic": "current_month deterministic score: bullish argument 73%, bearish argument 27%, neutral/inactive 23%, net edge +46 bullish.",
             "active_participation_pct": 77,
+            "neutral_evidence_pct": 23,
             "directional_participation_pct": 77,
             "winning_side": "BULLISH",
+            "bull_case_weight": 56,
+            "bear_case_weight": 21,
+            "neutral_weight": 23,
             "weighted_score": {
               "bullish_weight": 56,
               "bearish_weight": 21,
@@ -527,12 +543,17 @@
         "bullish_argument_pct": null,
         "bearish_argument_pct": null,
         "neutral_pct": null,
+        "neutral_evidence_pct": null,
         "directional_participation_pct": null,
+        "active_participation_pct": null,
         "net_edge_pct": null,
         "final_conviction": null,
         "verdict_strength": "MARKET_CLOSED",
         "winning_side": "MARKET_CLOSED",
-        "final_conviction_logic": "24H priority timeframe is closed by weekend rule."
+        "final_conviction_logic": "24H priority timeframe is closed by weekend rule.",
+        "bull_case_weight": null,
+        "bear_case_weight": null,
+        "neutral_weight": null
       },
       "timeframe_models": {
         "3d": {
@@ -1656,6 +1677,13 @@
           "reason": "Awaiting data"
         }
       },
+      "priority_timeframe": "24h",
+      "priority_call": {
+        "direction": "NO 24H CALL",
+        "conviction": null,
+        "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
+        "status": "market_closed"
+      },
       "factor_breakdown": {},
       "key_factors": [],
       "warnings": [],
@@ -1667,6 +1695,19 @@
       "logic_document": null,
       "logic_document_version": null,
       "conviction_model": {},
+      "timeframe_models": {},
+      "display_metrics": {
+        "bull_case": null,
+        "bear_case": null,
+        "winning_side": null,
+        "conviction": null,
+        "net_edge": null,
+        "directional_participation": null,
+        "neutral": null,
+        "verdict_strength": null,
+        "bull_case_weight": null,
+        "bear_case_weight": null
+      },
       "full_output": {}
     },
     {
@@ -1703,52 +1744,12 @@
           "reason": "Awaiting data"
         }
       },
-      "factor_breakdown": {},
-      "key_factors": [],
-      "warnings": [],
-      "reasoning_summary": "",
-      "score_bullish": null,
-      "score_bearish": null,
-      "score_neutral": null,
-      "non_neutral_count": null,
-      "logic_document": null,
-      "logic_document_version": null,
-      "conviction_model": {},
-      "full_output": {}
-    },
-    {
-      "agent": "NQ",
-      "status": "pending",
-      "market_status": "closed",
-      "last_run_et": null,
-      "summary": "Awaiting first NQ agent run.",
-      "calls": {
-        "24h": {
-          "direction": "NO 24H CALL",
-          "conviction": null,
-          "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
-          "status": "market_closed"
-        },
-        "3d": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
-        },
-        "current_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
-        },
-        "next_week": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
-        },
-        "current_month": {
-          "direction": "PENDING",
-          "conviction": null,
-          "reason": "Awaiting data"
-        }
+      "priority_timeframe": "24h",
+      "priority_call": {
+        "direction": "NO 24H CALL",
+        "conviction": null,
+        "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
+        "status": "market_closed"
       },
       "factor_breakdown": {},
       "key_factors": [],
@@ -1761,7 +1762,1723 @@
       "logic_document": null,
       "logic_document_version": null,
       "conviction_model": {},
+      "timeframe_models": {},
+      "display_metrics": {
+        "bull_case": null,
+        "bear_case": null,
+        "winning_side": null,
+        "conviction": null,
+        "net_edge": null,
+        "directional_participation": null,
+        "neutral": null,
+        "verdict_strength": null,
+        "bull_case_weight": null,
+        "bear_case_weight": null
+      },
       "full_output": {}
+    },
+    {
+      "agent": "NQ",
+      "status": "live",
+      "market_status": "closed",
+      "last_run_et": "2026-06-07T19:20:55.919+00:00",
+      "summary": "NQ Layer 1 raw call generated from sealed independent workflow.",
+      "calls": {
+        "24h": {
+          "direction": "NO 24H CALL",
+          "conviction": null,
+          "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
+          "status": "market_closed"
+        },
+        "3d": {
+          "direction": "BULLISH",
+          "conviction": 73,
+          "reason": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+          "conviction_model": {
+            "neutral_pct": 49,
+            "net_edge_pct": 46,
+            "winning_side": "BULLISH",
+            "participation": 51,
+            "weighted_edge": 0.46,
+            "neutral_weight": 49,
+            "raw_conviction": 73,
+            "agreement_boost": 0,
+            "base_conviction": 73,
+            "bear_case_weight": 14,
+            "bull_case_weight": 37,
+            "conflict_penalty": 0,
+            "final_conviction": 73,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 51,
+            "bearish_argument_pct": 27,
+            "bullish_argument_pct": 73,
+            "neutral_evidence_pct": 49,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+            "active_participation_pct": 51,
+            "directional_participation_pct": 51,
+            "weighted_score": {
+              "bullish_weight": 37,
+              "bearish_weight": 14,
+              "neutral_weight": 49,
+              "active_weight": 51,
+              "weight_margin": 23
+            },
+            "alignment": 73
+          },
+          "weighted_score": {
+            "active_weight": 51,
+            "weight_margin": 23,
+            "bearish_weight": 14,
+            "bullish_weight": 37,
+            "neutral_weight": 49
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 18,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 14,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "Falling USD eases financial conditions and supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "DXY delta -0.41%"
+            },
+            "F4": {
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 7,
+              "evidence": "US 10Y nominal delta 2 bps"
+            },
+            "F5": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "US 10Y real yield delta 5 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 14,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 7,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 7,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "current_week": {
+          "direction": "BULLISH",
+          "conviction": 68,
+          "reason": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+          "conviction_model": {
+            "neutral_pct": 50,
+            "net_edge_pct": 36,
+            "winning_side": "BULLISH",
+            "participation": 50,
+            "weighted_edge": 0.36,
+            "neutral_weight": 50,
+            "raw_conviction": 68,
+            "agreement_boost": 0,
+            "base_conviction": 68,
+            "bear_case_weight": 16,
+            "bull_case_weight": 34,
+            "conflict_penalty": 0,
+            "final_conviction": 68,
+            "verdict_strength": "STRONG",
+            "participation_cap": 50,
+            "bearish_argument_pct": 32,
+            "bullish_argument_pct": 68,
+            "neutral_evidence_pct": 50,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+            "active_participation_pct": 50,
+            "directional_participation_pct": 50,
+            "weighted_score": {
+              "bullish_weight": 34,
+              "bearish_weight": 16,
+              "neutral_weight": 50,
+              "active_weight": 50,
+              "weight_margin": 18
+            },
+            "alignment": 68
+          },
+          "weighted_score": {
+            "active_weight": 50,
+            "weight_margin": 18,
+            "bearish_weight": 16,
+            "bullish_weight": 34,
+            "neutral_weight": 50
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 16,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "Falling USD eases financial conditions and supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "DXY delta -0.41%"
+            },
+            "F4": {
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 2 bps"
+            },
+            "F5": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 18,
+              "evidence": "US 10Y real yield delta 5 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 16,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 6,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "next_week": {
+          "direction": "BEARISH",
+          "conviction": 72,
+          "reason": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+          "conviction_model": {
+            "neutral_pct": 33,
+            "net_edge_pct": -44,
+            "winning_side": "BEARISH",
+            "participation": 67,
+            "weighted_edge": 0.44,
+            "neutral_weight": 33,
+            "raw_conviction": 72,
+            "agreement_boost": 0,
+            "base_conviction": 72,
+            "bear_case_weight": 48,
+            "bull_case_weight": 19,
+            "conflict_penalty": 0,
+            "final_conviction": 72,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 67,
+            "bearish_argument_pct": 72,
+            "bullish_argument_pct": 28,
+            "neutral_evidence_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+            "active_participation_pct": 67,
+            "directional_participation_pct": 67,
+            "weighted_score": {
+              "bullish_weight": 19,
+              "bearish_weight": 48,
+              "neutral_weight": 33,
+              "active_weight": 67,
+              "weight_margin": 29
+            },
+            "alignment": 28
+          },
+          "weighted_score": {
+            "active_weight": 67,
+            "weight_margin": 29,
+            "bearish_weight": 48,
+            "bullish_weight": 19,
+            "neutral_weight": 33
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 14,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "USD move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "DXY delta 0.17%"
+            },
+            "F4": {
+              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 11 bps"
+            },
+            "F5": {
+              "reason": "Rising real yields are bearish long-duration growth equities",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "US 10Y real yield delta 17 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "current_month": {
+          "direction": "BEARISH",
+          "conviction": 75,
+          "reason": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+          "conviction_model": {
+            "neutral_pct": 33,
+            "net_edge_pct": -50,
+            "winning_side": "BEARISH",
+            "participation": 67,
+            "weighted_edge": 0.5,
+            "neutral_weight": 33,
+            "raw_conviction": 75,
+            "agreement_boost": 0,
+            "base_conviction": 75,
+            "bear_case_weight": 50,
+            "bull_case_weight": 17,
+            "conflict_penalty": 0,
+            "final_conviction": 75,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 67,
+            "bearish_argument_pct": 75,
+            "bullish_argument_pct": 25,
+            "neutral_evidence_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+            "active_participation_pct": 67,
+            "directional_participation_pct": 67,
+            "weighted_score": {
+              "bullish_weight": 17,
+              "bearish_weight": 50,
+              "neutral_weight": 33,
+              "active_weight": 67,
+              "weight_margin": 33
+            },
+            "alignment": 25
+          },
+          "weighted_score": {
+            "active_weight": 67,
+            "weight_margin": 33,
+            "bearish_weight": 50,
+            "bullish_weight": 17,
+            "neutral_weight": 33
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "USD move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "DXY delta 0.17%"
+            },
+            "F4": {
+              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 11 bps"
+            },
+            "F5": {
+              "reason": "Rising real yields are bearish long-duration growth equities",
+              "signal": "BEARISH",
+              "weight": 22,
+              "evidence": "US 10Y real yield delta 17 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        }
+      },
+      "priority_timeframe": "24h",
+      "priority_call": {
+        "direction": "NO 24H CALL",
+        "conviction": null,
+        "reason": "Weekend rule active: this market is closed, so no 24h bias is issued.",
+        "status": "market_closed"
+      },
+      "factor_breakdown": {
+        "F1": {
+          "reason": "Low-volatility risk-on regime supports NQ",
+          "signal": "BULLISH",
+          "weight": 20,
+          "evidence": "VIX 15.4"
+        },
+        "F2": {
+          "reason": "Volatility change below threshold",
+          "signal": "NEUTRAL",
+          "weight": 14,
+          "evidence": "VIX delta -0.66"
+        },
+        "F3": {
+          "reason": "USD move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 12,
+          "evidence": "DXY delta -0.13%"
+        },
+        "F4": {
+          "reason": "Nominal yield move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 6,
+          "evidence": "US 10Y nominal delta 0 bps"
+        },
+        "F5": {
+          "reason": "Real yield move below threshold",
+          "signal": "NEUTRAL",
+          "weight": 14,
+          "evidence": "US 10Y real yield delta 0 bps"
+        },
+        "F6": {
+          "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+          "signal": "BEARISH",
+          "weight": 12,
+          "evidence": "Fed bias hawkish"
+        },
+        "F7": {
+          "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+          "signal": "BULLISH",
+          "weight": 8,
+          "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+        },
+        "F8": {
+          "reason": "NQ own price action confirms bearish pressure",
+          "signal": "BEARISH",
+          "weight": 10,
+          "evidence": "NQ delta -4.8%"
+        },
+        "F9": {
+          "reason": "BTC strength confirms high-beta risk appetite",
+          "signal": "BULLISH",
+          "weight": 2,
+          "evidence": "BTC delta 1.05%"
+        },
+        "F10": {
+          "reason": "Gold does not provide a clean defensive-flow signal",
+          "signal": "NEUTRAL",
+          "weight": 2,
+          "evidence": "Gold delta 0%"
+        }
+      },
+      "key_factors": [
+        "F1 [20]: BULLISH — VIX 15.4 (Low-volatility risk-on regime supports NQ)",
+        "F2 [14]: NEUTRAL — VIX delta -0.66 (Volatility change below threshold)",
+        "F3 [12]: NEUTRAL — DXY delta -0.13% (USD move below threshold)",
+        "F4 [6]: NEUTRAL — US 10Y nominal delta 0 bps (Nominal yield move below threshold)",
+        "F5 [14]: NEUTRAL — US 10Y real yield delta 0 bps (Real yield move below threshold)",
+        "F6 [12]: BEARISH — Fed bias hawkish (Hawkish Fed bias tightens liquidity and pressures NQ)",
+        "F7 [8]: BULLISH — {\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09} (Positive US surprise supports NQ through growth/liquidity confidence)",
+        "F8 [10]: BEARISH — NQ delta -4.8% (NQ own price action confirms bearish pressure)",
+        "F9 [2]: BULLISH — BTC delta 1.05% (BTC strength confirms high-beta risk appetite)",
+        "F10 [2]: NEUTRAL — Gold delta 0% (Gold does not provide a clean defensive-flow signal)"
+      ],
+      "warnings": [
+        "VIX_REAL_YIELD_PRESSURE"
+      ],
+      "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 58%, 3d BULLISH 73%, current week BULLISH 68%, next week BEARISH 72%, current month BEARISH 75%.",
+      "score_bullish": 3,
+      "score_bearish": 2,
+      "score_neutral": 5,
+      "non_neutral_count": 6,
+      "logic_document": "agent_nq_direction.md",
+      "logic_document_version": "2.0_weighted_engine",
+      "conviction_model": {
+        "bullish_argument_pct": null,
+        "bearish_argument_pct": null,
+        "neutral_pct": null,
+        "neutral_evidence_pct": null,
+        "directional_participation_pct": null,
+        "active_participation_pct": null,
+        "net_edge_pct": null,
+        "final_conviction": null,
+        "verdict_strength": "MARKET_CLOSED",
+        "winning_side": "MARKET_CLOSED",
+        "final_conviction_logic": "24H priority timeframe is closed by weekend rule.",
+        "bull_case_weight": null,
+        "bear_case_weight": null,
+        "neutral_weight": null
+      },
+      "timeframe_models": {
+        "3d": {
+          "reason": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+          "direction": "BULLISH",
+          "conviction": 73,
+          "score_bearish": 1,
+          "score_bullish": 3,
+          "score_neutral": 6,
+          "weighted_score": {
+            "active_weight": 51,
+            "weight_margin": 23,
+            "bearish_weight": 14,
+            "bullish_weight": 37,
+            "neutral_weight": 49
+          },
+          "conviction_model": {
+            "neutral_pct": 49,
+            "net_edge_pct": 46,
+            "winning_side": "BULLISH",
+            "participation": 51,
+            "weighted_edge": 0.46,
+            "neutral_weight": 49,
+            "raw_conviction": 73,
+            "agreement_boost": 0,
+            "base_conviction": 73,
+            "bear_case_weight": 14,
+            "bull_case_weight": 37,
+            "conflict_penalty": 0,
+            "final_conviction": 73,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 51,
+            "bearish_argument_pct": 27,
+            "bullish_argument_pct": 73,
+            "neutral_evidence_pct": 49,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+            "active_participation_pct": 51,
+            "directional_participation_pct": 51
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 18,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 14,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "Falling USD eases financial conditions and supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "DXY delta -0.41%"
+            },
+            "F4": {
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 7,
+              "evidence": "US 10Y nominal delta 2 bps"
+            },
+            "F5": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 16,
+              "evidence": "US 10Y real yield delta 5 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 14,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 7,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 7,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "24h": {
+          "reason": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+          "direction": "BULLISH_LEAN",
+          "conviction": 58,
+          "score_bearish": 2,
+          "score_bullish": 3,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 52,
+            "weight_margin": 8,
+            "bearish_weight": 22,
+            "bullish_weight": 30,
+            "neutral_weight": 48
+          },
+          "conviction_model": {
+            "neutral_pct": 48,
+            "net_edge_pct": 16,
+            "winning_side": "BULLISH",
+            "participation": 52,
+            "weighted_edge": 0.16,
+            "neutral_weight": 48,
+            "raw_conviction": 58,
+            "agreement_boost": 0,
+            "base_conviction": 58,
+            "bear_case_weight": 22,
+            "bull_case_weight": 30,
+            "conflict_penalty": 0,
+            "final_conviction": 58,
+            "verdict_strength": "MODERATE",
+            "participation_cap": 52,
+            "bearish_argument_pct": 42,
+            "bullish_argument_pct": 58,
+            "neutral_evidence_pct": 48,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+            "active_participation_pct": 52,
+            "directional_participation_pct": 52
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 20,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 14,
+              "evidence": "VIX delta -0.66"
+            },
+            "F3": {
+              "reason": "USD move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "DXY delta -0.13%"
+            },
+            "F4": {
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "US 10Y nominal delta 0 bps"
+            },
+            "F5": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 14,
+              "evidence": "US 10Y real yield delta 0 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 12,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 8,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ own price action confirms bearish pressure",
+              "signal": "BEARISH",
+              "weight": 10,
+              "evidence": "NQ delta -4.8%"
+            },
+            "F9": {
+              "reason": "BTC strength confirms high-beta risk appetite",
+              "signal": "BULLISH",
+              "weight": 2,
+              "evidence": "BTC delta 1.05%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "next_week": {
+          "reason": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+          "direction": "BEARISH",
+          "conviction": 72,
+          "score_bearish": 3,
+          "score_bullish": 2,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 67,
+            "weight_margin": 29,
+            "bearish_weight": 48,
+            "bullish_weight": 19,
+            "neutral_weight": 33
+          },
+          "conviction_model": {
+            "neutral_pct": 33,
+            "net_edge_pct": -44,
+            "winning_side": "BEARISH",
+            "participation": 67,
+            "weighted_edge": 0.44,
+            "neutral_weight": 33,
+            "raw_conviction": 72,
+            "agreement_boost": 0,
+            "base_conviction": 72,
+            "bear_case_weight": 48,
+            "bull_case_weight": 19,
+            "conflict_penalty": 0,
+            "final_conviction": 72,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 67,
+            "bearish_argument_pct": 72,
+            "bullish_argument_pct": 28,
+            "neutral_evidence_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+            "active_participation_pct": 67,
+            "directional_participation_pct": 67
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 14,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "USD move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "DXY delta 0.17%"
+            },
+            "F4": {
+              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 11 bps"
+            },
+            "F5": {
+              "reason": "Rising real yields are bearish long-duration growth equities",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "US 10Y real yield delta 17 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 3,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "current_week": {
+          "reason": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+          "direction": "BULLISH",
+          "conviction": 68,
+          "score_bearish": 1,
+          "score_bullish": 3,
+          "score_neutral": 6,
+          "weighted_score": {
+            "active_weight": 50,
+            "weight_margin": 18,
+            "bearish_weight": 16,
+            "bullish_weight": 34,
+            "neutral_weight": 50
+          },
+          "conviction_model": {
+            "neutral_pct": 50,
+            "net_edge_pct": 36,
+            "winning_side": "BULLISH",
+            "participation": 50,
+            "weighted_edge": 0.36,
+            "neutral_weight": 50,
+            "raw_conviction": 68,
+            "agreement_boost": 0,
+            "base_conviction": 68,
+            "bear_case_weight": 16,
+            "bull_case_weight": 34,
+            "conflict_penalty": 0,
+            "final_conviction": 68,
+            "verdict_strength": "STRONG",
+            "participation_cap": 50,
+            "bearish_argument_pct": 32,
+            "bullish_argument_pct": 68,
+            "neutral_evidence_pct": 50,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+            "active_participation_pct": 50,
+            "directional_participation_pct": 50
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 16,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "Falling USD eases financial conditions and supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "DXY delta -0.41%"
+            },
+            "F4": {
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 2 bps"
+            },
+            "F5": {
+              "reason": "Real yield move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 18,
+              "evidence": "US 10Y real yield delta 5 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 16,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 6,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 2,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        },
+        "current_month": {
+          "reason": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+          "direction": "BEARISH",
+          "conviction": 75,
+          "score_bearish": 3,
+          "score_bullish": 2,
+          "score_neutral": 5,
+          "weighted_score": {
+            "active_weight": 67,
+            "weight_margin": 33,
+            "bearish_weight": 50,
+            "bullish_weight": 17,
+            "neutral_weight": 33
+          },
+          "conviction_model": {
+            "neutral_pct": 33,
+            "net_edge_pct": -50,
+            "winning_side": "BEARISH",
+            "participation": 67,
+            "weighted_edge": 0.5,
+            "neutral_weight": 33,
+            "raw_conviction": 75,
+            "agreement_boost": 0,
+            "base_conviction": 75,
+            "bear_case_weight": 50,
+            "bull_case_weight": 17,
+            "conflict_penalty": 0,
+            "final_conviction": 75,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 67,
+            "bearish_argument_pct": 75,
+            "bullish_argument_pct": 25,
+            "neutral_evidence_pct": 33,
+            "missing_input_penalty": 0,
+            "final_conviction_logic": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+            "active_participation_pct": 67,
+            "directional_participation_pct": 67
+          },
+          "factor_breakdown": {
+            "F1": {
+              "reason": "Low-volatility risk-on regime supports NQ",
+              "signal": "BULLISH",
+              "weight": 12,
+              "evidence": "VIX 15.4"
+            },
+            "F2": {
+              "reason": "Volatility change below threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "VIX delta -0.34"
+            },
+            "F3": {
+              "reason": "USD move below threshold",
+              "signal": "NEUTRAL",
+              "weight": 12,
+              "evidence": "DXY delta 0.17%"
+            },
+            "F4": {
+              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+              "signal": "BEARISH",
+              "weight": 8,
+              "evidence": "US 10Y nominal delta 11 bps"
+            },
+            "F5": {
+              "reason": "Rising real yields are bearish long-duration growth equities",
+              "signal": "BEARISH",
+              "weight": 22,
+              "evidence": "US 10Y real yield delta 17 bps"
+            },
+            "F6": {
+              "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+              "signal": "BEARISH",
+              "weight": 20,
+              "evidence": "Fed bias hawkish"
+            },
+            "F7": {
+              "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+              "signal": "BULLISH",
+              "weight": 5,
+              "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+            },
+            "F8": {
+              "reason": "NQ price move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 6,
+              "evidence": "NQ delta 0%"
+            },
+            "F9": {
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
+              "weight": 5,
+              "evidence": "BTC delta 0%"
+            },
+            "F10": {
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
+              "weight": 4,
+              "evidence": "Gold delta 0%"
+            }
+          }
+        }
+      },
+      "display_metrics": {
+        "bull_case": null,
+        "bear_case": null,
+        "winning_side": "MARKET_CLOSED",
+        "conviction": null,
+        "net_edge": null,
+        "directional_participation": null,
+        "neutral": null,
+        "verdict_strength": "MARKET_CLOSED",
+        "bull_case_weight": null,
+        "bear_case_weight": null
+      },
+      "full_output": {
+        "asset": "NQ",
+        "layer": "layer_1_raw",
+        "created_at": null,
+        "reason_24h": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+        "risk_flags": [
+          "VIX_REAL_YIELD_PRESSURE"
+        ],
+        "reason_3_day": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+        "direction_24h": "BULLISH_LEAN",
+        "score_bearish": 2,
+        "score_bullish": 3,
+        "score_neutral": 5,
+        "snapshot_date": "2026-06-07",
+        "conviction_24h": 58,
+        "logic_document": "agent_nq_direction.md",
+        "missing_inputs": [
+          "nq_d5_pct",
+          "nq_d20_pct",
+          "btc_d5_pct",
+          "gold_d5_pct",
+          "gold_d20_pct"
+        ],
+        "weighted_score": {
+          "active_weight": 52,
+          "weight_margin": 8,
+          "bearish_weight": 22,
+          "bullish_weight": 30,
+          "neutral_weight": 48
+        },
+        "direction_3_day": "BULLISH",
+        "conviction_3_day": 73,
+        "conviction_model": {
+          "neutral_pct": 48,
+          "net_edge_pct": 16,
+          "winning_side": "BULLISH",
+          "participation": 52,
+          "weighted_edge": 0.16,
+          "neutral_weight": 48,
+          "raw_conviction": 58,
+          "agreement_boost": 0,
+          "base_conviction": 58,
+          "bear_case_weight": 22,
+          "bull_case_weight": 30,
+          "conflict_penalty": 0,
+          "final_conviction": 58,
+          "verdict_strength": "MODERATE",
+          "participation_cap": 52,
+          "bearish_argument_pct": 42,
+          "bullish_argument_pct": 58,
+          "neutral_evidence_pct": 48,
+          "missing_input_penalty": 0,
+          "final_conviction_logic": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+          "active_participation_pct": 52,
+          "directional_participation_pct": 52
+        },
+        "factor_breakdown": {
+          "F1": {
+            "reason": "Low-volatility risk-on regime supports NQ",
+            "signal": "BULLISH",
+            "weight": 20,
+            "evidence": "VIX 15.4"
+          },
+          "F2": {
+            "reason": "Volatility change below threshold",
+            "signal": "NEUTRAL",
+            "weight": 14,
+            "evidence": "VIX delta -0.66"
+          },
+          "F3": {
+            "reason": "USD move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 12,
+            "evidence": "DXY delta -0.13%"
+          },
+          "F4": {
+            "reason": "Nominal yield move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 6,
+            "evidence": "US 10Y nominal delta 0 bps"
+          },
+          "F5": {
+            "reason": "Real yield move below threshold",
+            "signal": "NEUTRAL",
+            "weight": 14,
+            "evidence": "US 10Y real yield delta 0 bps"
+          },
+          "F6": {
+            "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+            "signal": "BEARISH",
+            "weight": 12,
+            "evidence": "Fed bias hawkish"
+          },
+          "F7": {
+            "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+            "signal": "BULLISH",
+            "weight": 8,
+            "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+          },
+          "F8": {
+            "reason": "NQ own price action confirms bearish pressure",
+            "signal": "BEARISH",
+            "weight": 10,
+            "evidence": "NQ delta -4.8%"
+          },
+          "F9": {
+            "reason": "BTC strength confirms high-beta risk appetite",
+            "signal": "BULLISH",
+            "weight": 2,
+            "evidence": "BTC delta 1.05%"
+          },
+          "F10": {
+            "reason": "Gold does not provide a clean defensive-flow signal",
+            "signal": "NEUTRAL",
+            "weight": 2,
+            "evidence": "Gold delta 0%"
+          }
+        },
+        "reason_next_week": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+        "timeframe_models": {
+          "3d": {
+            "reason": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+            "direction": "BULLISH",
+            "conviction": 73,
+            "score_bearish": 1,
+            "score_bullish": 3,
+            "score_neutral": 6,
+            "weighted_score": {
+              "active_weight": 51,
+              "weight_margin": 23,
+              "bearish_weight": 14,
+              "bullish_weight": 37,
+              "neutral_weight": 49
+            },
+            "conviction_model": {
+              "neutral_pct": 49,
+              "net_edge_pct": 46,
+              "winning_side": "BULLISH",
+              "participation": 51,
+              "weighted_edge": 0.46,
+              "neutral_weight": 49,
+              "raw_conviction": 73,
+              "agreement_boost": 0,
+              "base_conviction": 73,
+              "bear_case_weight": 14,
+              "bull_case_weight": 37,
+              "conflict_penalty": 0,
+              "final_conviction": 73,
+              "verdict_strength": "VERY_STRONG",
+              "participation_cap": 51,
+              "bearish_argument_pct": 27,
+              "bullish_argument_pct": 73,
+              "neutral_evidence_pct": 49,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "3d NQ deterministic score: bull case 73%, bear case 27%, neutral/inactive 49%, directional participation 51%, net edge +46.",
+              "active_participation_pct": 51,
+              "directional_participation_pct": 51
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Low-volatility risk-on regime supports NQ",
+                "signal": "BULLISH",
+                "weight": 18,
+                "evidence": "VIX 15.4"
+              },
+              "F2": {
+                "reason": "Volatility change below threshold",
+                "signal": "NEUTRAL",
+                "weight": 14,
+                "evidence": "VIX delta -0.34"
+              },
+              "F3": {
+                "reason": "Falling USD eases financial conditions and supports NQ",
+                "signal": "BULLISH",
+                "weight": 12,
+                "evidence": "DXY delta -0.41%"
+              },
+              "F4": {
+                "reason": "Nominal yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 7,
+                "evidence": "US 10Y nominal delta 2 bps"
+              },
+              "F5": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 16,
+                "evidence": "US 10Y real yield delta 5 bps"
+              },
+              "F6": {
+                "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+                "signal": "BEARISH",
+                "weight": 14,
+                "evidence": "Fed bias hawkish"
+              },
+              "F7": {
+                "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+                "signal": "BULLISH",
+                "weight": 7,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "NQ price move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 7,
+                "evidence": "NQ delta 0%"
+              },
+              "F9": {
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 3,
+                "evidence": "BTC delta 0%"
+              },
+              "F10": {
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
+                "weight": 2,
+                "evidence": "Gold delta 0%"
+              }
+            }
+          },
+          "24h": {
+            "reason": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+            "direction": "BULLISH_LEAN",
+            "conviction": 58,
+            "score_bearish": 2,
+            "score_bullish": 3,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 52,
+              "weight_margin": 8,
+              "bearish_weight": 22,
+              "bullish_weight": 30,
+              "neutral_weight": 48
+            },
+            "conviction_model": {
+              "neutral_pct": 48,
+              "net_edge_pct": 16,
+              "winning_side": "BULLISH",
+              "participation": 52,
+              "weighted_edge": 0.16,
+              "neutral_weight": 48,
+              "raw_conviction": 58,
+              "agreement_boost": 0,
+              "base_conviction": 58,
+              "bear_case_weight": 22,
+              "bull_case_weight": 30,
+              "conflict_penalty": 0,
+              "final_conviction": 58,
+              "verdict_strength": "MODERATE",
+              "participation_cap": 52,
+              "bearish_argument_pct": 42,
+              "bullish_argument_pct": 58,
+              "neutral_evidence_pct": 48,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "24h NQ deterministic score: bull case 58%, bear case 42%, neutral/inactive 48%, directional participation 52%, net edge +16.",
+              "active_participation_pct": 52,
+              "directional_participation_pct": 52
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Low-volatility risk-on regime supports NQ",
+                "signal": "BULLISH",
+                "weight": 20,
+                "evidence": "VIX 15.4"
+              },
+              "F2": {
+                "reason": "Volatility change below threshold",
+                "signal": "NEUTRAL",
+                "weight": 14,
+                "evidence": "VIX delta -0.66"
+              },
+              "F3": {
+                "reason": "USD move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 12,
+                "evidence": "DXY delta -0.13%"
+              },
+              "F4": {
+                "reason": "Nominal yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "US 10Y nominal delta 0 bps"
+              },
+              "F5": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 14,
+                "evidence": "US 10Y real yield delta 0 bps"
+              },
+              "F6": {
+                "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+                "signal": "BEARISH",
+                "weight": 12,
+                "evidence": "Fed bias hawkish"
+              },
+              "F7": {
+                "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+                "signal": "BULLISH",
+                "weight": 8,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "NQ own price action confirms bearish pressure",
+                "signal": "BEARISH",
+                "weight": 10,
+                "evidence": "NQ delta -4.8%"
+              },
+              "F9": {
+                "reason": "BTC strength confirms high-beta risk appetite",
+                "signal": "BULLISH",
+                "weight": 2,
+                "evidence": "BTC delta 1.05%"
+              },
+              "F10": {
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
+                "weight": 2,
+                "evidence": "Gold delta 0%"
+              }
+            }
+          },
+          "next_week": {
+            "reason": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+            "direction": "BEARISH",
+            "conviction": 72,
+            "score_bearish": 3,
+            "score_bullish": 2,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 67,
+              "weight_margin": 29,
+              "bearish_weight": 48,
+              "bullish_weight": 19,
+              "neutral_weight": 33
+            },
+            "conviction_model": {
+              "neutral_pct": 33,
+              "net_edge_pct": -44,
+              "winning_side": "BEARISH",
+              "participation": 67,
+              "weighted_edge": 0.44,
+              "neutral_weight": 33,
+              "raw_conviction": 72,
+              "agreement_boost": 0,
+              "base_conviction": 72,
+              "bear_case_weight": 48,
+              "bull_case_weight": 19,
+              "conflict_penalty": 0,
+              "final_conviction": 72,
+              "verdict_strength": "VERY_STRONG",
+              "participation_cap": 67,
+              "bearish_argument_pct": 72,
+              "bullish_argument_pct": 28,
+              "neutral_evidence_pct": 33,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "next_week NQ deterministic score: bull case 28%, bear case 72%, neutral/inactive 33%, directional participation 67%, net edge -44.",
+              "active_participation_pct": 67,
+              "directional_participation_pct": 67
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Low-volatility risk-on regime supports NQ",
+                "signal": "BULLISH",
+                "weight": 14,
+                "evidence": "VIX 15.4"
+              },
+              "F2": {
+                "reason": "Volatility change below threshold",
+                "signal": "NEUTRAL",
+                "weight": 8,
+                "evidence": "VIX delta -0.34"
+              },
+              "F3": {
+                "reason": "USD move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 12,
+                "evidence": "DXY delta 0.17%"
+              },
+              "F4": {
+                "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+                "signal": "BEARISH",
+                "weight": 8,
+                "evidence": "US 10Y nominal delta 11 bps"
+              },
+              "F5": {
+                "reason": "Rising real yields are bearish long-duration growth equities",
+                "signal": "BEARISH",
+                "weight": 20,
+                "evidence": "US 10Y real yield delta 17 bps"
+              },
+              "F6": {
+                "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+                "signal": "BEARISH",
+                "weight": 20,
+                "evidence": "Fed bias hawkish"
+              },
+              "F7": {
+                "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+                "signal": "BULLISH",
+                "weight": 5,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "NQ price move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 5,
+                "evidence": "NQ delta 0%"
+              },
+              "F9": {
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 5,
+                "evidence": "BTC delta 0%"
+              },
+              "F10": {
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
+                "weight": 3,
+                "evidence": "Gold delta 0%"
+              }
+            }
+          },
+          "current_week": {
+            "reason": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+            "direction": "BULLISH",
+            "conviction": 68,
+            "score_bearish": 1,
+            "score_bullish": 3,
+            "score_neutral": 6,
+            "weighted_score": {
+              "active_weight": 50,
+              "weight_margin": 18,
+              "bearish_weight": 16,
+              "bullish_weight": 34,
+              "neutral_weight": 50
+            },
+            "conviction_model": {
+              "neutral_pct": 50,
+              "net_edge_pct": 36,
+              "winning_side": "BULLISH",
+              "participation": 50,
+              "weighted_edge": 0.36,
+              "neutral_weight": 50,
+              "raw_conviction": 68,
+              "agreement_boost": 0,
+              "base_conviction": 68,
+              "bear_case_weight": 16,
+              "bull_case_weight": 34,
+              "conflict_penalty": 0,
+              "final_conviction": 68,
+              "verdict_strength": "STRONG",
+              "participation_cap": 50,
+              "bearish_argument_pct": 32,
+              "bullish_argument_pct": 68,
+              "neutral_evidence_pct": 50,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+              "active_participation_pct": 50,
+              "directional_participation_pct": 50
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Low-volatility risk-on regime supports NQ",
+                "signal": "BULLISH",
+                "weight": 16,
+                "evidence": "VIX 15.4"
+              },
+              "F2": {
+                "reason": "Volatility change below threshold",
+                "signal": "NEUTRAL",
+                "weight": 12,
+                "evidence": "VIX delta -0.34"
+              },
+              "F3": {
+                "reason": "Falling USD eases financial conditions and supports NQ",
+                "signal": "BULLISH",
+                "weight": 12,
+                "evidence": "DXY delta -0.41%"
+              },
+              "F4": {
+                "reason": "Nominal yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 8,
+                "evidence": "US 10Y nominal delta 2 bps"
+              },
+              "F5": {
+                "reason": "Real yield move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 18,
+                "evidence": "US 10Y real yield delta 5 bps"
+              },
+              "F6": {
+                "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+                "signal": "BEARISH",
+                "weight": 16,
+                "evidence": "Fed bias hawkish"
+              },
+              "F7": {
+                "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+                "signal": "BULLISH",
+                "weight": 6,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "NQ price move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "NQ delta 0%"
+              },
+              "F9": {
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 4,
+                "evidence": "BTC delta 0%"
+              },
+              "F10": {
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
+                "weight": 2,
+                "evidence": "Gold delta 0%"
+              }
+            }
+          },
+          "current_month": {
+            "reason": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+            "direction": "BEARISH",
+            "conviction": 75,
+            "score_bearish": 3,
+            "score_bullish": 2,
+            "score_neutral": 5,
+            "weighted_score": {
+              "active_weight": 67,
+              "weight_margin": 33,
+              "bearish_weight": 50,
+              "bullish_weight": 17,
+              "neutral_weight": 33
+            },
+            "conviction_model": {
+              "neutral_pct": 33,
+              "net_edge_pct": -50,
+              "winning_side": "BEARISH",
+              "participation": 67,
+              "weighted_edge": 0.5,
+              "neutral_weight": 33,
+              "raw_conviction": 75,
+              "agreement_boost": 0,
+              "base_conviction": 75,
+              "bear_case_weight": 50,
+              "bull_case_weight": 17,
+              "conflict_penalty": 0,
+              "final_conviction": 75,
+              "verdict_strength": "VERY_STRONG",
+              "participation_cap": 67,
+              "bearish_argument_pct": 75,
+              "bullish_argument_pct": 25,
+              "neutral_evidence_pct": 33,
+              "missing_input_penalty": 0,
+              "final_conviction_logic": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+              "active_participation_pct": 67,
+              "directional_participation_pct": 67
+            },
+            "factor_breakdown": {
+              "F1": {
+                "reason": "Low-volatility risk-on regime supports NQ",
+                "signal": "BULLISH",
+                "weight": 12,
+                "evidence": "VIX 15.4"
+              },
+              "F2": {
+                "reason": "Volatility change below threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "VIX delta -0.34"
+              },
+              "F3": {
+                "reason": "USD move below threshold",
+                "signal": "NEUTRAL",
+                "weight": 12,
+                "evidence": "DXY delta 0.17%"
+              },
+              "F4": {
+                "reason": "Rising nominal yields can pressure duration-sensitive NQ",
+                "signal": "BEARISH",
+                "weight": 8,
+                "evidence": "US 10Y nominal delta 11 bps"
+              },
+              "F5": {
+                "reason": "Rising real yields are bearish long-duration growth equities",
+                "signal": "BEARISH",
+                "weight": 22,
+                "evidence": "US 10Y real yield delta 17 bps"
+              },
+              "F6": {
+                "reason": "Hawkish Fed bias tightens liquidity and pressures NQ",
+                "signal": "BEARISH",
+                "weight": 20,
+                "evidence": "Fed bias hawkish"
+              },
+              "F7": {
+                "reason": "Positive US surprise supports NQ through growth/liquidity confidence",
+                "signal": "BULLISH",
+                "weight": 5,
+                "evidence": "{\"key\":\"NFP\",\"date\":\"2026-06-05\",\"event\":\"Non Farm Payrolls\",\"actual\":172,\"impact\":null,\"source\":\"surprises\",\"forecast\":85,\"previous\":null,\"surprise\":\"positive\",\"usd_signal\":\"BULLISH\",\"surprise_score\":1.09}"
+              },
+              "F8": {
+                "reason": "NQ price move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 6,
+                "evidence": "NQ delta 0%"
+              },
+              "F9": {
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
+                "weight": 5,
+                "evidence": "BTC delta 0%"
+              },
+              "F10": {
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
+                "weight": 4,
+                "evidence": "Gold delta 0%"
+              }
+            }
+          }
+        },
+        "non_neutral_count": 6,
+        "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 58%, 3d BULLISH 73%, current week BULLISH 68%, next week BEARISH 72%, current month BEARISH 75%.",
+        "direction_next_week": "BEARISH",
+        "reason_current_week": "current_week NQ deterministic score: bull case 68%, bear case 32%, neutral/inactive 50%, directional participation 50%, net edge +36.",
+        "conviction_next_week": 72,
+        "reason_current_month": "current_month NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 33%, directional participation 67%, net edge -50.",
+        "direction_current_week": "BULLISH",
+        "logic_document_version": "2.0_weighted_engine",
+        "conviction_current_week": 68,
+        "direction_current_month": "BEARISH",
+        "conviction_current_month": 75
+      }
     },
     {
       "agent": "BTC",
@@ -1777,7 +3494,7 @@
           "conviction_model": {
             "net_edge_pct": -22,
             "winning_side": "BEARISH",
-            "participation": null,
+            "participation": 49,
             "weighted_edge": 0.22,
             "raw_conviction": 61,
             "agreement_boost": 0,
@@ -1795,6 +3512,8 @@
             "final_conviction_logic": "24h BTC deterministic score: bull case 19 weight, bear case 30 weight, neutral evidence 51 weight. Winning side BEARISH, conviction 61%, net edge -22, directional participation 49%.",
             "directional_participation_pct": 49,
             "neutral_pct": 51,
+            "active_participation_pct": 49,
+            "neutral_weight": 51,
             "weighted_score": {
               "bullish_weight": 19,
               "bearish_weight": 30,
@@ -1880,8 +3599,8 @@
           "reason": "3d BTC deterministic score: bull case 31 weight, bear case 31 weight, neutral evidence 38 weight. Winning side NONE, conviction 0%, net edge 0, directional participation 62%.",
           "conviction_model": {
             "net_edge_pct": 0,
-            "winning_side": "TIED",
-            "participation": null,
+            "winning_side": "NONE",
+            "participation": 62,
             "weighted_edge": 0,
             "raw_conviction": 0,
             "agreement_boost": 0,
@@ -1899,6 +3618,8 @@
             "final_conviction_logic": "3d BTC deterministic score: bull case 31 weight, bear case 31 weight, neutral evidence 38 weight. Winning side NONE, conviction 0%, net edge 0, directional participation 62%.",
             "directional_participation_pct": 62,
             "neutral_pct": 38,
+            "active_participation_pct": 62,
+            "neutral_weight": 38,
             "weighted_score": {
               "bullish_weight": 31,
               "bearish_weight": 31,
@@ -1985,7 +3706,7 @@
           "conviction_model": {
             "net_edge_pct": 4,
             "winning_side": "BULLISH",
-            "participation": null,
+            "participation": 60,
             "weighted_edge": 0.04,
             "raw_conviction": 52,
             "agreement_boost": 0,
@@ -2003,6 +3724,8 @@
             "final_conviction_logic": "current_week BTC deterministic score: bull case 31 weight, bear case 29 weight, neutral evidence 40 weight. Winning side BULLISH, conviction 52%, net edge +4, directional participation 60%.",
             "directional_participation_pct": 60,
             "neutral_pct": 40,
+            "active_participation_pct": 60,
+            "neutral_weight": 40,
             "weighted_score": {
               "bullish_weight": 31,
               "bearish_weight": 29,
@@ -2089,7 +3812,7 @@
           "conviction_model": {
             "net_edge_pct": -48,
             "winning_side": "BEARISH",
-            "participation": null,
+            "participation": 53,
             "weighted_edge": 0.48,
             "raw_conviction": 74,
             "agreement_boost": 0,
@@ -2107,6 +3830,8 @@
             "final_conviction_logic": "next_week BTC deterministic score: bull case 14 weight, bear case 39 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 53%.",
             "directional_participation_pct": 53,
             "neutral_pct": 47,
+            "active_participation_pct": 53,
+            "neutral_weight": 47,
             "weighted_score": {
               "bullish_weight": 14,
               "bearish_weight": 39,
@@ -2193,7 +3918,7 @@
           "conviction_model": {
             "net_edge_pct": -50,
             "winning_side": "BEARISH",
-            "participation": null,
+            "participation": 52,
             "weighted_edge": 0.5,
             "raw_conviction": 75,
             "agreement_boost": 0,
@@ -2211,6 +3936,8 @@
             "final_conviction_logic": "current_month BTC deterministic score: bull case 13 weight, bear case 39 weight, neutral evidence 48 weight. Winning side BEARISH, conviction 75%, net edge -50, directional participation 52%.",
             "directional_participation_pct": 52,
             "neutral_pct": 48,
+            "active_participation_pct": 52,
+            "neutral_weight": 48,
             "weighted_score": {
               "bullish_weight": 13,
               "bearish_weight": 39,
@@ -2299,7 +4026,7 @@
         "conviction_model": {
           "net_edge_pct": -22,
           "winning_side": "BEARISH",
-          "participation": null,
+          "participation": 49,
           "weighted_edge": 0.22,
           "raw_conviction": 61,
           "agreement_boost": 0,
@@ -2317,6 +4044,8 @@
           "final_conviction_logic": "24h BTC deterministic score: bull case 19 weight, bear case 30 weight, neutral evidence 51 weight. Winning side BEARISH, conviction 61%, net edge -22, directional participation 49%.",
           "directional_participation_pct": 49,
           "neutral_pct": 51,
+          "active_participation_pct": 49,
+          "neutral_weight": 51,
           "weighted_score": {
             "bullish_weight": 19,
             "bearish_weight": 30,
@@ -2484,7 +4213,7 @@
       "conviction_model": {
         "net_edge_pct": -22,
         "winning_side": "BEARISH",
-        "participation": null,
+        "participation": 49,
         "weighted_edge": 0.22,
         "raw_conviction": 61,
         "agreement_boost": 0,
@@ -2502,6 +4231,8 @@
         "final_conviction_logic": "24h BTC deterministic score: bull case 19 weight, bear case 30 weight, neutral evidence 51 weight. Winning side BEARISH, conviction 61%, net edge -22, directional participation 49%.",
         "directional_participation_pct": 49,
         "neutral_pct": 51,
+        "active_participation_pct": 49,
+        "neutral_weight": 51,
         "weighted_score": {
           "bullish_weight": 19,
           "bearish_weight": 30,
