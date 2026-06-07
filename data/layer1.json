@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T14:28:14.292Z",
+    "last_updated_et": "2026-06-07T14:38:06.419Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication."
   },
   "agents": [
@@ -132,7 +132,16 @@
         "conflict_penalty": -8,
         "participation_cap": 82,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "After applying conflict penalty (Fed bias conflicts with US-DE spread and DXY signals), final conviction rounded to 66%. High active weight but primary driver conflict leads to lean verdicts in most timeframes."
+        "final_conviction_logic": "After applying conflict penalty (Fed bias conflicts with US-DE spread and DXY signals), final conviction rounded to 66%. High active weight but primary driver conflict leads to lean verdicts in most timeframes.",
+        "alignment": 48,
+        "base_conviction": 74,
+        "participation": 82,
+        "weighted_score": {
+          "bullish_weight": 66,
+          "bearish_weight": 18,
+          "active_weight": 84,
+          "weight_margin": 48
+        }
       },
       "full_output": {
         "asset": "USD",
@@ -281,8 +290,10 @@
       "score_bullish": null,
       "score_bearish": null,
       "score_neutral": null,
+      "non_neutral_count": null,
       "logic_document": null,
       "logic_document_version": null,
+      "conviction_model": {},
       "full_output": {}
     },
     {
@@ -325,8 +336,10 @@
       "score_bullish": null,
       "score_bearish": null,
       "score_neutral": null,
+      "non_neutral_count": null,
       "logic_document": null,
       "logic_document_version": null,
+      "conviction_model": {},
       "full_output": {}
     },
     {
@@ -369,8 +382,10 @@
       "score_bullish": null,
       "score_bearish": null,
       "score_neutral": null,
+      "non_neutral_count": null,
       "logic_document": null,
       "logic_document_version": null,
+      "conviction_model": {},
       "full_output": {}
     },
     {
@@ -413,8 +428,10 @@
       "score_bullish": null,
       "score_bearish": null,
       "score_neutral": null,
+      "non_neutral_count": null,
       "logic_document": null,
       "logic_document_version": null,
+      "conviction_model": {},
       "full_output": {}
     }
   ]
