@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T15:52:08.004Z",
+    "last_updated_et": "2026-06-07T15:54:19.707Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -24,22 +24,22 @@
         "3d": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD shows mixed signals: bullish from Fed bias, US 2Y yield, and strong economic surprise, but bearish from risk-on VIX conditions, narrowing US-DE spread, falling real yields, and DXY weakening. Primary drivers are conflicted between Fed bias/US 2Y yield and spread/real yield/DXY. Despite this, positive Fed bias and economic surprise support a bullish directional call with lean on longer-term horizons due to mixed structural signals."
+          "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "current_week": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD shows mixed signals: bullish from Fed bias, US 2Y yield, and strong economic surprise, but bearish from risk-on VIX conditions, narrowing US-DE spread, falling real yields, and DXY weakening. Primary drivers are conflicted between Fed bias/US 2Y yield and spread/real yield/DXY. Despite this, positive Fed bias and economic surprise support a bullish directional call with lean on longer-term horizons due to mixed structural signals."
+          "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "next_week": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD shows mixed signals: bullish from Fed bias, US 2Y yield, and strong economic surprise, but bearish from risk-on VIX conditions, narrowing US-DE spread, falling real yields, and DXY weakening. Primary drivers are conflicted between Fed bias/US 2Y yield and spread/real yield/DXY. Despite this, positive Fed bias and economic surprise support a bullish directional call with lean on longer-term horizons due to mixed structural signals."
+          "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "current_month": {
           "direction": "BULLISH_LEAN",
           "conviction": 50,
-          "reason": "USD shows mixed signals: bullish from Fed bias, US 2Y yield, and strong economic surprise, but bearish from risk-on VIX conditions, narrowing US-DE spread, falling real yields, and DXY weakening. Primary drivers are conflicted between Fed bias/US 2Y yield and spread/real yield/DXY. Despite this, positive Fed bias and economic surprise support a bullish directional call with lean on longer-term horizons due to mixed structural signals."
+          "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         }
       },
       "factor_breakdown": {
@@ -118,14 +118,14 @@
       ],
       "warnings": [
         "Primary drivers partially conflicted",
-        "Dollar Smile regime evidence neutral",
-        "Equity direction vs USD correlation factor bearish"
+        "US-DE 2Y spread delta bearish",
+        "DXY 5-day delta bearish"
       ],
-      "reasoning_summary": "USD shows mixed signals: bullish from Fed bias, US 2Y yield, and strong economic surprise, but bearish from risk-on VIX conditions, narrowing US-DE spread, falling real yields, and DXY weakening. Primary drivers are conflicted between Fed bias/US 2Y yield and spread/real yield/DXY. Despite this, positive Fed bias and economic surprise support a bullish directional call with lean on longer-term horizons due to mixed structural signals.",
+      "reasoning_summary": "Deterministic USD score: bullish weight 37, bearish weight 32, neutral weight 31.",
       "score_bullish": 4,
       "score_bearish": 3,
       "score_neutral": 3,
-      "non_neutral_count": 7,
+      "non_neutral_count": 8,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
@@ -152,8 +152,8 @@
         "created_at": null,
         "risk_flags": [
           "Primary drivers partially conflicted",
-          "Dollar Smile regime evidence neutral",
-          "Equity direction vs USD correlation factor bearish"
+          "US-DE 2Y spread delta bearish",
+          "DXY 5-day delta bearish"
         ],
         "direction_24h": "BULLISH_LEAN",
         "score_bearish": 3,
@@ -243,7 +243,7 @@
             "evidence": "NQ -4.8001% risk-on"
           }
         },
-        "non_neutral_count": 7,
+        "non_neutral_count": 8,
         "reasoning_summary": "Deterministic USD score: bullish weight 37, bearish weight 32, neutral weight 31.",
         "direction_next_week": "BULLISH_LEAN",
         "conviction_next_week": 50,
