@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T15:54:19.707Z",
+    "last_updated_et": "2026-06-07T16:08:42.329Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -23,22 +23,22 @@
         },
         "3d": {
           "direction": "BULLISH_LEAN",
-          "conviction": 50,
+          "conviction": 46,
           "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "current_week": {
           "direction": "BULLISH_LEAN",
-          "conviction": 50,
+          "conviction": 45,
           "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "next_week": {
           "direction": "BULLISH_LEAN",
-          "conviction": 50,
+          "conviction": 43,
           "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         },
         "current_month": {
           "direction": "BULLISH_LEAN",
-          "conviction": 50,
+          "conviction": 42,
           "reason": "USD bullish since key primary drivers such as US 2Y yield delta, Fed bias, and recent positive US economic surprises support strength. However, bearish signals from VIX, US-DE spread narrowing, DXY 5-day decline, and Dollar Smile regime temper confidence. Moderate primary driver conflict and mixed signals from secondary factors yield a strong bullish directional call with solid evidence. No missing inputs limit conviction."
         }
       },
@@ -121,7 +121,7 @@
         "US-DE 2Y spread delta bearish",
         "DXY 5-day delta bearish"
       ],
-      "reasoning_summary": "Deterministic USD score: bullish weight 37, bearish weight 32, neutral weight 31.",
+      "reasoning_summary": "Deterministic USD score: bullish case 37%, bearish case 32%, neutral 31%, active participation 69%, final directional conviction 47%.",
       "score_bullish": 4,
       "score_bearish": 3,
       "score_neutral": 3,
@@ -129,16 +129,23 @@
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
-        "weighted_edge": 0.05,
-        "raw_conviction": 53,
-        "agreement_boost": 0,
-        "conflict_penalty": -10,
-        "participation_cap": 72,
+        "neutral_pct": 31,
+        "net_edge_pct": 7,
+        "conflict_penalty": -5,
+        "final_conviction": 47,
+        "bearish_argument_pct": 32,
+        "bullish_argument_pct": 37,
+        "directional_share_pct": 54,
+        "final_conviction_logic": "Bullish case 37%, bearish case 32%, active participation 69%, directional share 54%, net edge 7%.",
+        "active_participation_pct": 69,
+        "weighted_edge": null,
+        "raw_conviction": null,
+        "participation_cap": null,
+        "alignment": null,
+        "base_conviction": null,
+        "participation": null,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "Deterministic scoring from market snapshot. Bullish 37, bearish 32, active 69, margin 5.",
-        "alignment": 5,
-        "base_conviction": 53,
-        "participation": 72,
+        "agreement_boost": 0,
         "weighted_score": {
           "bullish_weight": 37,
           "bearish_weight": 32,
@@ -160,7 +167,7 @@
         "score_bullish": 4,
         "score_neutral": 3,
         "snapshot_date": "2026-06-07",
-        "conviction_24h": 50,
+        "conviction_24h": 47,
         "logic_document": "agent_usd_direction.md",
         "missing_inputs": [],
         "weighted_score": {
@@ -171,15 +178,17 @@
           "neutral_weight": 31
         },
         "direction_3_day": "BULLISH_LEAN",
-        "conviction_3_day": 50,
+        "conviction_3_day": 46,
         "conviction_model": {
-          "weighted_edge": 0.05,
-          "raw_conviction": 53,
-          "agreement_boost": 0,
-          "conflict_penalty": -10,
-          "participation_cap": 72,
-          "missing_input_penalty": 0,
-          "final_conviction_logic": "Deterministic scoring from market snapshot. Bullish 37, bearish 32, active 69, margin 5."
+          "neutral_pct": 31,
+          "net_edge_pct": 7,
+          "conflict_penalty": -5,
+          "final_conviction": 47,
+          "bearish_argument_pct": 32,
+          "bullish_argument_pct": 37,
+          "directional_share_pct": 54,
+          "final_conviction_logic": "Bullish case 37%, bearish case 32%, active participation 69%, directional share 54%, net edge 7%.",
+          "active_participation_pct": 69
         },
         "factor_breakdown": {
           "F8 Fed Bias Delta": {
@@ -244,14 +253,14 @@
           }
         },
         "non_neutral_count": 8,
-        "reasoning_summary": "Deterministic USD score: bullish weight 37, bearish weight 32, neutral weight 31.",
+        "reasoning_summary": "Deterministic USD score: bullish case 37%, bearish case 32%, neutral 31%, active participation 69%, final directional conviction 47%.",
         "direction_next_week": "BULLISH_LEAN",
-        "conviction_next_week": 50,
+        "conviction_next_week": 43,
         "direction_current_week": "BULLISH_LEAN",
         "logic_document_version": "2.1_weighted_engine",
-        "conviction_current_week": 50,
+        "conviction_current_week": 45,
         "direction_current_month": "BULLISH_LEAN",
-        "conviction_current_month": 50
+        "conviction_current_month": 42
       }
     },
     {
