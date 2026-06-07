@@ -238,26 +238,33 @@ function renderScoreBreakdown(agent) {
   const bullish = agent.score_bullish ?? output.score_bullish ?? "--";
   const bearish = agent.score_bearish ?? output.score_bearish ?? "--";
   const neutral = agent.score_neutral ?? output.score_neutral ?? "--";
-  const nonNeutral = agent.non_neutral_count ?? output.non_neutral_count ?? "--";
 
-  const alignment = model.alignment ?? model.alignment_ratio ?? model.weighted_edge;
-  const baseConviction = model.base_conviction ?? model.raw_conviction;
-  const participation = model.participation ?? model.participation_modifier ?? model.participation_cap;
+  const bullCase = model.bullish_argument_pct;
+  const bearCase = model.bearish_argument_pct;
+  const neutralPct = model.neutral_pct;
+  const netEdge = model.net_edge_pct;
+  const conviction = model.final_conviction;
+  const participation = model.directional_participation_pct;
+  const winningSide = model.winning_side;
+  const verdictStrength = model.verdict_strength;
 
   return `
     <div class="score-grid">
       <div class="score-box"><span>Bullish Factors</span><strong>${bullish}</strong></div>
       <div class="score-box"><span>Bearish Factors</span><strong>${bearish}</strong></div>
       <div class="score-box"><span>Neutral Factors</span><strong>${neutral}</strong></div>
-      <div class="score-box"><span>Active Factors</span><strong>${nonNeutral}</strong></div>
+      <div class="score-box"><span>Winning Side</span><strong>${winningSide || "--"}</strong></div>
     </div>
+
     <div class="conviction-model">
-      <p><strong>Alignment:</strong> ${formatModelPercent(alignment)}</p>
-      <p><strong>Base conviction:</strong> ${formatModelPercent(baseConviction)}</p>
-      <p><strong>Participation:</strong> ${formatModelPercent(participation)}</p>
-      <p><strong>Conflict penalty:</strong> ${escapeHtml(valueOrPending(model.conflict_penalty))}</p>
-      <p><strong>Missing input penalty:</strong> ${escapeHtml(valueOrPending(model.missing_input_penalty))}</p>
-      <p><strong>Final logic:</strong> ${escapeHtml(model.final_conviction_logic ?? agent.reasoning_summary ?? "No conviction model supplied yet.")}</p>
+      <p><strong>Bull Case:</strong> ${formatModelPercent(bullCase)}</p>
+      <p><strong>Bear Case:</strong> ${formatModelPercent(bearCase)}</p>
+      <p><strong>Conviction:</strong> ${formatModelPercent(conviction)}</p>
+      <p><strong>Net Edge:</strong> ${netEdge ?? "--"}%</p>
+      <p><strong>Directional Participation:</strong> ${formatModelPercent(participation)}</p>
+      <p><strong>Neutral / Inactive:</strong> ${formatModelPercent(neutralPct)}</p>
+      <p><strong>Verdict Strength:</strong> ${verdictStrength || "--"}</p>
+      <p><strong>Final Logic:</strong> ${escapeHtml(model.final_conviction_logic ?? "No conviction model supplied yet.")}</p>
     </div>
   `;
 }
