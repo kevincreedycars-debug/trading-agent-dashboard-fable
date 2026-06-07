@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-07T17:18:41.248Z",
+    "last_updated_et": "2026-06-07T18:58:57.376Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -1019,7 +1019,9 @@
         "net_edge": null,
         "directional_participation": null,
         "neutral": null,
-        "verdict_strength": "MARKET_CLOSED"
+        "verdict_strength": "MARKET_CLOSED",
+        "bull_case_weight": null,
+        "bear_case_weight": null
       },
       "full_output": {
         "asset": "USD",
