@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-09T05:07:35.407Z",
+    "last_updated_et": "2026-06-09T18:55:11.791Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Tuesday"
@@ -729,14 +729,16 @@
       ],
       "warnings": [
         "Missing US-DE 2Y spread",
-        "Gold rising against USD strength may indicate risk-off nuance",
-        "VIX in neutral range moderates risk regime signal"
+        "Neutral VIX risk regime",
+        "Gold price rising conflicting with USD strength",
+        "Neutral Dollar Smile regime",
+        "Neutral equities regime"
       ],
       "reasoning_summary": "USD weighted verdicts calculated deterministically by timeframe. 24h BULLISH 94%, 3d BULLISH 89%, current week BULLISH 90%, next week BULLISH 92%, current month BULLISH 93%.",
       "score_bullish": 5,
       "score_bearish": 1,
       "score_neutral": 4,
-      "non_neutral_count": 8,
+      "non_neutral_count": 6,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
@@ -1267,8 +1269,10 @@
         "reason_24h": "24h deterministic score: bullish argument 94%, bearish argument 6%, neutral/inactive 28%, net edge +88 bullish.",
         "risk_flags": [
           "Missing US-DE 2Y spread",
-          "Gold rising against USD strength may indicate risk-off nuance",
-          "VIX in neutral range moderates risk regime signal"
+          "Neutral VIX risk regime",
+          "Gold price rising conflicting with USD strength",
+          "Neutral Dollar Smile regime",
+          "Neutral equities regime"
         ],
         "reason_3_day": "3d deterministic score: bullish argument 89%, bearish argument 11%, neutral/inactive 28%, net edge +78 bullish.",
         "direction_24h": "BULLISH",
@@ -1848,7 +1852,7 @@
             }
           }
         },
-        "non_neutral_count": 8,
+        "non_neutral_count": 6,
         "reasoning_summary": "USD weighted verdicts calculated deterministically by timeframe. 24h BULLISH 94%, 3d BULLISH 89%, current week BULLISH 90%, next week BULLISH 92%, current month BULLISH 93%.",
         "direction_next_week": "BULLISH",
         "reason_current_week": "current_week deterministic score: bullish argument 90%, bearish argument 10%, neutral/inactive 29%, net edge +80 bullish.",
