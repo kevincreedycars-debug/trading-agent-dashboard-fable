@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-09T19:39:15.277Z",
+    "last_updated_et": "2026-06-09T19:48:11.484Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Tuesday"
@@ -2007,51 +2007,51 @@
       "agent": "EUR",
       "status": "live",
       "market_status": "open",
-      "last_run_et": "2026-06-09T05:02:30.423+00:00",
+      "last_run_et": "2026-06-09T05:04:12.878+00:00",
       "summary": "EUR Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
-          "direction": "NO_CLEAR_BIAS",
-          "conviction": 0,
-          "reason": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
+          "direction": "BEARISH",
+          "conviction": 80,
+          "reason": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
           "conviction_model": {
-            "neutral_pct": 92,
-            "net_edge_pct": 0,
-            "winning_side": "NO_CLEAR_BIAS",
-            "participation": 8,
-            "weighted_edge": 0,
-            "neutral_weight": 92,
-            "raw_conviction": 0,
+            "neutral_pct": 80,
+            "net_edge_pct": -60,
+            "winning_side": "BEARISH",
+            "participation": 20,
+            "weighted_edge": 0.6,
+            "neutral_weight": 80,
+            "raw_conviction": 80,
             "agreement_boost": 0,
-            "base_conviction": 0,
-            "bear_case_weight": 4,
+            "base_conviction": 80,
+            "bear_case_weight": 16,
             "bull_case_weight": 4,
             "conflict_penalty": 0,
-            "final_conviction": 0,
-            "verdict_strength": "WEAK",
-            "participation_cap": 8,
-            "bearish_argument_pct": 50,
-            "bullish_argument_pct": 50,
-            "neutral_evidence_pct": 92,
+            "final_conviction": 80,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 20,
+            "bearish_argument_pct": 80,
+            "bullish_argument_pct": 20,
+            "neutral_evidence_pct": 80,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-            "active_participation_pct": 8,
-            "directional_participation_pct": 8,
+            "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+            "active_participation_pct": 20,
+            "directional_participation_pct": 20,
             "weighted_score": {
               "bullish_weight": 4,
-              "bearish_weight": 4,
-              "neutral_weight": 92,
-              "active_weight": 8,
-              "weight_margin": 0
+              "bearish_weight": 16,
+              "neutral_weight": 80,
+              "active_weight": 20,
+              "weight_margin": 12
             },
-            "alignment": 50
+            "alignment": 20
           },
           "weighted_score": {
-            "active_weight": 8,
-            "weight_margin": 0,
-            "bearish_weight": 4,
+            "active_weight": 20,
+            "weight_margin": 12,
+            "bearish_weight": 16,
             "bullish_weight": 4,
-            "neutral_weight": 92
+            "neutral_weight": 80
           },
           "factor_breakdown": {
             "F1": {
@@ -2085,16 +2085,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 12,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -0.83%"
             },
             "F7": {
               "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
               "signal": "BULLISH",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2118,46 +2118,46 @@
         },
         "3d": {
           "direction": "BEARISH",
-          "conviction": 100,
-          "reason": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
+          "conviction": 68,
+          "reason": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
           "conviction_model": {
-            "neutral_pct": 92,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -36,
             "winning_side": "BEARISH",
-            "participation": 8,
-            "weighted_edge": 1,
-            "neutral_weight": 92,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.36,
+            "neutral_weight": 44,
+            "raw_conviction": 68,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 8,
-            "bull_case_weight": 0,
+            "base_conviction": 68,
+            "bear_case_weight": 38,
+            "bull_case_weight": 18,
             "conflict_penalty": 0,
-            "final_conviction": 100,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 8,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 92,
+            "final_conviction": 68,
+            "verdict_strength": "STRONG",
+            "participation_cap": 56,
+            "bearish_argument_pct": 68,
+            "bullish_argument_pct": 32,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
-            "active_participation_pct": 8,
-            "directional_participation_pct": 8,
+            "final_conviction_logic": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56,
             "weighted_score": {
-              "bullish_weight": 0,
-              "bearish_weight": 8,
-              "neutral_weight": 92,
-              "active_weight": 8,
-              "weight_margin": 8
+              "bullish_weight": 18,
+              "bearish_weight": 38,
+              "neutral_weight": 44,
+              "active_weight": 56,
+              "weight_margin": 20
             },
-            "alignment": 0
+            "alignment": 32
           },
           "weighted_score": {
-            "active_weight": 8,
-            "weight_margin": 8,
-            "bearish_weight": 8,
-            "bullish_weight": 0,
-            "neutral_weight": 92
+            "active_weight": 56,
+            "weight_margin": 20,
+            "bearish_weight": 38,
+            "bullish_weight": 18,
+            "neutral_weight": 44
           },
           "factor_breakdown": {
             "F1": {
@@ -2167,16 +2167,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 18,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 12 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 20,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 7 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -2191,16 +2191,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 10,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.25%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2224,46 +2224,46 @@
         },
         "current_week": {
           "direction": "BEARISH",
-          "conviction": 100,
-          "reason": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
+          "conviction": 75,
+          "reason": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
           "conviction_model": {
-            "neutral_pct": 88,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -50,
             "winning_side": "BEARISH",
-            "participation": 12,
-            "weighted_edge": 1,
-            "neutral_weight": 88,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.5,
+            "neutral_weight": 44,
+            "raw_conviction": 75,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 12,
-            "bull_case_weight": 0,
+            "base_conviction": 75,
+            "bear_case_weight": 42,
+            "bull_case_weight": 14,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 75,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 12,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 88,
+            "participation_cap": 56,
+            "bearish_argument_pct": 75,
+            "bullish_argument_pct": 25,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
-            "active_participation_pct": 12,
-            "directional_participation_pct": 12,
+            "final_conviction_logic": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56,
             "weighted_score": {
-              "bullish_weight": 0,
-              "bearish_weight": 12,
-              "neutral_weight": 88,
-              "active_weight": 12,
-              "weight_margin": 12
+              "bullish_weight": 14,
+              "bearish_weight": 42,
+              "neutral_weight": 44,
+              "active_weight": 56,
+              "weight_margin": 28
             },
-            "alignment": 0
+            "alignment": 25
           },
           "weighted_score": {
-            "active_weight": 12,
-            "weight_margin": 12,
-            "bearish_weight": 12,
-            "bullish_weight": 0,
-            "neutral_weight": 88
+            "active_weight": 56,
+            "weight_margin": 28,
+            "bearish_weight": 42,
+            "bullish_weight": 14,
+            "neutral_weight": 44
           },
           "factor_breakdown": {
             "F1": {
@@ -2273,16 +2273,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 12 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 7 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -2297,16 +2297,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.25%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2330,46 +2330,46 @@
         },
         "next_week": {
           "direction": "BEARISH",
-          "conviction": 100,
-          "reason": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
+          "conviction": 79,
+          "reason": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
           "conviction_model": {
-            "neutral_pct": 86,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 14,
-            "weighted_edge": 1,
-            "neutral_weight": 86,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.58,
+            "neutral_weight": 44,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 14,
-            "bull_case_weight": 0,
+            "base_conviction": 79,
+            "bear_case_weight": 44,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 14,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 86,
+            "participation_cap": 56,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
-            "active_participation_pct": 14,
-            "directional_participation_pct": 14,
+            "final_conviction_logic": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56,
             "weighted_score": {
-              "bullish_weight": 0,
-              "bearish_weight": 14,
-              "neutral_weight": 86,
-              "active_weight": 14,
-              "weight_margin": 14
+              "bullish_weight": 12,
+              "bearish_weight": 44,
+              "neutral_weight": 44,
+              "active_weight": 56,
+              "weight_margin": 32
             },
-            "alignment": 0
+            "alignment": 21
           },
           "weighted_score": {
-            "active_weight": 14,
-            "weight_margin": 14,
-            "bearish_weight": 14,
-            "bullish_weight": 0,
-            "neutral_weight": 86
+            "active_weight": 56,
+            "weight_margin": 32,
+            "bearish_weight": 44,
+            "bullish_weight": 12,
+            "neutral_weight": 44
           },
           "factor_breakdown": {
             "F1": {
@@ -2379,16 +2379,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 8 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 24,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 17 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -2403,16 +2403,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 6,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.96%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2436,46 +2436,46 @@
         },
         "current_month": {
           "direction": "BEARISH",
-          "conviction": 100,
-          "reason": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
+          "conviction": 79,
+          "reason": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
           "conviction_model": {
-            "neutral_pct": 84,
-            "net_edge_pct": -100,
+            "neutral_pct": 42,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 16,
-            "weighted_edge": 1,
-            "neutral_weight": 84,
-            "raw_conviction": 100,
+            "participation": 58,
+            "weighted_edge": 0.58,
+            "neutral_weight": 42,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 16,
-            "bull_case_weight": 0,
+            "base_conviction": 79,
+            "bear_case_weight": 46,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 16,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 84,
+            "participation_cap": 58,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 42,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
-            "active_participation_pct": 16,
-            "directional_participation_pct": 16,
+            "final_conviction_logic": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
+            "active_participation_pct": 58,
+            "directional_participation_pct": 58,
             "weighted_score": {
-              "bullish_weight": 0,
-              "bearish_weight": 16,
-              "neutral_weight": 84,
-              "active_weight": 16,
-              "weight_margin": 16
+              "bullish_weight": 12,
+              "bearish_weight": 46,
+              "neutral_weight": 42,
+              "active_weight": 58,
+              "weight_margin": 34
             },
-            "alignment": 0
+            "alignment": 21
           },
           "weighted_score": {
-            "active_weight": 16,
-            "weight_margin": 16,
-            "bearish_weight": 16,
-            "bullish_weight": 0,
-            "neutral_weight": 84
+            "active_weight": 58,
+            "weight_margin": 34,
+            "bearish_weight": 46,
+            "bullish_weight": 12,
+            "neutral_weight": 42
           },
           "factor_breakdown": {
             "F1": {
@@ -2485,16 +2485,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 8 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 17 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -2509,16 +2509,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.96%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2543,47 +2543,47 @@
       },
       "priority_timeframe": "24h",
       "priority_call": {
-        "direction": "NO_CLEAR_BIAS",
-        "conviction": 0,
-        "reason": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
+        "direction": "BEARISH",
+        "conviction": 80,
+        "reason": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
         "conviction_model": {
-          "neutral_pct": 92,
-          "net_edge_pct": 0,
-          "winning_side": "NO_CLEAR_BIAS",
-          "participation": 8,
-          "weighted_edge": 0,
-          "neutral_weight": 92,
-          "raw_conviction": 0,
+          "neutral_pct": 80,
+          "net_edge_pct": -60,
+          "winning_side": "BEARISH",
+          "participation": 20,
+          "weighted_edge": 0.6,
+          "neutral_weight": 80,
+          "raw_conviction": 80,
           "agreement_boost": 0,
-          "base_conviction": 0,
-          "bear_case_weight": 4,
+          "base_conviction": 80,
+          "bear_case_weight": 16,
           "bull_case_weight": 4,
           "conflict_penalty": 0,
-          "final_conviction": 0,
-          "verdict_strength": "WEAK",
-          "participation_cap": 8,
-          "bearish_argument_pct": 50,
-          "bullish_argument_pct": 50,
-          "neutral_evidence_pct": 92,
+          "final_conviction": 80,
+          "verdict_strength": "VERY_STRONG",
+          "participation_cap": 20,
+          "bearish_argument_pct": 80,
+          "bullish_argument_pct": 20,
+          "neutral_evidence_pct": 80,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-          "active_participation_pct": 8,
-          "directional_participation_pct": 8,
+          "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+          "active_participation_pct": 20,
+          "directional_participation_pct": 20,
           "weighted_score": {
             "bullish_weight": 4,
-            "bearish_weight": 4,
-            "neutral_weight": 92,
-            "active_weight": 8,
-            "weight_margin": 0
+            "bearish_weight": 16,
+            "neutral_weight": 80,
+            "active_weight": 20,
+            "weight_margin": 12
           },
-          "alignment": 50
+          "alignment": 20
         },
         "weighted_score": {
-          "active_weight": 8,
-          "weight_margin": 0,
-          "bearish_weight": 4,
+          "active_weight": 20,
+          "weight_margin": 12,
+          "bearish_weight": 16,
           "bullish_weight": 4,
-          "neutral_weight": 92
+          "neutral_weight": 80
         },
         "factor_breakdown": {
           "F1": {
@@ -2617,16 +2617,16 @@
             "evidence": "EZ PMI 0 "
           },
           "F6": {
-            "reason": "EUR own price move below threshold",
-            "signal": "NEUTRAL",
+            "reason": "EUR own price delta confirms bearish pressure",
+            "signal": "BEARISH",
             "weight": 12,
-            "evidence": "EURUSD delta 0%"
+            "evidence": "EURUSD delta -0.83%"
           },
           "F7": {
             "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
             "signal": "BULLISH",
             "weight": 4,
-            "evidence": "Gold delta 0.68%"
+            "evidence": "Gold delta 0.69%"
           },
           "F8": {
             "reason": "Missing or inactive stress input",
@@ -2680,16 +2680,16 @@
           "evidence": "EZ PMI 0 "
         },
         "F6": {
-          "reason": "EUR own price move below threshold",
-          "signal": "NEUTRAL",
+          "reason": "EUR own price delta confirms bearish pressure",
+          "signal": "BEARISH",
           "weight": 12,
-          "evidence": "EURUSD delta 0%"
+          "evidence": "EURUSD delta -0.83%"
         },
         "F7": {
           "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
           "signal": "BULLISH",
           "weight": 4,
-          "evidence": "Gold delta 0.68%"
+          "evidence": "Gold delta 0.69%"
         },
         "F8": {
           "reason": "Missing or inactive stress input",
@@ -2716,90 +2716,90 @@
         "F3 [20]: NEUTRAL — US-DE 2Y spread delta 0 bps (Spread move below threshold)",
         "F4 [14]: NEUTRAL — No recent Eurozone event (No confirmed EZ economic surprise)",
         "F5 [4]: BEARISH — EZ PMI 0  (Weak or deteriorating Eurozone PMI trend pressures EUR)",
-        "F6 [12]: NEUTRAL — EURUSD delta 0% (EUR own price move below threshold)",
-        "F7 [4]: BULLISH — Gold delta 0.68% (Gold strength confirms anti-USD pressure supportive for EUR)",
+        "F6 [12]: BEARISH — EURUSD delta -0.83% (EUR own price delta confirms bearish pressure)",
+        "F7 [4]: BULLISH — Gold delta 0.69% (Gold strength confirms anti-USD pressure supportive for EUR)",
         "F8 [4]: NEUTRAL — EZ stress unavailable (Missing or inactive stress input)",
         "F9 [2]: NEUTRAL — Global growth unavailable (Missing input)",
         "F10 [2]: NEUTRAL — VIX 21.51 (Neutral risk regime)"
       ],
       "warnings": [],
-      "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h NO_CLEAR_BIAS 0%, 3d BEARISH 100%, current week BEARISH 100%, next week BEARISH 100%, current month BEARISH 100%.",
+      "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h BEARISH 80%, 3d BEARISH 68%, current week BEARISH 75%, next week BEARISH 79%, current month BEARISH 79%.",
       "score_bullish": 1,
-      "score_bearish": 1,
-      "score_neutral": 8,
-      "non_neutral_count": 3,
+      "score_bearish": 2,
+      "score_neutral": 7,
+      "non_neutral_count": 6,
       "logic_document": "agent_eur_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
-        "neutral_pct": 92,
-        "net_edge_pct": 0,
-        "winning_side": "NO_CLEAR_BIAS",
-        "participation": 8,
-        "weighted_edge": 0,
-        "neutral_weight": 92,
-        "raw_conviction": 0,
+        "neutral_pct": 80,
+        "net_edge_pct": -60,
+        "winning_side": "BEARISH",
+        "participation": 20,
+        "weighted_edge": 0.6,
+        "neutral_weight": 80,
+        "raw_conviction": 80,
         "agreement_boost": 0,
-        "base_conviction": 0,
-        "bear_case_weight": 4,
+        "base_conviction": 80,
+        "bear_case_weight": 16,
         "bull_case_weight": 4,
         "conflict_penalty": 0,
-        "final_conviction": 0,
-        "verdict_strength": "WEAK",
-        "participation_cap": 8,
-        "bearish_argument_pct": 50,
-        "bullish_argument_pct": 50,
-        "neutral_evidence_pct": 92,
+        "final_conviction": 80,
+        "verdict_strength": "VERY_STRONG",
+        "participation_cap": 20,
+        "bearish_argument_pct": 80,
+        "bullish_argument_pct": 20,
+        "neutral_evidence_pct": 80,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-        "active_participation_pct": 8,
-        "directional_participation_pct": 8,
+        "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+        "active_participation_pct": 20,
+        "directional_participation_pct": 20,
         "weighted_score": {
           "bullish_weight": 4,
-          "bearish_weight": 4,
-          "neutral_weight": 92,
-          "active_weight": 8,
-          "weight_margin": 0
+          "bearish_weight": 16,
+          "neutral_weight": 80,
+          "active_weight": 20,
+          "weight_margin": 12
         },
-        "alignment": 50
+        "alignment": 20
       },
       "timeframe_models": {
         "3d": {
-          "reason": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
+          "reason": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
           "direction": "BEARISH",
-          "conviction": 100,
-          "score_bearish": 1,
-          "score_bullish": 0,
-          "score_neutral": 9,
+          "conviction": 68,
+          "score_bearish": 3,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 8,
-            "weight_margin": 8,
-            "bearish_weight": 8,
-            "bullish_weight": 0,
-            "neutral_weight": 92
+            "active_weight": 56,
+            "weight_margin": 20,
+            "bearish_weight": 38,
+            "bullish_weight": 18,
+            "neutral_weight": 44
           },
           "conviction_model": {
-            "neutral_pct": 92,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -36,
             "winning_side": "BEARISH",
-            "participation": 8,
-            "weighted_edge": 1,
-            "neutral_weight": 92,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.36,
+            "neutral_weight": 44,
+            "raw_conviction": 68,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 8,
-            "bull_case_weight": 0,
+            "base_conviction": 68,
+            "bear_case_weight": 38,
+            "bull_case_weight": 18,
             "conflict_penalty": 0,
-            "final_conviction": 100,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 8,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 92,
+            "final_conviction": 68,
+            "verdict_strength": "STRONG",
+            "participation_cap": 56,
+            "bearish_argument_pct": 68,
+            "bullish_argument_pct": 32,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
-            "active_participation_pct": 8,
-            "directional_participation_pct": 8
+            "final_conviction_logic": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56
           },
           "factor_breakdown": {
             "F1": {
@@ -2809,16 +2809,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 18,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 12 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 20,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 7 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -2833,16 +2833,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 10,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.25%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2865,42 +2865,42 @@
           }
         },
         "24h": {
-          "reason": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-          "direction": "NO_CLEAR_BIAS",
-          "conviction": 0,
-          "score_bearish": 1,
+          "reason": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+          "direction": "BEARISH",
+          "conviction": 80,
+          "score_bearish": 2,
           "score_bullish": 1,
-          "score_neutral": 8,
+          "score_neutral": 7,
           "weighted_score": {
-            "active_weight": 8,
-            "weight_margin": 0,
-            "bearish_weight": 4,
+            "active_weight": 20,
+            "weight_margin": 12,
+            "bearish_weight": 16,
             "bullish_weight": 4,
-            "neutral_weight": 92
+            "neutral_weight": 80
           },
           "conviction_model": {
-            "neutral_pct": 92,
-            "net_edge_pct": 0,
-            "winning_side": "NO_CLEAR_BIAS",
-            "participation": 8,
-            "weighted_edge": 0,
-            "neutral_weight": 92,
-            "raw_conviction": 0,
+            "neutral_pct": 80,
+            "net_edge_pct": -60,
+            "winning_side": "BEARISH",
+            "participation": 20,
+            "weighted_edge": 0.6,
+            "neutral_weight": 80,
+            "raw_conviction": 80,
             "agreement_boost": 0,
-            "base_conviction": 0,
-            "bear_case_weight": 4,
+            "base_conviction": 80,
+            "bear_case_weight": 16,
             "bull_case_weight": 4,
             "conflict_penalty": 0,
-            "final_conviction": 0,
-            "verdict_strength": "WEAK",
-            "participation_cap": 8,
-            "bearish_argument_pct": 50,
-            "bullish_argument_pct": 50,
-            "neutral_evidence_pct": 92,
+            "final_conviction": 80,
+            "verdict_strength": "VERY_STRONG",
+            "participation_cap": 20,
+            "bearish_argument_pct": 80,
+            "bullish_argument_pct": 20,
+            "neutral_evidence_pct": 80,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-            "active_participation_pct": 8,
-            "directional_participation_pct": 8
+            "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+            "active_participation_pct": 20,
+            "directional_participation_pct": 20
           },
           "factor_breakdown": {
             "F1": {
@@ -2934,16 +2934,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 12,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -0.83%"
             },
             "F7": {
               "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
               "signal": "BULLISH",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -2966,42 +2966,42 @@
           }
         },
         "next_week": {
-          "reason": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
+          "reason": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
           "direction": "BEARISH",
-          "conviction": 100,
-          "score_bearish": 1,
-          "score_bullish": 0,
-          "score_neutral": 9,
+          "conviction": 79,
+          "score_bearish": 3,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 14,
-            "weight_margin": 14,
-            "bearish_weight": 14,
-            "bullish_weight": 0,
-            "neutral_weight": 86
+            "active_weight": 56,
+            "weight_margin": 32,
+            "bearish_weight": 44,
+            "bullish_weight": 12,
+            "neutral_weight": 44
           },
           "conviction_model": {
-            "neutral_pct": 86,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 14,
-            "weighted_edge": 1,
-            "neutral_weight": 86,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.58,
+            "neutral_weight": 44,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 14,
-            "bull_case_weight": 0,
+            "base_conviction": 79,
+            "bear_case_weight": 44,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 14,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 86,
+            "participation_cap": 56,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
-            "active_participation_pct": 14,
-            "directional_participation_pct": 14
+            "final_conviction_logic": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56
           },
           "factor_breakdown": {
             "F1": {
@@ -3011,16 +3011,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 8 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 24,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 17 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -3035,16 +3035,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 6,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.96%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -3067,42 +3067,42 @@
           }
         },
         "current_week": {
-          "reason": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
+          "reason": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
           "direction": "BEARISH",
-          "conviction": 100,
-          "score_bearish": 1,
-          "score_bullish": 0,
-          "score_neutral": 9,
+          "conviction": 75,
+          "score_bearish": 3,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 12,
-            "weight_margin": 12,
-            "bearish_weight": 12,
-            "bullish_weight": 0,
-            "neutral_weight": 88
+            "active_weight": 56,
+            "weight_margin": 28,
+            "bearish_weight": 42,
+            "bullish_weight": 14,
+            "neutral_weight": 44
           },
           "conviction_model": {
-            "neutral_pct": 88,
-            "net_edge_pct": -100,
+            "neutral_pct": 44,
+            "net_edge_pct": -50,
             "winning_side": "BEARISH",
-            "participation": 12,
-            "weighted_edge": 1,
-            "neutral_weight": 88,
-            "raw_conviction": 100,
+            "participation": 56,
+            "weighted_edge": 0.5,
+            "neutral_weight": 44,
+            "raw_conviction": 75,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 12,
-            "bull_case_weight": 0,
+            "base_conviction": 75,
+            "bear_case_weight": 42,
+            "bull_case_weight": 14,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 75,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 12,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 88,
+            "participation_cap": 56,
+            "bearish_argument_pct": 75,
+            "bullish_argument_pct": 25,
+            "neutral_evidence_pct": 44,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
-            "active_participation_pct": 12,
-            "directional_participation_pct": 12
+            "final_conviction_logic": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
+            "active_participation_pct": 56,
+            "directional_participation_pct": 56
           },
           "factor_breakdown": {
             "F1": {
@@ -3112,16 +3112,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 12 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 7 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -3136,16 +3136,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.25%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0.69%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -3168,42 +3168,42 @@
           }
         },
         "current_month": {
-          "reason": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
+          "reason": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
           "direction": "BEARISH",
-          "conviction": 100,
-          "score_bearish": 1,
-          "score_bullish": 0,
-          "score_neutral": 9,
+          "conviction": 79,
+          "score_bearish": 3,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 16,
-            "weight_margin": 16,
-            "bearish_weight": 16,
-            "bullish_weight": 0,
-            "neutral_weight": 84
+            "active_weight": 58,
+            "weight_margin": 34,
+            "bearish_weight": 46,
+            "bullish_weight": 12,
+            "neutral_weight": 42
           },
           "conviction_model": {
-            "neutral_pct": 84,
-            "net_edge_pct": -100,
+            "neutral_pct": 42,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 16,
-            "weighted_edge": 1,
-            "neutral_weight": 84,
-            "raw_conviction": 100,
+            "participation": 58,
+            "weighted_edge": 0.58,
+            "neutral_weight": 42,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 100,
-            "bear_case_weight": 16,
-            "bull_case_weight": 0,
+            "base_conviction": 79,
+            "bear_case_weight": 46,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 100,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 16,
-            "bearish_argument_pct": 100,
-            "bullish_argument_pct": 0,
-            "neutral_evidence_pct": 84,
+            "participation_cap": 58,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 42,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
-            "active_participation_pct": 16,
-            "directional_participation_pct": 16
+            "final_conviction_logic": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
+            "active_participation_pct": 58,
+            "directional_participation_pct": 58
           },
           "factor_breakdown": {
             "F1": {
@@ -3213,16 +3213,16 @@
               "evidence": "ECB bias unknown"
             },
             "F2": {
-              "reason": "German 2Y move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "Rising German front-end yields support EUR",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Germany 2Y delta 0 bps"
+              "evidence": "Germany 2Y delta 8 bps"
             },
             "F3": {
-              "reason": "Spread move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "US-DE spread widening pressures EUR",
+              "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US-DE 2Y spread delta 0 bps"
+              "evidence": "US-DE 2Y spread delta 17 bps"
             },
             "F4": {
               "reason": "No confirmed EZ economic surprise",
@@ -3237,16 +3237,16 @@
               "evidence": "EZ PMI 0 "
             },
             "F6": {
-              "reason": "EUR own price move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "EUR own price delta confirms bearish pressure",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "EURUSD delta 0%"
+              "evidence": "EURUSD delta -1.96%"
             },
             "F7": {
               "reason": "Gold move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta 0.68%"
+              "evidence": "Gold delta 0%"
             },
             "F8": {
               "reason": "Missing or inactive stress input",
@@ -3270,78 +3270,71 @@
         }
       },
       "display_metrics": {
-        "bull_case": 50,
-        "bear_case": 50,
-        "winning_side": "NO_CLEAR_BIAS",
-        "conviction": 0,
-        "net_edge": 0,
-        "directional_participation": 8,
-        "neutral": 92,
-        "verdict_strength": "WEAK",
+        "bull_case": 20,
+        "bear_case": 80,
+        "winning_side": "BEARISH",
+        "conviction": 80,
+        "net_edge": -60,
+        "directional_participation": 20,
+        "neutral": 80,
+        "verdict_strength": "VERY_STRONG",
         "bull_case_weight": 4,
-        "bear_case_weight": 4
+        "bear_case_weight": 16
       },
       "full_output": {
         "asset": "EUR",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-09T05:02:30.423+00:00",
-        "reason_24h": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
+        "created_at": "2026-06-09T05:04:13.081489+00:00",
+        "reason_24h": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
         "risk_flags": [],
-        "reason_3_day": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
-        "direction_24h": "NO_CLEAR_BIAS",
-        "score_bearish": 1,
+        "reason_3_day": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
+        "direction_24h": "BEARISH",
+        "score_bearish": 2,
         "score_bullish": 1,
-        "score_neutral": 8,
-        "conviction_24h": 0,
+        "score_neutral": 7,
+        "conviction_24h": 80,
         "logic_document": "agent_eur_direction.md",
         "missing_inputs": [
           "ecb_bias",
-          "de_2y_d5_bps",
-          "de_2y_d20_bps",
-          "us_de_2y_spread_d5_bps",
-          "us_de_2y_spread_d20_bps",
           "latest_ez_event",
           "ez_composite_pmi",
           "ez_composite_pmi_direction",
-          "eurusd_d1_pct",
-          "eurusd_d5_pct",
-          "eurusd_d20_pct",
           "ez_stress_flag",
           "global_growth_regime",
           "china_growth_signal"
         ],
         "weighted_score": {
-          "active_weight": 8,
-          "weight_margin": 0,
-          "bearish_weight": 4,
+          "active_weight": 20,
+          "weight_margin": 12,
+          "bearish_weight": 16,
           "bullish_weight": 4,
-          "neutral_weight": 92
+          "neutral_weight": 80
         },
         "direction_3_day": "BEARISH",
-        "conviction_3_day": 100,
+        "conviction_3_day": 68,
         "conviction_model": {
-          "neutral_pct": 92,
-          "net_edge_pct": 0,
-          "winning_side": "NO_CLEAR_BIAS",
-          "participation": 8,
-          "weighted_edge": 0,
-          "neutral_weight": 92,
-          "raw_conviction": 0,
+          "neutral_pct": 80,
+          "net_edge_pct": -60,
+          "winning_side": "BEARISH",
+          "participation": 20,
+          "weighted_edge": 0.6,
+          "neutral_weight": 80,
+          "raw_conviction": 80,
           "agreement_boost": 0,
-          "base_conviction": 0,
-          "bear_case_weight": 4,
+          "base_conviction": 80,
+          "bear_case_weight": 16,
           "bull_case_weight": 4,
           "conflict_penalty": 0,
-          "final_conviction": 0,
-          "verdict_strength": "WEAK",
-          "participation_cap": 8,
-          "bearish_argument_pct": 50,
-          "bullish_argument_pct": 50,
-          "neutral_evidence_pct": 92,
+          "final_conviction": 80,
+          "verdict_strength": "VERY_STRONG",
+          "participation_cap": 20,
+          "bearish_argument_pct": 80,
+          "bullish_argument_pct": 20,
+          "neutral_evidence_pct": 80,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-          "active_participation_pct": 8,
-          "directional_participation_pct": 8
+          "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+          "active_participation_pct": 20,
+          "directional_participation_pct": 20
         },
         "factor_breakdown": {
           "F1": {
@@ -3375,16 +3368,16 @@
             "evidence": "EZ PMI 0 "
           },
           "F6": {
-            "reason": "EUR own price move below threshold",
-            "signal": "NEUTRAL",
+            "reason": "EUR own price delta confirms bearish pressure",
+            "signal": "BEARISH",
             "weight": 12,
-            "evidence": "EURUSD delta 0%"
+            "evidence": "EURUSD delta -0.83%"
           },
           "F7": {
             "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
             "signal": "BULLISH",
             "weight": 4,
-            "evidence": "Gold delta 0.68%"
+            "evidence": "Gold delta 0.69%"
           },
           "F8": {
             "reason": "Missing or inactive stress input",
@@ -3405,45 +3398,45 @@
             "evidence": "VIX 21.51"
           }
         },
-        "reason_next_week": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
+        "reason_next_week": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
         "timeframe_models": {
           "3d": {
-            "reason": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
+            "reason": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
             "direction": "BEARISH",
-            "conviction": 100,
-            "score_bearish": 1,
-            "score_bullish": 0,
-            "score_neutral": 9,
+            "conviction": 68,
+            "score_bearish": 3,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 8,
-              "weight_margin": 8,
-              "bearish_weight": 8,
-              "bullish_weight": 0,
-              "neutral_weight": 92
+              "active_weight": 56,
+              "weight_margin": 20,
+              "bearish_weight": 38,
+              "bullish_weight": 18,
+              "neutral_weight": 44
             },
             "conviction_model": {
-              "neutral_pct": 92,
-              "net_edge_pct": -100,
+              "neutral_pct": 44,
+              "net_edge_pct": -36,
               "winning_side": "BEARISH",
-              "participation": 8,
-              "weighted_edge": 1,
-              "neutral_weight": 92,
-              "raw_conviction": 100,
+              "participation": 56,
+              "weighted_edge": 0.36,
+              "neutral_weight": 44,
+              "raw_conviction": 68,
               "agreement_boost": 0,
-              "base_conviction": 100,
-              "bear_case_weight": 8,
-              "bull_case_weight": 0,
+              "base_conviction": 68,
+              "bear_case_weight": 38,
+              "bull_case_weight": 18,
               "conflict_penalty": 0,
-              "final_conviction": 100,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 8,
-              "bearish_argument_pct": 100,
-              "bullish_argument_pct": 0,
-              "neutral_evidence_pct": 92,
+              "final_conviction": 68,
+              "verdict_strength": "STRONG",
+              "participation_cap": 56,
+              "bearish_argument_pct": 68,
+              "bullish_argument_pct": 32,
+              "neutral_evidence_pct": 44,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "3d EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 92%, directional participation 8%, net edge -100.",
-              "active_participation_pct": 8,
-              "directional_participation_pct": 8
+              "final_conviction_logic": "3d EUR deterministic score: bull case 32%, bear case 68%, neutral/inactive 44%, directional participation 56%, net edge -36.",
+              "active_participation_pct": 56,
+              "directional_participation_pct": 56
             },
             "factor_breakdown": {
               "F1": {
@@ -3453,16 +3446,16 @@
                 "evidence": "ECB bias unknown"
               },
               "F2": {
-                "reason": "German 2Y move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "Rising German front-end yields support EUR",
+                "signal": "BULLISH",
                 "weight": 18,
-                "evidence": "Germany 2Y delta 0 bps"
+                "evidence": "Germany 2Y delta 12 bps"
               },
               "F3": {
-                "reason": "Spread move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "US-DE spread widening pressures EUR",
+                "signal": "BEARISH",
                 "weight": 20,
-                "evidence": "US-DE 2Y spread delta 0 bps"
+                "evidence": "US-DE 2Y spread delta 7 bps"
               },
               "F4": {
                 "reason": "No confirmed EZ economic surprise",
@@ -3477,16 +3470,16 @@
                 "evidence": "EZ PMI 0 "
               },
               "F6": {
-                "reason": "EUR own price move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "EUR own price delta confirms bearish pressure",
+                "signal": "BEARISH",
                 "weight": 10,
-                "evidence": "EURUSD delta 0%"
+                "evidence": "EURUSD delta -1.25%"
               },
               "F7": {
                 "reason": "Gold move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Gold delta 0.68%"
+                "evidence": "Gold delta 0.69%"
               },
               "F8": {
                 "reason": "Missing or inactive stress input",
@@ -3509,42 +3502,42 @@
             }
           },
           "24h": {
-            "reason": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-            "direction": "NO_CLEAR_BIAS",
-            "conviction": 0,
-            "score_bearish": 1,
+            "reason": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+            "direction": "BEARISH",
+            "conviction": 80,
+            "score_bearish": 2,
             "score_bullish": 1,
-            "score_neutral": 8,
+            "score_neutral": 7,
             "weighted_score": {
-              "active_weight": 8,
-              "weight_margin": 0,
-              "bearish_weight": 4,
+              "active_weight": 20,
+              "weight_margin": 12,
+              "bearish_weight": 16,
               "bullish_weight": 4,
-              "neutral_weight": 92
+              "neutral_weight": 80
             },
             "conviction_model": {
-              "neutral_pct": 92,
-              "net_edge_pct": 0,
-              "winning_side": "NO_CLEAR_BIAS",
-              "participation": 8,
-              "weighted_edge": 0,
-              "neutral_weight": 92,
-              "raw_conviction": 0,
+              "neutral_pct": 80,
+              "net_edge_pct": -60,
+              "winning_side": "BEARISH",
+              "participation": 20,
+              "weighted_edge": 0.6,
+              "neutral_weight": 80,
+              "raw_conviction": 80,
               "agreement_boost": 0,
-              "base_conviction": 0,
-              "bear_case_weight": 4,
+              "base_conviction": 80,
+              "bear_case_weight": 16,
               "bull_case_weight": 4,
               "conflict_penalty": 0,
-              "final_conviction": 0,
-              "verdict_strength": "WEAK",
-              "participation_cap": 8,
-              "bearish_argument_pct": 50,
-              "bullish_argument_pct": 50,
-              "neutral_evidence_pct": 92,
+              "final_conviction": 80,
+              "verdict_strength": "VERY_STRONG",
+              "participation_cap": 20,
+              "bearish_argument_pct": 80,
+              "bullish_argument_pct": 20,
+              "neutral_evidence_pct": 80,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "24h EUR deterministic score: bull case 50%, bear case 50%, neutral/inactive 92%, directional participation 8%, net edge 0.",
-              "active_participation_pct": 8,
-              "directional_participation_pct": 8
+              "final_conviction_logic": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
+              "active_participation_pct": 20,
+              "directional_participation_pct": 20
             },
             "factor_breakdown": {
               "F1": {
@@ -3578,16 +3571,16 @@
                 "evidence": "EZ PMI 0 "
               },
               "F6": {
-                "reason": "EUR own price move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "EUR own price delta confirms bearish pressure",
+                "signal": "BEARISH",
                 "weight": 12,
-                "evidence": "EURUSD delta 0%"
+                "evidence": "EURUSD delta -0.83%"
               },
               "F7": {
                 "reason": "Gold strength confirms anti-USD pressure supportive for EUR",
                 "signal": "BULLISH",
                 "weight": 4,
-                "evidence": "Gold delta 0.68%"
+                "evidence": "Gold delta 0.69%"
               },
               "F8": {
                 "reason": "Missing or inactive stress input",
@@ -3610,42 +3603,42 @@
             }
           },
           "next_week": {
-            "reason": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
+            "reason": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
             "direction": "BEARISH",
-            "conviction": 100,
-            "score_bearish": 1,
-            "score_bullish": 0,
-            "score_neutral": 9,
+            "conviction": 79,
+            "score_bearish": 3,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 14,
-              "weight_margin": 14,
-              "bearish_weight": 14,
-              "bullish_weight": 0,
-              "neutral_weight": 86
+              "active_weight": 56,
+              "weight_margin": 32,
+              "bearish_weight": 44,
+              "bullish_weight": 12,
+              "neutral_weight": 44
             },
             "conviction_model": {
-              "neutral_pct": 86,
-              "net_edge_pct": -100,
+              "neutral_pct": 44,
+              "net_edge_pct": -58,
               "winning_side": "BEARISH",
-              "participation": 14,
-              "weighted_edge": 1,
-              "neutral_weight": 86,
-              "raw_conviction": 100,
+              "participation": 56,
+              "weighted_edge": 0.58,
+              "neutral_weight": 44,
+              "raw_conviction": 79,
               "agreement_boost": 0,
-              "base_conviction": 100,
-              "bear_case_weight": 14,
-              "bull_case_weight": 0,
+              "base_conviction": 79,
+              "bear_case_weight": 44,
+              "bull_case_weight": 12,
               "conflict_penalty": 0,
-              "final_conviction": 100,
+              "final_conviction": 79,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 14,
-              "bearish_argument_pct": 100,
-              "bullish_argument_pct": 0,
-              "neutral_evidence_pct": 86,
+              "participation_cap": 56,
+              "bearish_argument_pct": 79,
+              "bullish_argument_pct": 21,
+              "neutral_evidence_pct": 44,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "next_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 86%, directional participation 14%, net edge -100.",
-              "active_participation_pct": 14,
-              "directional_participation_pct": 14
+              "final_conviction_logic": "next_week EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 44%, directional participation 56%, net edge -58.",
+              "active_participation_pct": 56,
+              "directional_participation_pct": 56
             },
             "factor_breakdown": {
               "F1": {
@@ -3655,16 +3648,16 @@
                 "evidence": "ECB bias unknown"
               },
               "F2": {
-                "reason": "German 2Y move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "Rising German front-end yields support EUR",
+                "signal": "BULLISH",
                 "weight": 12,
-                "evidence": "Germany 2Y delta 0 bps"
+                "evidence": "Germany 2Y delta 8 bps"
               },
               "F3": {
-                "reason": "Spread move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "US-DE spread widening pressures EUR",
+                "signal": "BEARISH",
                 "weight": 24,
-                "evidence": "US-DE 2Y spread delta 0 bps"
+                "evidence": "US-DE 2Y spread delta 17 bps"
               },
               "F4": {
                 "reason": "No confirmed EZ economic surprise",
@@ -3679,16 +3672,16 @@
                 "evidence": "EZ PMI 0 "
               },
               "F6": {
-                "reason": "EUR own price move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "EUR own price delta confirms bearish pressure",
+                "signal": "BEARISH",
                 "weight": 6,
-                "evidence": "EURUSD delta 0%"
+                "evidence": "EURUSD delta -1.96%"
               },
               "F7": {
                 "reason": "Gold move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 3,
-                "evidence": "Gold delta 0.68%"
+                "evidence": "Gold delta 0%"
               },
               "F8": {
                 "reason": "Missing or inactive stress input",
@@ -3711,42 +3704,42 @@
             }
           },
           "current_week": {
-            "reason": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
+            "reason": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
             "direction": "BEARISH",
-            "conviction": 100,
-            "score_bearish": 1,
-            "score_bullish": 0,
-            "score_neutral": 9,
+            "conviction": 75,
+            "score_bearish": 3,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 12,
-              "weight_margin": 12,
-              "bearish_weight": 12,
-              "bullish_weight": 0,
-              "neutral_weight": 88
+              "active_weight": 56,
+              "weight_margin": 28,
+              "bearish_weight": 42,
+              "bullish_weight": 14,
+              "neutral_weight": 44
             },
             "conviction_model": {
-              "neutral_pct": 88,
-              "net_edge_pct": -100,
+              "neutral_pct": 44,
+              "net_edge_pct": -50,
               "winning_side": "BEARISH",
-              "participation": 12,
-              "weighted_edge": 1,
-              "neutral_weight": 88,
-              "raw_conviction": 100,
+              "participation": 56,
+              "weighted_edge": 0.5,
+              "neutral_weight": 44,
+              "raw_conviction": 75,
               "agreement_boost": 0,
-              "base_conviction": 100,
-              "bear_case_weight": 12,
-              "bull_case_weight": 0,
+              "base_conviction": 75,
+              "bear_case_weight": 42,
+              "bull_case_weight": 14,
               "conflict_penalty": 0,
-              "final_conviction": 100,
+              "final_conviction": 75,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 12,
-              "bearish_argument_pct": 100,
-              "bullish_argument_pct": 0,
-              "neutral_evidence_pct": 88,
+              "participation_cap": 56,
+              "bearish_argument_pct": 75,
+              "bullish_argument_pct": 25,
+              "neutral_evidence_pct": 44,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
-              "active_participation_pct": 12,
-              "directional_participation_pct": 12
+              "final_conviction_logic": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
+              "active_participation_pct": 56,
+              "directional_participation_pct": 56
             },
             "factor_breakdown": {
               "F1": {
@@ -3756,16 +3749,16 @@
                 "evidence": "ECB bias unknown"
               },
               "F2": {
-                "reason": "German 2Y move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "Rising German front-end yields support EUR",
+                "signal": "BULLISH",
                 "weight": 14,
-                "evidence": "Germany 2Y delta 0 bps"
+                "evidence": "Germany 2Y delta 12 bps"
               },
               "F3": {
-                "reason": "Spread move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "US-DE spread widening pressures EUR",
+                "signal": "BEARISH",
                 "weight": 22,
-                "evidence": "US-DE 2Y spread delta 0 bps"
+                "evidence": "US-DE 2Y spread delta 7 bps"
               },
               "F4": {
                 "reason": "No confirmed EZ economic surprise",
@@ -3780,16 +3773,16 @@
                 "evidence": "EZ PMI 0 "
               },
               "F6": {
-                "reason": "EUR own price move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "EUR own price delta confirms bearish pressure",
+                "signal": "BEARISH",
                 "weight": 8,
-                "evidence": "EURUSD delta 0%"
+                "evidence": "EURUSD delta -1.25%"
               },
               "F7": {
                 "reason": "Gold move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Gold delta 0.68%"
+                "evidence": "Gold delta 0.69%"
               },
               "F8": {
                 "reason": "Missing or inactive stress input",
@@ -3812,42 +3805,42 @@
             }
           },
           "current_month": {
-            "reason": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
+            "reason": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
             "direction": "BEARISH",
-            "conviction": 100,
-            "score_bearish": 1,
-            "score_bullish": 0,
-            "score_neutral": 9,
+            "conviction": 79,
+            "score_bearish": 3,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 16,
-              "weight_margin": 16,
-              "bearish_weight": 16,
-              "bullish_weight": 0,
-              "neutral_weight": 84
+              "active_weight": 58,
+              "weight_margin": 34,
+              "bearish_weight": 46,
+              "bullish_weight": 12,
+              "neutral_weight": 42
             },
             "conviction_model": {
-              "neutral_pct": 84,
-              "net_edge_pct": -100,
+              "neutral_pct": 42,
+              "net_edge_pct": -58,
               "winning_side": "BEARISH",
-              "participation": 16,
-              "weighted_edge": 1,
-              "neutral_weight": 84,
-              "raw_conviction": 100,
+              "participation": 58,
+              "weighted_edge": 0.58,
+              "neutral_weight": 42,
+              "raw_conviction": 79,
               "agreement_boost": 0,
-              "base_conviction": 100,
-              "bear_case_weight": 16,
-              "bull_case_weight": 0,
+              "base_conviction": 79,
+              "bear_case_weight": 46,
+              "bull_case_weight": 12,
               "conflict_penalty": 0,
-              "final_conviction": 100,
+              "final_conviction": 79,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 16,
-              "bearish_argument_pct": 100,
-              "bullish_argument_pct": 0,
-              "neutral_evidence_pct": 84,
+              "participation_cap": 58,
+              "bearish_argument_pct": 79,
+              "bullish_argument_pct": 21,
+              "neutral_evidence_pct": 42,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
-              "active_participation_pct": 16,
-              "directional_participation_pct": 16
+              "final_conviction_logic": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
+              "active_participation_pct": 58,
+              "directional_participation_pct": 58
             },
             "factor_breakdown": {
               "F1": {
@@ -3857,16 +3850,16 @@
                 "evidence": "ECB bias unknown"
               },
               "F2": {
-                "reason": "German 2Y move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "Rising German front-end yields support EUR",
+                "signal": "BULLISH",
                 "weight": 12,
-                "evidence": "Germany 2Y delta 0 bps"
+                "evidence": "Germany 2Y delta 8 bps"
               },
               "F3": {
-                "reason": "Spread move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "US-DE spread widening pressures EUR",
+                "signal": "BEARISH",
                 "weight": 22,
-                "evidence": "US-DE 2Y spread delta 0 bps"
+                "evidence": "US-DE 2Y spread delta 17 bps"
               },
               "F4": {
                 "reason": "No confirmed EZ economic surprise",
@@ -3881,16 +3874,16 @@
                 "evidence": "EZ PMI 0 "
               },
               "F6": {
-                "reason": "EUR own price move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "EUR own price delta confirms bearish pressure",
+                "signal": "BEARISH",
                 "weight": 8,
-                "evidence": "EURUSD delta 0%"
+                "evidence": "EURUSD delta -1.96%"
               },
               "F7": {
                 "reason": "Gold move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 3,
-                "evidence": "Gold delta 0.68%"
+                "evidence": "Gold delta 0%"
               },
               "F8": {
                 "reason": "Missing or inactive stress input",
@@ -3913,17 +3906,17 @@
             }
           }
         },
-        "non_neutral_count": 3,
-        "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h NO_CLEAR_BIAS 0%, 3d BEARISH 100%, current week BEARISH 100%, next week BEARISH 100%, current month BEARISH 100%.",
+        "non_neutral_count": 6,
+        "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h BEARISH 80%, 3d BEARISH 68%, current week BEARISH 75%, next week BEARISH 79%, current month BEARISH 79%.",
         "direction_next_week": "BEARISH",
-        "reason_current_week": "current_week EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 88%, directional participation 12%, net edge -100.",
-        "conviction_next_week": 100,
-        "reason_current_month": "current_month EUR deterministic score: bull case 0%, bear case 100%, neutral/inactive 84%, directional participation 16%, net edge -100.",
+        "reason_current_week": "current_week EUR deterministic score: bull case 25%, bear case 75%, neutral/inactive 44%, directional participation 56%, net edge -50.",
+        "conviction_next_week": 79,
+        "reason_current_month": "current_month EUR deterministic score: bull case 21%, bear case 79%, neutral/inactive 42%, directional participation 58%, net edge -58.",
         "direction_current_week": "BEARISH",
         "logic_document_version": "2.0_weighted_engine",
-        "conviction_current_week": 100,
+        "conviction_current_week": 75,
         "direction_current_month": "BEARISH",
-        "conviction_current_month": 100
+        "conviction_current_month": 79
       }
     },
     {
