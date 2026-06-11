@@ -17,6 +17,7 @@ let activeTab = "overview";
 function updateClock() {
   const el = document.getElementById("currentTime");
   if (!el) return;
+
   const now = new Date();
   el.textContent = new Intl.DateTimeFormat("en-GB", {
     timeZone: "America/New_York",
@@ -26,6 +27,38 @@ function updateClock() {
     second: "2-digit",
     timeZoneName: "short"
   }).format(now);
+}
+
+function formatDashboardTime(value) {
+  if (!value || value === "pending") return "Pending";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return escapeHtml(value);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    dateStyle: "medium",
+    timeStyle: "medium"
+  }).format(date);
+}
+
+function formatRelativeAge(value) {
+  if (!value || value === "pending") return "Pending";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
 }
 
 function normaliseDirection(direction = "") {
@@ -66,12 +99,17 @@ function escapeHtml(value = "") {
 function asObject(value, fallback = {}) {
   if (!value) return fallback;
   if (typeof value === "object") return value;
-  try { return JSON.parse(value); } catch (e) { return fallback; }
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return fallback;
+  }
 }
 
 function asArray(value) {
   if (!value) return [];
   if (Array.isArray(value)) return value;
+
   if (typeof value === "string") {
     try {
       const parsed = JSON.parse(value);
@@ -80,20 +118,39 @@ function asArray(value) {
       return [value];
     }
   }
+
   return [];
 }
 
 function getCall(agent, timeframe = "24h") {
-  return agent?.calls?.[timeframe] || { direction: "PENDING", conviction: null, reason: "Awaiting data" };
+  return agent?.calls?.[timeframe] || {
+    direction: "PENDING",
+    conviction: null,
+    reason: "Awaiting data"
+  };
 }
 
 function getAgent(name) {
   return (layer1Data?.agents || []).find(agent => agent.agent === name);
 }
 
+function getDashboardUpdatedAt() {
+  return layer1Data?.dashboard_meta?.last_updated_et || null;
+}
+
+function getAgentUpdatedAt(agent) {
+  return agent?.last_run_et || agent?.created_at || null;
+}
+
 function bestLiveAgent() {
-  const live = (layer1Data?.agents || []).filter(agent => getCall(agent, "24h").conviction !== null && getCall(agent, "24h").direction !== "PENDING");
-  return live.sort((a, b) => Number(getCall(b, "24h").conviction || 0) - Number(getCall(a, "24h").conviction || 0))[0] || null;
+  const live = (layer1Data?.agents || []).filter(agent => {
+    const call24 = getCall(agent, "24h");
+    return call24.conviction !== null && call24.direction !== "PENDING";
+  });
+
+  return live.sort((a, b) => {
+    return Number(getCall(b, "24h").conviction || 0) - Number(getCall(a, "24h").conviction || 0);
+  })[0] || null;
 }
 
 function renderOverviewStats() {
@@ -102,7 +159,10 @@ function renderOverviewStats() {
 
   const strongest = bestLiveAgent();
   const liveCount = (layer1Data?.agents || []).filter(agent => agent.status === "live").length;
-  const updated = layer1Data?.dashboard_meta?.last_updated_et || "pending";
+
+  const dashboardUpdated = getDashboardUpdatedAt();
+  const formattedDashboardUpdated = formatDashboardTime(dashboardUpdated);
+  const dashboardAge = formatRelativeAge(dashboardUpdated);
 
   container.innerHTML = `
     <article class="metric-card hero-metric">
@@ -113,23 +173,30 @@ function renderOverviewStats() {
       </strong>
       <span>${strongest ? formatConviction(getCall(strongest, "24h").conviction) : "--"} conviction</span>
     </article>
+
     <article class="metric-card">
       <p class="eyebrow">Live Agents</p>
       <h3>${liveCount} / ${orderedAgents.length}</h3>
       <span>Layer 1 raw producers</span>
     </article>
+
     <article class="metric-card">
-      <p class="eyebrow">Last Data Push</p>
-      <h3>${updated === "pending" ? "Pending" : "Live"}</h3>
-      <span>${escapeHtml(updated)}</span>
+      <p class="eyebrow">Last n8n Ingest</p>
+      <h3>${dashboardUpdated ? "Live" : "Pending"}</h3>
+      <span>${escapeHtml(formattedDashboardUpdated)}${dashboardAge ? ` · ${escapeHtml(dashboardAge)}` : ""}</span>
     </article>
   `;
 }
 
 function renderAgentCard(agent) {
   const call24 = getCall(agent, "24h");
+  const assetUpdated = getAgentUpdatedAt(agent);
+  const formattedAssetUpdated = formatDashboardTime(assetUpdated);
+  const assetAge = formatRelativeAge(assetUpdated);
+
   const calls = Object.entries(agent.calls || {}).map(([tf, call]) => {
     const direction = call.direction || "PENDING";
+
     return `
       <div class="call-row compact-call">
         <div class="call-row-head">
@@ -149,11 +216,19 @@ function renderAgentCard(agent) {
         </div>
         <span class="badge">${escapeHtml(agent.status || "pending")}</span>
       </div>
+
       <div class="main-signal">
         <span class="direction ${directionClass(call24.direction)}">${normaliseDirection(call24.direction)}</span>
         <strong>${formatConviction(call24.conviction)}</strong>
       </div>
+
       <p class="summary">${escapeHtml(agent.summary || "")}</p>
+
+      <p class="asset-update">
+        <strong>Last asset update:</strong>
+        ${escapeHtml(formattedAssetUpdated)}${assetAge ? ` · ${escapeHtml(assetAge)}` : ""}
+      </p>
+
       <div class="call-list">${calls}</div>
       <button class="inspect-button" data-agent="${escapeHtml(agent.agent)}">Inspect ${escapeHtml(agent.agent)} Engine</button>
     </article>
@@ -161,11 +236,16 @@ function renderAgentCard(agent) {
 }
 
 function renderLayer1(data) {
-  document.getElementById("layer1Updated").textContent =
-    `Last updated: ${data.dashboard_meta?.last_updated_et || "pending"}`;
+  const layer1Updated = document.getElementById("layer1Updated");
+  if (layer1Updated) {
+    layer1Updated.textContent = `Last n8n ingest: ${formatDashboardTime(data.dashboard_meta?.last_updated_et)}`;
+  }
 
   renderOverviewStats();
+
   const grid = document.getElementById("layer1Grid");
+  if (!grid) return;
+
   grid.innerHTML = (data.agents || []).map(renderAgentCard).join("");
 
   grid.querySelectorAll("[data-agent]").forEach(el => {
@@ -244,8 +324,10 @@ function valueOrPending(value) {
 
 function formatModelPercent(value) {
   if (value === null || value === undefined || value === "") return "pending";
+
   const n = Number(value);
   if (!Number.isFinite(n)) return escapeHtml(value);
+
   return `${n <= 1 ? Math.round(n * 100) : Math.round(n)}%`;
 }
 
@@ -291,6 +373,8 @@ function renderAgentDetail(agentName) {
   const view = document.getElementById("agentView");
   const agent = getAgent(agentName);
 
+  if (!view) return;
+
   if (!agent) {
     view.innerHTML = `
       <section class="detail-shell">
@@ -301,7 +385,12 @@ function renderAgentDetail(agentName) {
   }
 
   const call24 = getCall(agent, "24h");
-  const warnings = asArray(agent.warnings).map(w => `<div class="warning-card">⚠ ${escapeHtml(w)}</div>`).join("") || `<div class="empty-state">No warnings reported.</div>`;
+  const dashboardUpdated = getDashboardUpdatedAt();
+  const assetUpdated = getAgentUpdatedAt(agent);
+
+  const warnings = asArray(agent.warnings)
+    .map(w => `<div class="warning-card">⚠ ${escapeHtml(w)}</div>`)
+    .join("") || `<div class="empty-state">No warnings reported.</div>`;
 
   view.innerHTML = `
     <section class="agent-detail-hero">
@@ -309,12 +398,18 @@ function renderAgentDetail(agentName) {
         <p class="eyebrow">Layer 1 Independent Agent</p>
         <h2>${escapeHtml(agent.agent)} Direction Engine</h2>
         <p class="subcopy">${escapeHtml(agent.summary || "Raw directional agent output.")}</p>
+
+        <div class="update-strip">
+          <span><strong>Last asset update:</strong> ${escapeHtml(formatDashboardTime(assetUpdated))}${formatRelativeAge(assetUpdated) ? ` · ${escapeHtml(formatRelativeAge(assetUpdated))}` : ""}</span>
+          <span><strong>Last n8n ingest:</strong> ${escapeHtml(formatDashboardTime(dashboardUpdated))}${formatRelativeAge(dashboardUpdated) ? ` · ${escapeHtml(formatRelativeAge(dashboardUpdated))}` : ""}</span>
+        </div>
       </div>
+
       <div class="signal-tower">
         <span>24H Primary Call</span>
         <strong class="direction ${directionClass(call24.direction)}">${normaliseDirection(call24.direction)}</strong>
         <b>${formatConviction(call24.conviction)}</b>
-        <small>Last run: ${escapeHtml(agent.last_run_et || "pending")}</small>
+        <small>Last asset update: ${escapeHtml(formatDashboardTime(assetUpdated))}</small>
       </div>
     </section>
 
@@ -375,15 +470,20 @@ function renderAgentDetail(agentName) {
 }
 
 function renderLayer2(data) {
-  document.getElementById("layer2Updated").textContent =
-    `Last updated: ${data.dashboard_meta?.last_updated_et || "pending"}`;
+  const layer2Updated = document.getElementById("layer2Updated");
+  if (layer2Updated) {
+    layer2Updated.textContent = `Last updated: ${formatDashboardTime(data.dashboard_meta?.last_updated_et)}`;
+  }
 
   const panel = document.getElementById("layer2Panel");
+  if (!panel) return;
+
   const agent = data.eco_events_agent || {};
   const adjusted = agent.adjusted_calls || {};
 
   const cards = Object.entries(adjusted).map(([asset, call]) => {
     const direction = call.direction || "PENDING";
+
     return `
       <div class="adjusted-card">
         <p class="eyebrow">${escapeHtml(asset)}</p>
@@ -408,10 +508,18 @@ function renderLayer2(data) {
 
 function setTab(tab) {
   activeTab = tab;
-  document.querySelectorAll(".tab-button").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
-  document.getElementById("overviewView").classList.toggle("active-view", tab === "overview");
-  document.getElementById("layer2View").classList.toggle("active-view", tab === "layer2");
-  document.getElementById("agentView").classList.toggle("active-view", orderedAgents.includes(tab));
+
+  document.querySelectorAll(".tab-button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
+
+  const overviewView = document.getElementById("overviewView");
+  const layer2View = document.getElementById("layer2View");
+  const agentView = document.getElementById("agentView");
+
+  if (overviewView) overviewView.classList.toggle("active-view", tab === "overview");
+  if (layer2View) layer2View.classList.toggle("active-view", tab === "layer2");
+  if (agentView) agentView.classList.toggle("active-view", orderedAgents.includes(tab));
 
   if (orderedAgents.includes(tab)) renderAgentDetail(tab);
 }
@@ -434,15 +542,23 @@ async function loadDashboard() {
 
     renderLayer1(layer1Data);
     renderLayer2(layer2Data);
-    if (orderedAgents.includes(activeTab)) renderAgentDetail(activeTab);
+
+    if (orderedAgents.includes(activeTab)) {
+      renderAgentDetail(activeTab);
+    }
   } catch (err) {
     console.error(err);
-    document.getElementById("layer1Grid").innerHTML = `<p class="warning">Could not load dashboard JSON.</p>`;
+
+    const grid = document.getElementById("layer1Grid");
+    if (grid) {
+      grid.innerHTML = `<p class="warning">Could not load dashboard JSON.</p>`;
+    }
   }
 }
 
 setupTabs();
 updateClock();
 setInterval(updateClock, 1000);
+
 loadDashboard();
 setInterval(loadDashboard, 60000);
