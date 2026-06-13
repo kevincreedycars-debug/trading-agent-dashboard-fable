@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-13T21:02:49.734Z",
+    "last_updated_et": "2026-06-13T21:11:31.839Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Saturday"
@@ -1791,7 +1791,7 @@
       "agent": "EUR",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-13T21:01:38.023+00:00",
+      "last_run_et": "2026-06-13T21:11:11.035+00:00",
       "summary": "EUR Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -1893,10 +1893,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -1999,10 +1999,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2105,10 +2105,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2211,10 +2211,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2282,10 +2282,10 @@
           "evidence": "EZ stress neutral"
         },
         "F9": {
-          "reason": "Missing input",
+          "reason": "Global growth signal mixed",
           "signal": "NEUTRAL",
           "weight": 2,
-          "evidence": "Global growth unavailable"
+          "evidence": "Growth regime neutral"
         },
         "F10": {
           "reason": "Neutral risk regime",
@@ -2303,7 +2303,7 @@
         "F6 [12]: BEARISH — EURUSD delta -0.83% (EUR own price delta confirms bearish pressure)",
         "F7 [4]: BEARISH — Gold delta -1.2% (Gold weakness confirms USD strength pressure against EUR)",
         "F8 [4]: NEUTRAL — EZ stress neutral (No active Eurozone stress signal)",
-        "F9 [2]: NEUTRAL — Global growth unavailable (Missing input)",
+        "F9 [2]: NEUTRAL — Growth regime neutral (Global growth signal mixed)",
         "F10 [2]: NEUTRAL — VIX 19.44 (Neutral risk regime)"
       ],
       "warnings": [],
@@ -2311,7 +2311,7 @@
       "score_bullish": 1,
       "score_bearish": 2,
       "score_neutral": 7,
-      "non_neutral_count": 4,
+      "non_neutral_count": 5,
       "logic_document": "agent_eur_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
@@ -2419,10 +2419,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2520,10 +2520,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2621,10 +2621,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2722,10 +2722,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2823,10 +2823,10 @@
               "evidence": "EZ stress neutral"
             },
             "F9": {
-              "reason": "Missing input",
+              "reason": "Global growth signal mixed",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "Global growth unavailable"
+              "evidence": "Growth regime neutral"
             },
             "F10": {
               "reason": "Neutral risk regime",
@@ -2852,7 +2852,7 @@
       "full_output": {
         "asset": "EUR",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-13T21:01:39.397573+00:00",
+        "created_at": "2026-06-13T21:11:15.45164+00:00",
         "reason_24h": "24h EUR deterministic score: bull case 20%, bear case 80%, neutral/inactive 80%, directional participation 20%, net edge -60.",
         "risk_flags": [],
         "reason_3_day": "3d EUR deterministic score: bull case 36%, bear case 64%, neutral/inactive 78%, directional participation 22%, net edge -28.",
@@ -2864,9 +2864,7 @@
         "logic_document": "agent_eur_direction.md",
         "missing_inputs": [
           "latest_ez_event",
-          "gold_d5_pct",
-          "global_growth_regime",
-          "china_growth_signal"
+          "gold_d5_pct"
         ],
         "weighted_score": {
           "active_weight": 20,
@@ -2951,10 +2949,10 @@
             "evidence": "EZ stress neutral"
           },
           "F9": {
-            "reason": "Missing input",
+            "reason": "Global growth signal mixed",
             "signal": "NEUTRAL",
             "weight": 2,
-            "evidence": "Global growth unavailable"
+            "evidence": "Growth regime neutral"
           },
           "F10": {
             "reason": "Neutral risk regime",
@@ -3053,10 +3051,10 @@
                 "evidence": "EZ stress neutral"
               },
               "F9": {
-                "reason": "Missing input",
+                "reason": "Global growth signal mixed",
                 "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Global growth unavailable"
+                "evidence": "Growth regime neutral"
               },
               "F10": {
                 "reason": "Neutral risk regime",
@@ -3154,10 +3152,10 @@
                 "evidence": "EZ stress neutral"
               },
               "F9": {
-                "reason": "Missing input",
+                "reason": "Global growth signal mixed",
                 "signal": "NEUTRAL",
                 "weight": 2,
-                "evidence": "Global growth unavailable"
+                "evidence": "Growth regime neutral"
               },
               "F10": {
                 "reason": "Neutral risk regime",
@@ -3255,10 +3253,10 @@
                 "evidence": "EZ stress neutral"
               },
               "F9": {
-                "reason": "Missing input",
+                "reason": "Global growth signal mixed",
                 "signal": "NEUTRAL",
                 "weight": 6,
-                "evidence": "Global growth unavailable"
+                "evidence": "Growth regime neutral"
               },
               "F10": {
                 "reason": "Neutral risk regime",
@@ -3356,10 +3354,10 @@
                 "evidence": "EZ stress neutral"
               },
               "F9": {
-                "reason": "Missing input",
+                "reason": "Global growth signal mixed",
                 "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Global growth unavailable"
+                "evidence": "Growth regime neutral"
               },
               "F10": {
                 "reason": "Neutral risk regime",
@@ -3457,10 +3455,10 @@
                 "evidence": "EZ stress neutral"
               },
               "F9": {
-                "reason": "Missing input",
+                "reason": "Global growth signal mixed",
                 "signal": "NEUTRAL",
                 "weight": 6,
-                "evidence": "Global growth unavailable"
+                "evidence": "Growth regime neutral"
               },
               "F10": {
                 "reason": "Neutral risk regime",
@@ -3471,22 +3469,47 @@
             }
           }
         },
-        "non_neutral_count": 4,
+        "non_neutral_count": 5,
         "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h BEARISH 80%, 3d BEARISH 64%, current week NO_CLEAR_BIAS 0%, next week BEARISH 76%, current month BEARISH 74%.",
         "snapshot_selection": {
           "warnings": [
             "gold_d5_pct missing; using gold_d1_pct fallback"
           ],
           "selected_by": "latest_v11_eur_usable_snapshot",
-          "selected_from_rows": 49,
-          "selected_created_at": "2026-06-13T21:01:39.397573+00:00",
-          "selected_run_time_et": "2026-06-13T21:01:38.023+00:00",
-          "selected_snapshot_id": "a7da2d62-3826-4e67-a137-f5004e9b5507",
+          "selected_from_rows": 50,
+          "selected_created_at": "2026-06-13T21:11:15.45164+00:00",
+          "selected_run_time_et": "2026-06-13T21:11:11.035+00:00",
+          "selected_snapshot_id": "a73d42f4-8bc5-4297-b17f-03ce885aa33f",
           "selected_snapshot_date": "2026-06-13",
           "top_5_rows_seen_by_workflow": [
             {
-              "id": "a7da2d62-3826-4e67-a137-f5004e9b5507",
+              "id": "a73d42f4-8bc5-4297-b17f-03ce885aa33f",
               "rank": 1,
+              "ecb_bias": "neutral",
+              "fed_bias": null,
+              "created_at": "2026-06-13T21:11:15.45164+00:00",
+              "eur_usable": true,
+              "de_2y_yield": 2.6,
+              "run_time_et": "2026-06-13T21:11:11.035+00:00",
+              "de_2y_d5_bps": -4.999999999999982,
+              "eurusd_price": 1.1533,
+              "de_2y_d20_bps": -10.999999999999988,
+              "eurusd_d1_pct": -0.8255224008943204,
+              "eurusd_d5_pct": -1.2501070297114434,
+              "snapshot_date": "2026-06-13",
+              "source_status": "partial",
+              "eurusd_d20_pct": -1.9636178170690157,
+              "latest_ez_event": null,
+              "us_de_2y_spread": 1.4499999999999997,
+              "ez_composite_pmi": 44.3,
+              "collector_version": "v11_eur_forex_factory_events",
+              "us_de_2y_spread_d5_bps": 4.999999999999982,
+              "us_de_2y_spread_d20_bps": 17.99999999999997,
+              "ez_composite_pmi_direction": "improving"
+            },
+            {
+              "id": "a7da2d62-3826-4e67-a137-f5004e9b5507",
+              "rank": 2,
               "ecb_bias": "neutral",
               "fed_bias": null,
               "created_at": "2026-06-13T21:01:39.397573+00:00",
@@ -3511,7 +3534,7 @@
             },
             {
               "id": "bb27ad34-7683-4487-b312-9887590ffdba",
-              "rank": 2,
+              "rank": 3,
               "ecb_bias": "neutral",
               "fed_bias": null,
               "created_at": "2026-06-13T19:22:26.043967+00:00",
@@ -3536,7 +3559,7 @@
             },
             {
               "id": "697e5780-4098-46b6-b273-c115159ddc92",
-              "rank": 3,
+              "rank": 4,
               "ecb_bias": "neutral",
               "fed_bias": null,
               "created_at": "2026-06-11T06:49:57.444915+00:00",
@@ -3561,7 +3584,7 @@
             },
             {
               "id": "7733a814-2085-4145-9724-c06ea836a106",
-              "rank": 4,
+              "rank": 5,
               "ecb_bias": "neutral",
               "fed_bias": null,
               "created_at": "2026-06-11T06:43:41.380478+00:00",
@@ -3582,31 +3605,6 @@
               "collector_version": "v11_eur_forex_factory_events",
               "us_de_2y_spread_d5_bps": 5.000000000000027,
               "us_de_2y_spread_d20_bps": 17.99999999999997,
-              "ez_composite_pmi_direction": null
-            },
-            {
-              "id": "4afba66a-2543-4243-a4f9-da75e2a32138",
-              "rank": 5,
-              "ecb_bias": null,
-              "fed_bias": "neutral",
-              "created_at": "2026-06-11T05:17:09.076373+00:00",
-              "eur_usable": false,
-              "de_2y_yield": null,
-              "run_time_et": "2026-06-11T05:17:08.923+00:00",
-              "de_2y_d5_bps": null,
-              "eurusd_price": null,
-              "de_2y_d20_bps": null,
-              "eurusd_d1_pct": null,
-              "eurusd_d5_pct": null,
-              "snapshot_date": "2026-06-11",
-              "source_status": "partial",
-              "eurusd_d20_pct": null,
-              "latest_ez_event": null,
-              "us_de_2y_spread": null,
-              "ez_composite_pmi": null,
-              "collector_version": "btc_v1_weighted_inputs_etf_dominance_fear_greed",
-              "us_de_2y_spread_d5_bps": null,
-              "us_de_2y_spread_d20_bps": null,
               "ez_composite_pmi_direction": null
             }
           ],
@@ -3661,8 +3659,8 @@
           "us_de_2y_spread": 1.4499999999999997,
           "ez_composite_pmi": 44.3,
           "us_de_10y_spread": 1.4536842105,
-          "china_growth_signal": null,
-          "global_growth_regime": null,
+          "china_growth_signal": "neutral",
+          "global_growth_regime": "neutral",
           "us_de_2y_spread_d5_bps": 4.999999999999982,
           "us_de_10y_spread_d5_bps": -35.88157894999995,
           "us_de_2y_spread_d20_bps": 17.99999999999997,
@@ -3709,8 +3707,8 @@
           "us_de_2y_spread": 1.4499999999999997,
           "ez_composite_pmi": 44.3,
           "us_de_10y_spread": 1.4536842105,
-          "china_growth_signal": null,
-          "global_growth_regime": null,
+          "china_growth_signal": "neutral",
+          "global_growth_regime": "neutral",
           "us_de_2y_spread_d5_bps": 4.999999999999982,
           "us_de_10y_spread_d5_bps": -35.88157894999995,
           "us_de_2y_spread_d20_bps": 17.99999999999997,
