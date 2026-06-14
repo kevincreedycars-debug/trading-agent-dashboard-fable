@@ -2,10 +2,10 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-13T21:11:31.839Z",
+    "last_updated_et": "2026-06-14T20:56:39.756Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
-    "london_weekday": "Saturday"
+    "london_weekday": "Sunday"
   },
   "agents": [
     {
@@ -7122,51 +7122,51 @@
       "agent": "BTC",
       "status": "live",
       "market_status": "open",
-      "last_run_et": "2026-06-11T05:17:08.923+00:00",
+      "last_run_et": "2026-06-14T20:16:12.421+00:00",
       "summary": "BTC Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
-          "direction": "BEARISH",
-          "conviction": 78,
-          "reason": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
+          "direction": "BULLISH_LEAN",
+          "conviction": 51,
+          "reason": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
           "conviction_model": {
-            "net_edge_pct": -56,
-            "winning_side": "BEARISH",
-            "participation": 51,
-            "weighted_edge": 0.56,
-            "raw_conviction": 78,
+            "net_edge_pct": 2,
+            "winning_side": "BULLISH",
+            "participation": 81,
+            "weighted_edge": 0.02,
+            "raw_conviction": 51,
             "agreement_boost": 0,
-            "base_conviction": 78,
+            "base_conviction": 51,
             "bear_case_weight": 40,
-            "bull_case_weight": 11,
+            "bull_case_weight": 41,
             "conflict_penalty": 0,
-            "final_conviction": 78,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 51,
-            "bearish_argument_pct": 78,
-            "bullish_argument_pct": 22,
-            "neutral_evidence_pct": 49,
+            "final_conviction": 51,
+            "verdict_strength": "WEAK",
+            "participation_cap": 81,
+            "bearish_argument_pct": 49,
+            "bullish_argument_pct": 51,
+            "neutral_evidence_pct": 19,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-            "directional_participation_pct": 51,
-            "neutral_pct": 49,
-            "active_participation_pct": 51,
-            "neutral_weight": 49,
+            "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+            "directional_participation_pct": 81,
+            "neutral_pct": 19,
+            "active_participation_pct": 81,
+            "neutral_weight": 19,
             "weighted_score": {
-              "bullish_weight": 11,
+              "bullish_weight": 41,
               "bearish_weight": 40,
-              "neutral_weight": 49,
-              "active_weight": 51,
-              "weight_margin": 29
+              "neutral_weight": 19,
+              "active_weight": 81,
+              "weight_margin": 1
             },
-            "alignment": 22
+            "alignment": 51
           },
           "weighted_score": {
-            "active_weight": 51,
-            "weight_margin": 29,
+            "active_weight": 81,
+            "weight_margin": 1,
             "bearish_weight": 40,
-            "bullish_weight": 11,
-            "neutral_weight": 49
+            "bullish_weight": 41,
+            "neutral_weight": 19
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7176,22 +7176,22 @@
               "evidence": "DXY 1d % 0.6045500433556843"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
-              "signal": "NEUTRAL",
+              "reason": "BTC own trend is above noise threshold and supports upside pressure",
+              "signal": "BULLISH",
               "weight": 16,
-              "evidence": "BTC 1d % 1.5091004976584494"
+              "evidence": "BTC 1d % 3.4147063199015193"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 10,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7206,10 +7206,10 @@
               "evidence": "ETF flow 655300000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7218,61 +7218,61 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "NQ strength confirms high-beta risk appetite for BTC",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "NQ 1d % 0"
+              "evidence": "NQ 1d % 0.5885"
             },
             "F10 BTC Dominance / Crypto Structure": {
               "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
               "signal": "BULLISH",
               "weight": 3,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
             }
           }
         },
         "3d": {
           "direction": "BEARISH",
-          "conviction": 81,
-          "reason": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
+          "conviction": 84,
+          "reason": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
           "conviction_model": {
-            "net_edge_pct": -62,
+            "net_edge_pct": -68,
             "winning_side": "BEARISH",
-            "participation": 53,
-            "weighted_edge": 0.62,
-            "raw_conviction": 81,
+            "participation": 51,
+            "weighted_edge": 0.68,
+            "raw_conviction": 84,
             "agreement_boost": 0,
-            "base_conviction": 81,
+            "base_conviction": 84,
             "bear_case_weight": 43,
-            "bull_case_weight": 10,
+            "bull_case_weight": 8,
             "conflict_penalty": 0,
-            "final_conviction": 81,
+            "final_conviction": 84,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 53,
-            "bearish_argument_pct": 81,
-            "bullish_argument_pct": 19,
-            "neutral_evidence_pct": 47,
+            "participation_cap": 51,
+            "bearish_argument_pct": 84,
+            "bullish_argument_pct": 16,
+            "neutral_evidence_pct": 49,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-            "directional_participation_pct": 53,
-            "neutral_pct": 47,
-            "active_participation_pct": 53,
-            "neutral_weight": 47,
+            "final_conviction_logic": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+            "directional_participation_pct": 51,
+            "neutral_pct": 49,
+            "active_participation_pct": 51,
+            "neutral_weight": 49,
             "weighted_score": {
-              "bullish_weight": 10,
+              "bullish_weight": 8,
               "bearish_weight": 43,
-              "neutral_weight": 47,
-              "active_weight": 53,
-              "weight_margin": 33
+              "neutral_weight": 49,
+              "active_weight": 51,
+              "weight_margin": 35
             },
-            "alignment": 19
+            "alignment": 16
           },
           "weighted_score": {
-            "active_weight": 53,
-            "weight_margin": 33,
+            "active_weight": 51,
+            "weight_margin": 35,
             "bearish_weight": 43,
-            "bullish_weight": 10,
-            "neutral_weight": 47
+            "bullish_weight": 8,
+            "neutral_weight": 49
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7282,22 +7282,22 @@
               "evidence": "DXY 5d % 1.013473443008527"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "BTC 5d % 1.5091004976584494"
+              "evidence": "Missing BTC 5d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 14,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 14,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7312,10 +7312,10 @@
               "evidence": "ETF flow 1259400000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7324,61 +7324,61 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "NQ 5d % 0"
+              "evidence": "Missing NQ 5d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "current_week": {
           "direction": "BEARISH",
-          "conviction": 79,
-          "reason": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
+          "conviction": 83,
+          "reason": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
           "conviction_model": {
-            "net_edge_pct": -58,
+            "net_edge_pct": -66,
             "winning_side": "BEARISH",
-            "participation": 56,
-            "weighted_edge": 0.58,
-            "raw_conviction": 79,
+            "participation": 53,
+            "weighted_edge": 0.66,
+            "raw_conviction": 83,
             "agreement_boost": 0,
-            "base_conviction": 79,
+            "base_conviction": 83,
             "bear_case_weight": 44,
-            "bull_case_weight": 12,
+            "bull_case_weight": 9,
             "conflict_penalty": 0,
-            "final_conviction": 79,
+            "final_conviction": 83,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 56,
-            "bearish_argument_pct": 79,
-            "bullish_argument_pct": 21,
-            "neutral_evidence_pct": 44,
+            "participation_cap": 53,
+            "bearish_argument_pct": 83,
+            "bullish_argument_pct": 17,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-            "directional_participation_pct": 56,
-            "neutral_pct": 44,
-            "active_participation_pct": 56,
-            "neutral_weight": 44,
+            "final_conviction_logic": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+            "directional_participation_pct": 53,
+            "neutral_pct": 47,
+            "active_participation_pct": 53,
+            "neutral_weight": 47,
             "weighted_score": {
-              "bullish_weight": 12,
+              "bullish_weight": 9,
               "bearish_weight": 44,
-              "neutral_weight": 44,
-              "active_weight": 56,
-              "weight_margin": 32
+              "neutral_weight": 47,
+              "active_weight": 53,
+              "weight_margin": 35
             },
-            "alignment": 21
+            "alignment": 17
           },
           "weighted_score": {
-            "active_weight": 56,
-            "weight_margin": 32,
+            "active_weight": 53,
+            "weight_margin": 35,
             "bearish_weight": 44,
-            "bullish_weight": 12,
-            "neutral_weight": 44
+            "bullish_weight": 9,
+            "neutral_weight": 47
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7388,22 +7388,22 @@
               "evidence": "DXY 5d % 1.013473443008527"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 10,
-              "evidence": "BTC 5d % 1.5091004976584494"
+              "evidence": "Missing BTC 5d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 13,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7418,10 +7418,10 @@
               "evidence": "ETF flow 1259400000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7430,61 +7430,61 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 10,
-              "evidence": "NQ 5d % 0"
+              "evidence": "Missing NQ 5d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "next_week": {
           "direction": "BEARISH",
-          "conviction": 74,
-          "reason": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
+          "conviction": 79,
+          "reason": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
           "conviction_model": {
-            "net_edge_pct": -48,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 57,
-            "weighted_edge": 0.48,
-            "raw_conviction": 74,
+            "participation": 53,
+            "weighted_edge": 0.58,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 74,
+            "base_conviction": 79,
             "bear_case_weight": 42,
-            "bull_case_weight": 15,
+            "bull_case_weight": 11,
             "conflict_penalty": 0,
-            "final_conviction": 74,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 57,
-            "bearish_argument_pct": 74,
-            "bullish_argument_pct": 26,
-            "neutral_evidence_pct": 43,
+            "participation_cap": 53,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
-            "directional_participation_pct": 57,
-            "neutral_pct": 43,
-            "active_participation_pct": 57,
-            "neutral_weight": 43,
+            "final_conviction_logic": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
+            "directional_participation_pct": 53,
+            "neutral_pct": 47,
+            "active_participation_pct": 53,
+            "neutral_weight": 47,
             "weighted_score": {
-              "bullish_weight": 15,
+              "bullish_weight": 11,
               "bearish_weight": 42,
-              "neutral_weight": 43,
-              "active_weight": 57,
-              "weight_margin": 27
+              "neutral_weight": 47,
+              "active_weight": 53,
+              "weight_margin": 31
             },
-            "alignment": 26
+            "alignment": 21
           },
           "weighted_score": {
-            "active_weight": 57,
-            "weight_margin": 27,
+            "active_weight": 53,
+            "weight_margin": 31,
             "bearish_weight": 42,
-            "bullish_weight": 15,
-            "neutral_weight": 43
+            "bullish_weight": 11,
+            "neutral_weight": 47
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7494,22 +7494,22 @@
               "evidence": "DXY 20d % 1.755335916130279"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "BTC 20d % 1.5091004976584494"
+              "evidence": "Missing BTC 20d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "Real yield 20d bps 25.00000000000002"
+              "evidence": "Real yield 20d bps 17.000000000000014"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 10,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7524,10 +7524,10 @@
               "evidence": "ETF flow 1825800000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 9,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7536,61 +7536,61 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "NQ 20d % 0"
+              "evidence": "Missing NQ 20d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "current_month": {
           "direction": "BEARISH",
-          "conviction": 72,
-          "reason": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
+          "conviction": 77,
+          "reason": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
           "conviction_model": {
-            "net_edge_pct": -44,
+            "net_edge_pct": -54,
             "winning_side": "BEARISH",
-            "participation": 57,
-            "weighted_edge": 0.44,
-            "raw_conviction": 72,
+            "participation": 53,
+            "weighted_edge": 0.54,
+            "raw_conviction": 77,
             "agreement_boost": 0,
-            "base_conviction": 72,
+            "base_conviction": 77,
             "bear_case_weight": 41,
-            "bull_case_weight": 16,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 72,
+            "final_conviction": 77,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 57,
-            "bearish_argument_pct": 72,
-            "bullish_argument_pct": 28,
-            "neutral_evidence_pct": 43,
+            "participation_cap": 53,
+            "bearish_argument_pct": 77,
+            "bullish_argument_pct": 23,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
-            "directional_participation_pct": 57,
-            "neutral_pct": 43,
-            "active_participation_pct": 57,
-            "neutral_weight": 43,
+            "final_conviction_logic": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
+            "directional_participation_pct": 53,
+            "neutral_pct": 47,
+            "active_participation_pct": 53,
+            "neutral_weight": 47,
             "weighted_score": {
-              "bullish_weight": 16,
+              "bullish_weight": 12,
               "bearish_weight": 41,
-              "neutral_weight": 43,
-              "active_weight": 57,
-              "weight_margin": 25
+              "neutral_weight": 47,
+              "active_weight": 53,
+              "weight_margin": 29
             },
-            "alignment": 28
+            "alignment": 23
           },
           "weighted_score": {
-            "active_weight": 57,
-            "weight_margin": 25,
+            "active_weight": 53,
+            "weight_margin": 29,
             "bearish_weight": 41,
-            "bullish_weight": 16,
-            "neutral_weight": 43
+            "bullish_weight": 12,
+            "neutral_weight": 47
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7600,22 +7600,22 @@
               "evidence": "DXY 20d % 1.755335916130279"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "BTC 20d % 1.5091004976584494"
+              "evidence": "Missing BTC 20d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "Real yield 20d bps 25.00000000000002"
+              "evidence": "Real yield 20d bps 17.000000000000014"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 9,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7630,10 +7630,10 @@
               "evidence": "ETF flow 1825800000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 9,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7642,63 +7642,63 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "NQ 20d % 0"
+              "evidence": "Missing NQ 20d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         }
       },
       "priority_timeframe": "24h",
       "priority_call": {
-        "direction": "BEARISH",
-        "conviction": 78,
-        "reason": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
+        "direction": "BULLISH_LEAN",
+        "conviction": 51,
+        "reason": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
         "conviction_model": {
-          "net_edge_pct": -56,
-          "winning_side": "BEARISH",
-          "participation": 51,
-          "weighted_edge": 0.56,
-          "raw_conviction": 78,
+          "net_edge_pct": 2,
+          "winning_side": "BULLISH",
+          "participation": 81,
+          "weighted_edge": 0.02,
+          "raw_conviction": 51,
           "agreement_boost": 0,
-          "base_conviction": 78,
+          "base_conviction": 51,
           "bear_case_weight": 40,
-          "bull_case_weight": 11,
+          "bull_case_weight": 41,
           "conflict_penalty": 0,
-          "final_conviction": 78,
-          "verdict_strength": "VERY_STRONG",
-          "participation_cap": 51,
-          "bearish_argument_pct": 78,
-          "bullish_argument_pct": 22,
-          "neutral_evidence_pct": 49,
+          "final_conviction": 51,
+          "verdict_strength": "WEAK",
+          "participation_cap": 81,
+          "bearish_argument_pct": 49,
+          "bullish_argument_pct": 51,
+          "neutral_evidence_pct": 19,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-          "directional_participation_pct": 51,
-          "neutral_pct": 49,
-          "active_participation_pct": 51,
-          "neutral_weight": 49,
+          "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+          "directional_participation_pct": 81,
+          "neutral_pct": 19,
+          "active_participation_pct": 81,
+          "neutral_weight": 19,
           "weighted_score": {
-            "bullish_weight": 11,
+            "bullish_weight": 41,
             "bearish_weight": 40,
-            "neutral_weight": 49,
-            "active_weight": 51,
-            "weight_margin": 29
+            "neutral_weight": 19,
+            "active_weight": 81,
+            "weight_margin": 1
           },
-          "alignment": 22
+          "alignment": 51
         },
         "weighted_score": {
-          "active_weight": 51,
-          "weight_margin": 29,
+          "active_weight": 81,
+          "weight_margin": 1,
           "bearish_weight": 40,
-          "bullish_weight": 11,
-          "neutral_weight": 49
+          "bullish_weight": 41,
+          "neutral_weight": 19
         },
         "factor_breakdown": {
           "F2 DXY / USD Pressure": {
@@ -7708,22 +7708,22 @@
             "evidence": "DXY 1d % 0.6045500433556843"
           },
           "F1 BTC Own Price Delta": {
-            "reason": "BTC move is inside normal noise threshold",
-            "signal": "NEUTRAL",
+            "reason": "BTC own trend is above noise threshold and supports upside pressure",
+            "signal": "BULLISH",
             "weight": 16,
-            "evidence": "BTC 1d % 1.5091004976584494"
+            "evidence": "BTC 1d % 3.4147063199015193"
           },
           "F3 US 10Y Real Yield Delta": {
             "reason": "Rising real yields tighten financial conditions and pressure BTC",
             "signal": "BEARISH",
             "weight": 10,
-            "evidence": "Real yield 5d bps 13.000000000000034"
+            "evidence": "Real yield 5d bps 5.000000000000027"
           },
           "F5 VIX Level and Risk Regime": {
             "reason": "VIX rising materially increases BTC risk pressure",
             "signal": "BEARISH",
             "weight": 16,
-            "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+            "evidence": "VIX 19.44, VIX d5 4.040000000000001"
           },
           "F4 Fed Bias / Policy Liquidity": {
             "reason": "No clear Fed liquidity impulse",
@@ -7738,10 +7738,10 @@
             "evidence": "ETF flow 655300000"
           },
           "F9 Stablecoin / Crypto Liquidity": {
-            "reason": "Stablecoin liquidity flat",
+            "reason": "Missing input",
             "signal": "NEUTRAL",
             "weight": 3,
-            "evidence": "Stablecoin supply delta 0%"
+            "evidence": "Missing stablecoin and crypto market cap deltas"
           },
           "F7 US Economic Surprise Direction": {
             "reason": "No confirmed surprise",
@@ -7750,16 +7750,16 @@
             "evidence": "No recent US event"
           },
           "F6 NQ / High-Beta Risk Confirmation": {
-            "reason": "NQ move below threshold",
-            "signal": "NEUTRAL",
+            "reason": "NQ strength confirms high-beta risk appetite for BTC",
+            "signal": "BULLISH",
             "weight": 14,
-            "evidence": "NQ 1d % 0"
+            "evidence": "NQ 1d % 0.5885"
           },
           "F10 BTC Dominance / Crypto Structure": {
             "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
             "signal": "BULLISH",
             "weight": 3,
-            "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
           }
         }
       },
@@ -7771,22 +7771,22 @@
           "evidence": "DXY 1d % 0.6045500433556843"
         },
         "F1 BTC Own Price Delta": {
-          "reason": "BTC move is inside normal noise threshold",
-          "signal": "NEUTRAL",
+          "reason": "BTC own trend is above noise threshold and supports upside pressure",
+          "signal": "BULLISH",
           "weight": 16,
-          "evidence": "BTC 1d % 1.5091004976584494"
+          "evidence": "BTC 1d % 3.4147063199015193"
         },
         "F3 US 10Y Real Yield Delta": {
           "reason": "Rising real yields tighten financial conditions and pressure BTC",
           "signal": "BEARISH",
           "weight": 10,
-          "evidence": "Real yield 5d bps 13.000000000000034"
+          "evidence": "Real yield 5d bps 5.000000000000027"
         },
         "F5 VIX Level and Risk Regime": {
           "reason": "VIX rising materially increases BTC risk pressure",
           "signal": "BEARISH",
           "weight": 16,
-          "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+          "evidence": "VIX 19.44, VIX d5 4.040000000000001"
         },
         "F4 Fed Bias / Policy Liquidity": {
           "reason": "No clear Fed liquidity impulse",
@@ -7801,10 +7801,10 @@
           "evidence": "ETF flow 655300000"
         },
         "F9 Stablecoin / Crypto Liquidity": {
-          "reason": "Stablecoin liquidity flat",
+          "reason": "Missing input",
           "signal": "NEUTRAL",
           "weight": 3,
-          "evidence": "Stablecoin supply delta 0%"
+          "evidence": "Missing stablecoin and crypto market cap deltas"
         },
         "F7 US Economic Surprise Direction": {
           "reason": "No confirmed surprise",
@@ -7813,124 +7813,131 @@
           "evidence": "No recent US event"
         },
         "F6 NQ / High-Beta Risk Confirmation": {
-          "reason": "NQ move below threshold",
-          "signal": "NEUTRAL",
+          "reason": "NQ strength confirms high-beta risk appetite for BTC",
+          "signal": "BULLISH",
           "weight": 14,
-          "evidence": "NQ 1d % 0"
+          "evidence": "NQ 1d % 0.5885"
         },
         "F10 BTC Dominance / Crypto Structure": {
           "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
           "signal": "BULLISH",
           "weight": 3,
-          "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+          "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
         }
       },
       "key_factors": [
         "F2 DXY / USD Pressure [14]: BEARISH — DXY 1d % 0.6045500433556843 (DXY strength pressures BTC/USD)",
-        "F1 BTC Own Price Delta [16]: NEUTRAL — BTC 1d % 1.5091004976584494 (BTC move is inside normal noise threshold)",
-        "F3 US 10Y Real Yield Delta [10]: BEARISH — Real yield 5d bps 13.000000000000034 (Rising real yields tighten financial conditions and pressure BTC)",
-        "F5 VIX Level and Risk Regime [16]: BEARISH — VIX 19.87, VIX d5 4.100000000000001 (VIX rising materially increases BTC risk pressure)",
+        "F1 BTC Own Price Delta [16]: BULLISH — BTC 1d % 3.4147063199015193 (BTC own trend is above noise threshold and supports upside pressure)",
+        "F3 US 10Y Real Yield Delta [10]: BEARISH — Real yield 5d bps 5.000000000000027 (Rising real yields tighten financial conditions and pressure BTC)",
+        "F5 VIX Level and Risk Regime [16]: BEARISH — VIX 19.44, VIX d5 4.040000000000001 (VIX rising materially increases BTC risk pressure)",
         "F4 Fed Bias / Policy Liquidity [10]: NEUTRAL — Fed bias neutral (No clear Fed liquidity impulse)",
         "F8 BTC ETF / Institutional Flow [8]: BULLISH — ETF flow 655300000 (Confirmed BTC ETF net inflow supports BTC demand)",
-        "F9 Stablecoin / Crypto Liquidity [3]: NEUTRAL — Stablecoin supply delta 0% (Stablecoin liquidity flat)",
+        "F9 Stablecoin / Crypto Liquidity [3]: NEUTRAL — Missing stablecoin and crypto market cap deltas (Missing input)",
         "F7 US Economic Surprise Direction [6]: NEUTRAL — No recent US event (No confirmed surprise)",
-        "F6 NQ / High-Beta Risk Confirmation [14]: NEUTRAL — NQ 1d % 0 (NQ move below threshold)",
-        "F10 BTC Dominance / Crypto Structure [3]: BULLISH — Fear/Greed 12, BTC delta 1.5091004976584494% (Extreme fear with stabilising BTC can support contrarian bullish pressure)"
+        "F6 NQ / High-Beta Risk Confirmation [14]: BULLISH — NQ 1d % 0.5885 (NQ strength confirms high-beta risk appetite for BTC)",
+        "F10 BTC Dominance / Crypto Structure [3]: BULLISH — Fear/Greed 18, BTC delta 3.4147063199015193% (Extreme fear with stabilising BTC can support contrarian bullish pressure)"
       ],
       "warnings": [
-        "WEEKEND_LIQUIDITY_RISK"
+        "WEEKEND_LIQUIDITY_RISK",
+        "Missing/neutral input: F9 Stablecoin / Crypto Liquidity",
+        "Missing/neutral input: F1 BTC Own Price Delta",
+        "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation"
       ],
-      "reasoning_summary": "BTC weighted verdicts calculated deterministically by timeframe. 24h BEARISH 78%, 3d BEARISH 81%, current week BEARISH 79%, next week BEARISH 74%, current month BEARISH 72%.",
-      "score_bullish": 2,
+      "reasoning_summary": "BTC weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 51%, 3d BEARISH 84%, current week BEARISH 83%, next week BEARISH 79%, current month BEARISH 77%.",
+      "score_bullish": 4,
       "score_bearish": 3,
-      "score_neutral": 5,
-      "non_neutral_count": 5,
+      "score_neutral": 3,
+      "non_neutral_count": 4,
       "logic_document": "agent_btc_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
-        "net_edge_pct": -56,
-        "winning_side": "BEARISH",
-        "participation": 51,
-        "weighted_edge": 0.56,
-        "raw_conviction": 78,
+        "net_edge_pct": 2,
+        "winning_side": "BULLISH",
+        "participation": 81,
+        "weighted_edge": 0.02,
+        "raw_conviction": 51,
         "agreement_boost": 0,
-        "base_conviction": 78,
+        "base_conviction": 51,
         "bear_case_weight": 40,
-        "bull_case_weight": 11,
+        "bull_case_weight": 41,
         "conflict_penalty": 0,
-        "final_conviction": 78,
-        "verdict_strength": "VERY_STRONG",
-        "participation_cap": 51,
-        "bearish_argument_pct": 78,
-        "bullish_argument_pct": 22,
-        "neutral_evidence_pct": 49,
+        "final_conviction": 51,
+        "verdict_strength": "WEAK",
+        "participation_cap": 81,
+        "bearish_argument_pct": 49,
+        "bullish_argument_pct": 51,
+        "neutral_evidence_pct": 19,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-        "directional_participation_pct": 51,
-        "neutral_pct": 49,
-        "active_participation_pct": 51,
-        "neutral_weight": 49,
+        "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+        "directional_participation_pct": 81,
+        "neutral_pct": 19,
+        "active_participation_pct": 81,
+        "neutral_weight": 19,
         "weighted_score": {
-          "bullish_weight": 11,
+          "bullish_weight": 41,
           "bearish_weight": 40,
-          "neutral_weight": 49,
-          "active_weight": 51,
-          "weight_margin": 29
+          "neutral_weight": 19,
+          "active_weight": 81,
+          "weight_margin": 1
         },
-        "alignment": 22
+        "alignment": 51
       },
       "timeframe_models": {
         "3d": {
-          "reason": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-          "warnings": [],
+          "reason": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+          "warnings": [
+            "Missing/neutral input: F1 BTC Own Price Delta",
+            "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+            "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+          ],
           "bear_case": [
             "F2 DXY / USD Pressure (15): DXY 5d % 1.013473443008527",
-            "F3 US 10Y Real Yield Delta (14): Real yield 5d bps 13.000000000000034",
-            "F5 VIX Level and Risk Regime (14): VIX 19.87, VIX d5 4.100000000000001"
+            "F3 US 10Y Real Yield Delta (14): Real yield 5d bps 5.000000000000027",
+            "F5 VIX Level and Risk Regime (14): VIX 19.44, VIX d5 4.040000000000001"
           ],
           "bull_case": [
-            "F8 BTC ETF / Institutional Flow (8): ETF flow 1259400000",
-            "F10 BTC Dominance / Crypto Structure (2): Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "F8 BTC ETF / Institutional Flow (8): ETF flow 1259400000"
           ],
           "direction": "BEARISH",
-          "conviction": 81,
+          "conviction": 84,
           "neutral_case": [
-            "F1 BTC Own Price Delta (12): BTC 5d % 1.5091004976584494",
+            "F1 BTC Own Price Delta (12): Missing BTC 5d %",
             "F4 Fed Bias / Policy Liquidity (12): Fed bias neutral",
-            "F6 NQ / High-Beta Risk Confirmation (12): NQ 5d % 0",
+            "F6 NQ / High-Beta Risk Confirmation (12): Missing NQ 5d %",
             "F7 US Economic Surprise Direction (7): No recent US event",
-            "F9 Stablecoin / Crypto Liquidity (4): Stablecoin supply delta 0%"
+            "F9 Stablecoin / Crypto Liquidity (4): Missing stablecoin and crypto market cap deltas",
+            "F10 BTC Dominance / Crypto Structure (2): Fear/Greed 18"
           ],
           "score_bearish": 3,
-          "score_bullish": 2,
-          "score_neutral": 5,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 53,
-            "weight_margin": 33,
+            "active_weight": 51,
+            "weight_margin": 35,
             "bearish_weight": 43,
-            "bullish_weight": 10,
-            "neutral_weight": 47
+            "bullish_weight": 8,
+            "neutral_weight": 49
           },
           "conviction_model": {
-            "net_edge_pct": -62,
+            "net_edge_pct": -68,
             "winning_side": "BEARISH",
-            "participation": 53,
-            "weighted_edge": 0.62,
-            "raw_conviction": 81,
+            "participation": 51,
+            "weighted_edge": 0.68,
+            "raw_conviction": 84,
             "agreement_boost": 0,
-            "base_conviction": 81,
+            "base_conviction": 84,
             "bear_case_weight": 43,
-            "bull_case_weight": 10,
+            "bull_case_weight": 8,
             "conflict_penalty": 0,
-            "final_conviction": 81,
+            "final_conviction": 84,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 53,
-            "bearish_argument_pct": 81,
-            "bullish_argument_pct": 19,
-            "neutral_evidence_pct": 47,
+            "participation_cap": 51,
+            "bearish_argument_pct": 84,
+            "bullish_argument_pct": 16,
+            "neutral_evidence_pct": 49,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-            "directional_participation_pct": 53
+            "final_conviction_logic": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+            "directional_participation_pct": 51
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -7940,22 +7947,22 @@
               "evidence": "DXY 5d % 1.013473443008527"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "BTC 5d % 1.5091004976584494"
+              "evidence": "Missing BTC 5d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 14,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 14,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -7970,10 +7977,10 @@
               "evidence": "ETF flow 1259400000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -7982,70 +7989,73 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "NQ 5d % 0"
+              "evidence": "Missing NQ 5d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "24h": {
-          "reason": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-          "warnings": [],
+          "reason": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+          "warnings": [
+            "Missing/neutral input: F9 Stablecoin / Crypto Liquidity",
+            "WEEKEND_LIQUIDITY_RISK"
+          ],
           "bear_case": [
             "F2 DXY / USD Pressure (14): DXY 1d % 0.6045500433556843",
-            "F3 US 10Y Real Yield Delta (10): Real yield 5d bps 13.000000000000034",
-            "F5 VIX Level and Risk Regime (16): VIX 19.87, VIX d5 4.100000000000001"
+            "F3 US 10Y Real Yield Delta (10): Real yield 5d bps 5.000000000000027",
+            "F5 VIX Level and Risk Regime (16): VIX 19.44, VIX d5 4.040000000000001"
           ],
           "bull_case": [
+            "F1 BTC Own Price Delta (16): BTC 1d % 3.4147063199015193",
+            "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 0.5885",
             "F8 BTC ETF / Institutional Flow (8): ETF flow 655300000",
-            "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 18, BTC delta 3.4147063199015193%"
           ],
-          "direction": "BEARISH",
-          "conviction": 78,
+          "direction": "BULLISH_LEAN",
+          "conviction": 51,
           "neutral_case": [
-            "F1 BTC Own Price Delta (16): BTC 1d % 1.5091004976584494",
             "F4 Fed Bias / Policy Liquidity (10): Fed bias neutral",
-            "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 0",
             "F7 US Economic Surprise Direction (6): No recent US event",
-            "F9 Stablecoin / Crypto Liquidity (3): Stablecoin supply delta 0%"
+            "F9 Stablecoin / Crypto Liquidity (3): Missing stablecoin and crypto market cap deltas"
           ],
           "score_bearish": 3,
-          "score_bullish": 2,
-          "score_neutral": 5,
+          "score_bullish": 4,
+          "score_neutral": 3,
           "weighted_score": {
-            "active_weight": 51,
-            "weight_margin": 29,
+            "active_weight": 81,
+            "weight_margin": 1,
             "bearish_weight": 40,
-            "bullish_weight": 11,
-            "neutral_weight": 49
+            "bullish_weight": 41,
+            "neutral_weight": 19
           },
           "conviction_model": {
-            "net_edge_pct": -56,
-            "winning_side": "BEARISH",
-            "participation": 51,
-            "weighted_edge": 0.56,
-            "raw_conviction": 78,
+            "net_edge_pct": 2,
+            "winning_side": "BULLISH",
+            "participation": 81,
+            "weighted_edge": 0.02,
+            "raw_conviction": 51,
             "agreement_boost": 0,
-            "base_conviction": 78,
+            "base_conviction": 51,
             "bear_case_weight": 40,
-            "bull_case_weight": 11,
+            "bull_case_weight": 41,
             "conflict_penalty": 0,
-            "final_conviction": 78,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 51,
-            "bearish_argument_pct": 78,
-            "bullish_argument_pct": 22,
-            "neutral_evidence_pct": 49,
+            "final_conviction": 51,
+            "verdict_strength": "WEAK",
+            "participation_cap": 81,
+            "bearish_argument_pct": 49,
+            "bullish_argument_pct": 51,
+            "neutral_evidence_pct": 19,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-            "directional_participation_pct": 51
+            "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+            "directional_participation_pct": 81
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -8055,22 +8065,22 @@
               "evidence": "DXY 1d % 0.6045500433556843"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
-              "signal": "NEUTRAL",
+              "reason": "BTC own trend is above noise threshold and supports upside pressure",
+              "signal": "BULLISH",
               "weight": 16,
-              "evidence": "BTC 1d % 1.5091004976584494"
+              "evidence": "BTC 1d % 3.4147063199015193"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 10,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -8085,10 +8095,10 @@
               "evidence": "ETF flow 655300000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -8097,70 +8107,74 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
-              "signal": "NEUTRAL",
+              "reason": "NQ strength confirms high-beta risk appetite for BTC",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "NQ 1d % 0"
+              "evidence": "NQ 1d % 0.5885"
             },
             "F10 BTC Dominance / Crypto Structure": {
               "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
               "signal": "BULLISH",
               "weight": 3,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
             }
           }
         },
         "next_week": {
-          "reason": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
-          "warnings": [],
+          "reason": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
+          "warnings": [
+            "Missing/neutral input: F1 BTC Own Price Delta",
+            "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+            "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+          ],
           "bear_case": [
             "F2 DXY / USD Pressure (14): DXY 20d % 1.755335916130279",
-            "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 25.00000000000002",
-            "F5 VIX Level and Risk Regime (10): VIX 19.87, VIX d5 4.100000000000001"
+            "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 17.000000000000014",
+            "F5 VIX Level and Risk Regime (10): VIX 19.44, VIX d5 4.040000000000001"
           ],
           "bull_case": [
-            "F8 BTC ETF / Institutional Flow (11): ETF flow 1825800000",
-            "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "F8 BTC ETF / Institutional Flow (11): ETF flow 1825800000"
           ],
           "direction": "BEARISH",
-          "conviction": 74,
+          "conviction": 79,
           "neutral_case": [
-            "F1 BTC Own Price Delta (6): BTC 20d % 1.5091004976584494",
+            "F1 BTC Own Price Delta (6): Missing BTC 20d %",
             "F4 Fed Bias / Policy Liquidity (16): Fed bias neutral",
-            "F6 NQ / High-Beta Risk Confirmation (7): NQ 20d % 0",
+            "F6 NQ / High-Beta Risk Confirmation (7): Missing NQ 20d %",
             "F7 US Economic Surprise Direction (5): No recent US event",
-            "F9 Stablecoin / Crypto Liquidity (9): Stablecoin supply delta 0%"
+            "F9 Stablecoin / Crypto Liquidity (9): Missing stablecoin and crypto market cap deltas",
+            "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 18"
           ],
           "score_bearish": 3,
-          "score_bullish": 2,
-          "score_neutral": 5,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 57,
-            "weight_margin": 27,
+            "active_weight": 53,
+            "weight_margin": 31,
             "bearish_weight": 42,
-            "bullish_weight": 15,
-            "neutral_weight": 43
+            "bullish_weight": 11,
+            "neutral_weight": 47
           },
           "conviction_model": {
-            "net_edge_pct": -48,
+            "net_edge_pct": -58,
             "winning_side": "BEARISH",
-            "participation": 57,
-            "weighted_edge": 0.48,
-            "raw_conviction": 74,
+            "participation": 53,
+            "weighted_edge": 0.58,
+            "raw_conviction": 79,
             "agreement_boost": 0,
-            "base_conviction": 74,
+            "base_conviction": 79,
             "bear_case_weight": 42,
-            "bull_case_weight": 15,
+            "bull_case_weight": 11,
             "conflict_penalty": 0,
-            "final_conviction": 74,
+            "final_conviction": 79,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 57,
-            "bearish_argument_pct": 74,
-            "bullish_argument_pct": 26,
-            "neutral_evidence_pct": 43,
+            "participation_cap": 53,
+            "bearish_argument_pct": 79,
+            "bullish_argument_pct": 21,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
-            "directional_participation_pct": 57
+            "final_conviction_logic": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
+            "directional_participation_pct": 53
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -8170,22 +8184,22 @@
               "evidence": "DXY 20d % 1.755335916130279"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "BTC 20d % 1.5091004976584494"
+              "evidence": "Missing BTC 20d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "Real yield 20d bps 25.00000000000002"
+              "evidence": "Real yield 20d bps 17.000000000000014"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 10,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -8200,10 +8214,10 @@
               "evidence": "ETF flow 1825800000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 9,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -8212,70 +8226,74 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "NQ 20d % 0"
+              "evidence": "Missing NQ 20d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "current_week": {
-          "reason": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-          "warnings": [],
+          "reason": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+          "warnings": [
+            "Missing/neutral input: F1 BTC Own Price Delta",
+            "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+            "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+          ],
           "bear_case": [
             "F2 DXY / USD Pressure (15): DXY 5d % 1.013473443008527",
-            "F3 US 10Y Real Yield Delta (16): Real yield 5d bps 13.000000000000034",
-            "F5 VIX Level and Risk Regime (13): VIX 19.87, VIX d5 4.100000000000001"
+            "F3 US 10Y Real Yield Delta (16): Real yield 5d bps 5.000000000000027",
+            "F5 VIX Level and Risk Regime (13): VIX 19.44, VIX d5 4.040000000000001"
           ],
           "bull_case": [
-            "F8 BTC ETF / Institutional Flow (9): ETF flow 1259400000",
-            "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "F8 BTC ETF / Institutional Flow (9): ETF flow 1259400000"
           ],
           "direction": "BEARISH",
-          "conviction": 79,
+          "conviction": 83,
           "neutral_case": [
-            "F1 BTC Own Price Delta (10): BTC 5d % 1.5091004976584494",
+            "F1 BTC Own Price Delta (10): Missing BTC 5d %",
             "F4 Fed Bias / Policy Liquidity (13): Fed bias neutral",
-            "F6 NQ / High-Beta Risk Confirmation (10): NQ 5d % 0",
+            "F6 NQ / High-Beta Risk Confirmation (10): Missing NQ 5d %",
             "F7 US Economic Surprise Direction (6): No recent US event",
-            "F9 Stablecoin / Crypto Liquidity (5): Stablecoin supply delta 0%"
+            "F9 Stablecoin / Crypto Liquidity (5): Missing stablecoin and crypto market cap deltas",
+            "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 18"
           ],
           "score_bearish": 3,
-          "score_bullish": 2,
-          "score_neutral": 5,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 56,
-            "weight_margin": 32,
+            "active_weight": 53,
+            "weight_margin": 35,
             "bearish_weight": 44,
-            "bullish_weight": 12,
-            "neutral_weight": 44
+            "bullish_weight": 9,
+            "neutral_weight": 47
           },
           "conviction_model": {
-            "net_edge_pct": -58,
+            "net_edge_pct": -66,
             "winning_side": "BEARISH",
-            "participation": 56,
-            "weighted_edge": 0.58,
-            "raw_conviction": 79,
+            "participation": 53,
+            "weighted_edge": 0.66,
+            "raw_conviction": 83,
             "agreement_boost": 0,
-            "base_conviction": 79,
+            "base_conviction": 83,
             "bear_case_weight": 44,
-            "bull_case_weight": 12,
+            "bull_case_weight": 9,
             "conflict_penalty": 0,
-            "final_conviction": 79,
+            "final_conviction": 83,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 56,
-            "bearish_argument_pct": 79,
-            "bullish_argument_pct": 21,
-            "neutral_evidence_pct": 44,
+            "participation_cap": 53,
+            "bearish_argument_pct": 83,
+            "bullish_argument_pct": 17,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-            "directional_participation_pct": 56
+            "final_conviction_logic": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+            "directional_participation_pct": 53
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -8285,22 +8303,22 @@
               "evidence": "DXY 5d % 1.013473443008527"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 10,
-              "evidence": "BTC 5d % 1.5091004976584494"
+              "evidence": "Missing BTC 5d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "Real yield 5d bps 13.000000000000034"
+              "evidence": "Real yield 5d bps 5.000000000000027"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 13,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -8315,10 +8333,10 @@
               "evidence": "ETF flow 1259400000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -8327,70 +8345,74 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 10,
-              "evidence": "NQ 5d % 0"
+              "evidence": "Missing NQ 5d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         },
         "current_month": {
-          "reason": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
-          "warnings": [],
+          "reason": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
+          "warnings": [
+            "Missing/neutral input: F1 BTC Own Price Delta",
+            "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+            "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+          ],
           "bear_case": [
             "F2 DXY / USD Pressure (14): DXY 20d % 1.755335916130279",
-            "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 25.00000000000002",
-            "F5 VIX Level and Risk Regime (9): VIX 19.87, VIX d5 4.100000000000001"
+            "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 17.000000000000014",
+            "F5 VIX Level and Risk Regime (9): VIX 19.44, VIX d5 4.040000000000001"
           ],
           "bull_case": [
-            "F8 BTC ETF / Institutional Flow (12): ETF flow 1825800000",
-            "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "F8 BTC ETF / Institutional Flow (12): ETF flow 1825800000"
           ],
           "direction": "BEARISH",
-          "conviction": 72,
+          "conviction": 77,
           "neutral_case": [
-            "F1 BTC Own Price Delta (7): BTC 20d % 1.5091004976584494",
+            "F1 BTC Own Price Delta (7): Missing BTC 20d %",
             "F4 Fed Bias / Policy Liquidity (17): Fed bias neutral",
-            "F6 NQ / High-Beta Risk Confirmation (6): NQ 20d % 0",
+            "F6 NQ / High-Beta Risk Confirmation (6): Missing NQ 20d %",
             "F7 US Economic Surprise Direction (4): No recent US event",
-            "F9 Stablecoin / Crypto Liquidity (9): Stablecoin supply delta 0%"
+            "F9 Stablecoin / Crypto Liquidity (9): Missing stablecoin and crypto market cap deltas",
+            "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 18"
           ],
           "score_bearish": 3,
-          "score_bullish": 2,
-          "score_neutral": 5,
+          "score_bullish": 1,
+          "score_neutral": 6,
           "weighted_score": {
-            "active_weight": 57,
-            "weight_margin": 25,
+            "active_weight": 53,
+            "weight_margin": 29,
             "bearish_weight": 41,
-            "bullish_weight": 16,
-            "neutral_weight": 43
+            "bullish_weight": 12,
+            "neutral_weight": 47
           },
           "conviction_model": {
-            "net_edge_pct": -44,
+            "net_edge_pct": -54,
             "winning_side": "BEARISH",
-            "participation": 57,
-            "weighted_edge": 0.44,
-            "raw_conviction": 72,
+            "participation": 53,
+            "weighted_edge": 0.54,
+            "raw_conviction": 77,
             "agreement_boost": 0,
-            "base_conviction": 72,
+            "base_conviction": 77,
             "bear_case_weight": 41,
-            "bull_case_weight": 16,
+            "bull_case_weight": 12,
             "conflict_penalty": 0,
-            "final_conviction": 72,
+            "final_conviction": 77,
             "verdict_strength": "VERY_STRONG",
-            "participation_cap": 57,
-            "bearish_argument_pct": 72,
-            "bullish_argument_pct": 28,
-            "neutral_evidence_pct": 43,
+            "participation_cap": 53,
+            "bearish_argument_pct": 77,
+            "bullish_argument_pct": 23,
+            "neutral_evidence_pct": 47,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
-            "directional_participation_pct": 57
+            "final_conviction_logic": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
+            "directional_participation_pct": 53
           },
           "factor_breakdown": {
             "F2 DXY / USD Pressure": {
@@ -8400,22 +8422,22 @@
               "evidence": "DXY 20d % 1.755335916130279"
             },
             "F1 BTC Own Price Delta": {
-              "reason": "BTC move is inside normal noise threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "BTC 20d % 1.5091004976584494"
+              "evidence": "Missing BTC 20d %"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Rising real yields tighten financial conditions and pressure BTC",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "Real yield 20d bps 25.00000000000002"
+              "evidence": "Real yield 20d bps 17.000000000000014"
             },
             "F5 VIX Level and Risk Regime": {
               "reason": "VIX rising materially increases BTC risk pressure",
               "signal": "BEARISH",
               "weight": 9,
-              "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+              "evidence": "VIX 19.44, VIX d5 4.040000000000001"
             },
             "F4 Fed Bias / Policy Liquidity": {
               "reason": "No clear Fed liquidity impulse",
@@ -8430,10 +8452,10 @@
               "evidence": "ETF flow 1825800000"
             },
             "F9 Stablecoin / Crypto Liquidity": {
-              "reason": "Stablecoin liquidity flat",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 9,
-              "evidence": "Stablecoin supply delta 0%"
+              "evidence": "Missing stablecoin and crypto market cap deltas"
             },
             "F7 US Economic Surprise Direction": {
               "reason": "No confirmed surprise",
@@ -8442,85 +8464,96 @@
               "evidence": "No recent US event"
             },
             "F6 NQ / High-Beta Risk Confirmation": {
-              "reason": "NQ move below threshold",
+              "reason": "Missing input",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "NQ 20d % 0"
+              "evidence": "Missing NQ 20d %"
             },
             "F10 BTC Dominance / Crypto Structure": {
-              "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-              "signal": "BULLISH",
+              "reason": "Sentiment alone is not enough to drive BTC factor",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "evidence": "Fear/Greed 18"
             }
           }
         }
       },
       "display_metrics": {
-        "bull_case": 22,
-        "bear_case": 78,
-        "winning_side": "BEARISH",
-        "conviction": 78,
-        "net_edge": -56,
-        "directional_participation": 51,
-        "neutral": 49,
-        "verdict_strength": "VERY_STRONG",
-        "bull_case_weight": 11,
+        "bull_case": 51,
+        "bear_case": 49,
+        "winning_side": "BULLISH",
+        "conviction": 51,
+        "net_edge": 2,
+        "directional_participation": 81,
+        "neutral": 19,
+        "verdict_strength": "WEAK",
+        "bull_case_weight": 41,
         "bear_case_weight": 40
       },
       "full_output": {
         "asset": "BTC",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-11T05:17:08.923Z",
-        "reason_24h": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
+        "created_at": "2026-06-14T20:45:53.021Z",
+        "reason_24h": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
         "risk_flags": [
-          "WEEKEND_LIQUIDITY_RISK"
+          "WEEKEND_LIQUIDITY_RISK",
+          "Missing/neutral input: F9 Stablecoin / Crypto Liquidity",
+          "Missing/neutral input: F1 BTC Own Price Delta",
+          "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation"
         ],
-        "reason_3_day": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-        "direction_24h": "BEARISH",
+        "reason_3_day": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+        "direction_24h": "BULLISH_LEAN",
         "score_bearish": 3,
-        "score_bullish": 2,
-        "score_neutral": 5,
-        "snapshot_date": "2026-06-11",
-        "conviction_24h": 78,
+        "score_bullish": 4,
+        "score_neutral": 3,
+        "snapshot_date": "2026-06-14",
+        "conviction_24h": 51,
         "logic_document": "agent_btc_direction.md",
         "missing_inputs": [
-          "nq_d1_pct",
+          "btc_d5_pct",
+          "btc_d20_pct",
+          "latest_us_event",
           "nq_d5_pct",
           "nq_d20_pct",
+          "gold_d5_pct",
+          "gold_d20_pct",
+          "btc_dominance_d5",
+          "btc_dominance_d20",
+          "total_crypto_market_cap_d5_pct",
+          "total_crypto_market_cap_d20_pct",
+          "stablecoin_supply",
           "stablecoin_supply_d5_pct",
-          "stablecoin_supply_d20_pct",
-          "latest_us_event"
+          "stablecoin_supply_d20_pct"
         ],
         "weighted_score": {
-          "active_weight": 51,
-          "weight_margin": 29,
+          "active_weight": 81,
+          "weight_margin": 1,
           "bearish_weight": 40,
-          "bullish_weight": 11,
-          "neutral_weight": 49
+          "bullish_weight": 41,
+          "neutral_weight": 19
         },
         "direction_3_day": "BEARISH",
-        "conviction_3_day": 81,
+        "conviction_3_day": 84,
         "conviction_model": {
-          "net_edge_pct": -56,
-          "winning_side": "BEARISH",
-          "participation": 51,
-          "weighted_edge": 0.56,
-          "raw_conviction": 78,
+          "net_edge_pct": 2,
+          "winning_side": "BULLISH",
+          "participation": 81,
+          "weighted_edge": 0.02,
+          "raw_conviction": 51,
           "agreement_boost": 0,
-          "base_conviction": 78,
+          "base_conviction": 51,
           "bear_case_weight": 40,
-          "bull_case_weight": 11,
+          "bull_case_weight": 41,
           "conflict_penalty": 0,
-          "final_conviction": 78,
-          "verdict_strength": "VERY_STRONG",
-          "participation_cap": 51,
-          "bearish_argument_pct": 78,
-          "bullish_argument_pct": 22,
-          "neutral_evidence_pct": 49,
+          "final_conviction": 51,
+          "verdict_strength": "WEAK",
+          "participation_cap": 81,
+          "bearish_argument_pct": 49,
+          "bullish_argument_pct": 51,
+          "neutral_evidence_pct": 19,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-          "directional_participation_pct": 51
+          "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+          "directional_participation_pct": 81
         },
         "factor_breakdown": {
           "F2 DXY / USD Pressure": {
@@ -8530,22 +8563,22 @@
             "evidence": "DXY 1d % 0.6045500433556843"
           },
           "F1 BTC Own Price Delta": {
-            "reason": "BTC move is inside normal noise threshold",
-            "signal": "NEUTRAL",
+            "reason": "BTC own trend is above noise threshold and supports upside pressure",
+            "signal": "BULLISH",
             "weight": 16,
-            "evidence": "BTC 1d % 1.5091004976584494"
+            "evidence": "BTC 1d % 3.4147063199015193"
           },
           "F3 US 10Y Real Yield Delta": {
             "reason": "Rising real yields tighten financial conditions and pressure BTC",
             "signal": "BEARISH",
             "weight": 10,
-            "evidence": "Real yield 5d bps 13.000000000000034"
+            "evidence": "Real yield 5d bps 5.000000000000027"
           },
           "F5 VIX Level and Risk Regime": {
             "reason": "VIX rising materially increases BTC risk pressure",
             "signal": "BEARISH",
             "weight": 16,
-            "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+            "evidence": "VIX 19.44, VIX d5 4.040000000000001"
           },
           "F4 Fed Bias / Policy Liquidity": {
             "reason": "No clear Fed liquidity impulse",
@@ -8560,10 +8593,10 @@
             "evidence": "ETF flow 655300000"
           },
           "F9 Stablecoin / Crypto Liquidity": {
-            "reason": "Stablecoin liquidity flat",
+            "reason": "Missing input",
             "signal": "NEUTRAL",
             "weight": 3,
-            "evidence": "Stablecoin supply delta 0%"
+            "evidence": "Missing stablecoin and crypto market cap deltas"
           },
           "F7 US Economic Surprise Direction": {
             "reason": "No confirmed surprise",
@@ -8572,71 +8605,75 @@
             "evidence": "No recent US event"
           },
           "F6 NQ / High-Beta Risk Confirmation": {
-            "reason": "NQ move below threshold",
-            "signal": "NEUTRAL",
+            "reason": "NQ strength confirms high-beta risk appetite for BTC",
+            "signal": "BULLISH",
             "weight": 14,
-            "evidence": "NQ 1d % 0"
+            "evidence": "NQ 1d % 0.5885"
           },
           "F10 BTC Dominance / Crypto Structure": {
             "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
             "signal": "BULLISH",
             "weight": 3,
-            "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+            "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
           }
         },
-        "reason_next_week": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
+        "reason_next_week": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
         "timeframe_models": {
           "3d": {
-            "reason": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-            "warnings": [],
+            "reason": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+            "warnings": [
+              "Missing/neutral input: F1 BTC Own Price Delta",
+              "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+              "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+            ],
             "bear_case": [
               "F2 DXY / USD Pressure (15): DXY 5d % 1.013473443008527",
-              "F3 US 10Y Real Yield Delta (14): Real yield 5d bps 13.000000000000034",
-              "F5 VIX Level and Risk Regime (14): VIX 19.87, VIX d5 4.100000000000001"
+              "F3 US 10Y Real Yield Delta (14): Real yield 5d bps 5.000000000000027",
+              "F5 VIX Level and Risk Regime (14): VIX 19.44, VIX d5 4.040000000000001"
             ],
             "bull_case": [
-              "F8 BTC ETF / Institutional Flow (8): ETF flow 1259400000",
-              "F10 BTC Dominance / Crypto Structure (2): Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "F8 BTC ETF / Institutional Flow (8): ETF flow 1259400000"
             ],
             "direction": "BEARISH",
-            "conviction": 81,
+            "conviction": 84,
             "neutral_case": [
-              "F1 BTC Own Price Delta (12): BTC 5d % 1.5091004976584494",
+              "F1 BTC Own Price Delta (12): Missing BTC 5d %",
               "F4 Fed Bias / Policy Liquidity (12): Fed bias neutral",
-              "F6 NQ / High-Beta Risk Confirmation (12): NQ 5d % 0",
+              "F6 NQ / High-Beta Risk Confirmation (12): Missing NQ 5d %",
               "F7 US Economic Surprise Direction (7): No recent US event",
-              "F9 Stablecoin / Crypto Liquidity (4): Stablecoin supply delta 0%"
+              "F9 Stablecoin / Crypto Liquidity (4): Missing stablecoin and crypto market cap deltas",
+              "F10 BTC Dominance / Crypto Structure (2): Fear/Greed 18"
             ],
             "score_bearish": 3,
-            "score_bullish": 2,
-            "score_neutral": 5,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 53,
-              "weight_margin": 33,
+              "active_weight": 51,
+              "weight_margin": 35,
               "bearish_weight": 43,
-              "bullish_weight": 10,
-              "neutral_weight": 47
+              "bullish_weight": 8,
+              "neutral_weight": 49
             },
             "conviction_model": {
-              "net_edge_pct": -62,
+              "net_edge_pct": -68,
               "winning_side": "BEARISH",
-              "participation": 53,
-              "weighted_edge": 0.62,
-              "raw_conviction": 81,
+              "participation": 51,
+              "weighted_edge": 0.68,
+              "raw_conviction": 84,
               "agreement_boost": 0,
-              "base_conviction": 81,
+              "base_conviction": 84,
               "bear_case_weight": 43,
-              "bull_case_weight": 10,
+              "bull_case_weight": 8,
               "conflict_penalty": 0,
-              "final_conviction": 81,
+              "final_conviction": 84,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 53,
-              "bearish_argument_pct": 81,
-              "bullish_argument_pct": 19,
-              "neutral_evidence_pct": 47,
+              "participation_cap": 51,
+              "bearish_argument_pct": 84,
+              "bullish_argument_pct": 16,
+              "neutral_evidence_pct": 49,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "3d BTC deterministic score: bull case 10 weight, bear case 43 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 81%, net edge -62, directional participation 53%.",
-              "directional_participation_pct": 53
+              "final_conviction_logic": "3d BTC deterministic score: bull case 8 weight, bear case 43 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 84%, net edge -68, directional participation 51%.",
+              "directional_participation_pct": 51
             },
             "factor_breakdown": {
               "F2 DXY / USD Pressure": {
@@ -8646,22 +8683,22 @@
                 "evidence": "DXY 5d % 1.013473443008527"
               },
               "F1 BTC Own Price Delta": {
-                "reason": "BTC move is inside normal noise threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 12,
-                "evidence": "BTC 5d % 1.5091004976584494"
+                "evidence": "Missing BTC 5d %"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Rising real yields tighten financial conditions and pressure BTC",
                 "signal": "BEARISH",
                 "weight": 14,
-                "evidence": "Real yield 5d bps 13.000000000000034"
+                "evidence": "Real yield 5d bps 5.000000000000027"
               },
               "F5 VIX Level and Risk Regime": {
                 "reason": "VIX rising materially increases BTC risk pressure",
                 "signal": "BEARISH",
                 "weight": 14,
-                "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+                "evidence": "VIX 19.44, VIX d5 4.040000000000001"
               },
               "F4 Fed Bias / Policy Liquidity": {
                 "reason": "No clear Fed liquidity impulse",
@@ -8676,10 +8713,10 @@
                 "evidence": "ETF flow 1259400000"
               },
               "F9 Stablecoin / Crypto Liquidity": {
-                "reason": "Stablecoin liquidity flat",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Stablecoin supply delta 0%"
+                "evidence": "Missing stablecoin and crypto market cap deltas"
               },
               "F7 US Economic Surprise Direction": {
                 "reason": "No confirmed surprise",
@@ -8688,70 +8725,73 @@
                 "evidence": "No recent US event"
               },
               "F6 NQ / High-Beta Risk Confirmation": {
-                "reason": "NQ move below threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 12,
-                "evidence": "NQ 5d % 0"
+                "evidence": "Missing NQ 5d %"
               },
               "F10 BTC Dominance / Crypto Structure": {
-                "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-                "signal": "BULLISH",
+                "reason": "Sentiment alone is not enough to drive BTC factor",
+                "signal": "NEUTRAL",
                 "weight": 2,
-                "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+                "evidence": "Fear/Greed 18"
               }
             }
           },
           "24h": {
-            "reason": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-            "warnings": [],
+            "reason": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+            "warnings": [
+              "Missing/neutral input: F9 Stablecoin / Crypto Liquidity",
+              "WEEKEND_LIQUIDITY_RISK"
+            ],
             "bear_case": [
               "F2 DXY / USD Pressure (14): DXY 1d % 0.6045500433556843",
-              "F3 US 10Y Real Yield Delta (10): Real yield 5d bps 13.000000000000034",
-              "F5 VIX Level and Risk Regime (16): VIX 19.87, VIX d5 4.100000000000001"
+              "F3 US 10Y Real Yield Delta (10): Real yield 5d bps 5.000000000000027",
+              "F5 VIX Level and Risk Regime (16): VIX 19.44, VIX d5 4.040000000000001"
             ],
             "bull_case": [
+              "F1 BTC Own Price Delta (16): BTC 1d % 3.4147063199015193",
+              "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 0.5885",
               "F8 BTC ETF / Institutional Flow (8): ETF flow 655300000",
-              "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 18, BTC delta 3.4147063199015193%"
             ],
-            "direction": "BEARISH",
-            "conviction": 78,
+            "direction": "BULLISH_LEAN",
+            "conviction": 51,
             "neutral_case": [
-              "F1 BTC Own Price Delta (16): BTC 1d % 1.5091004976584494",
               "F4 Fed Bias / Policy Liquidity (10): Fed bias neutral",
-              "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 0",
               "F7 US Economic Surprise Direction (6): No recent US event",
-              "F9 Stablecoin / Crypto Liquidity (3): Stablecoin supply delta 0%"
+              "F9 Stablecoin / Crypto Liquidity (3): Missing stablecoin and crypto market cap deltas"
             ],
             "score_bearish": 3,
-            "score_bullish": 2,
-            "score_neutral": 5,
+            "score_bullish": 4,
+            "score_neutral": 3,
             "weighted_score": {
-              "active_weight": 51,
-              "weight_margin": 29,
+              "active_weight": 81,
+              "weight_margin": 1,
               "bearish_weight": 40,
-              "bullish_weight": 11,
-              "neutral_weight": 49
+              "bullish_weight": 41,
+              "neutral_weight": 19
             },
             "conviction_model": {
-              "net_edge_pct": -56,
-              "winning_side": "BEARISH",
-              "participation": 51,
-              "weighted_edge": 0.56,
-              "raw_conviction": 78,
+              "net_edge_pct": 2,
+              "winning_side": "BULLISH",
+              "participation": 81,
+              "weighted_edge": 0.02,
+              "raw_conviction": 51,
               "agreement_boost": 0,
-              "base_conviction": 78,
+              "base_conviction": 51,
               "bear_case_weight": 40,
-              "bull_case_weight": 11,
+              "bull_case_weight": 41,
               "conflict_penalty": 0,
-              "final_conviction": 78,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 51,
-              "bearish_argument_pct": 78,
-              "bullish_argument_pct": 22,
-              "neutral_evidence_pct": 49,
+              "final_conviction": 51,
+              "verdict_strength": "WEAK",
+              "participation_cap": 81,
+              "bearish_argument_pct": 49,
+              "bullish_argument_pct": 51,
+              "neutral_evidence_pct": 19,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "24h BTC deterministic score: bull case 11 weight, bear case 40 weight, neutral evidence 49 weight. Winning side BEARISH, conviction 78%, net edge -56, directional participation 51%.",
-              "directional_participation_pct": 51
+              "final_conviction_logic": "24h BTC deterministic score: bull case 41 weight, bear case 40 weight, neutral evidence 19 weight. Winning side BULLISH, conviction 51%, net edge +2, directional participation 81%.",
+              "directional_participation_pct": 81
             },
             "factor_breakdown": {
               "F2 DXY / USD Pressure": {
@@ -8761,22 +8801,22 @@
                 "evidence": "DXY 1d % 0.6045500433556843"
               },
               "F1 BTC Own Price Delta": {
-                "reason": "BTC move is inside normal noise threshold",
-                "signal": "NEUTRAL",
+                "reason": "BTC own trend is above noise threshold and supports upside pressure",
+                "signal": "BULLISH",
                 "weight": 16,
-                "evidence": "BTC 1d % 1.5091004976584494"
+                "evidence": "BTC 1d % 3.4147063199015193"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Rising real yields tighten financial conditions and pressure BTC",
                 "signal": "BEARISH",
                 "weight": 10,
-                "evidence": "Real yield 5d bps 13.000000000000034"
+                "evidence": "Real yield 5d bps 5.000000000000027"
               },
               "F5 VIX Level and Risk Regime": {
                 "reason": "VIX rising materially increases BTC risk pressure",
                 "signal": "BEARISH",
                 "weight": 16,
-                "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+                "evidence": "VIX 19.44, VIX d5 4.040000000000001"
               },
               "F4 Fed Bias / Policy Liquidity": {
                 "reason": "No clear Fed liquidity impulse",
@@ -8791,10 +8831,10 @@
                 "evidence": "ETF flow 655300000"
               },
               "F9 Stablecoin / Crypto Liquidity": {
-                "reason": "Stablecoin liquidity flat",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 3,
-                "evidence": "Stablecoin supply delta 0%"
+                "evidence": "Missing stablecoin and crypto market cap deltas"
               },
               "F7 US Economic Surprise Direction": {
                 "reason": "No confirmed surprise",
@@ -8803,70 +8843,74 @@
                 "evidence": "No recent US event"
               },
               "F6 NQ / High-Beta Risk Confirmation": {
-                "reason": "NQ move below threshold",
-                "signal": "NEUTRAL",
+                "reason": "NQ strength confirms high-beta risk appetite for BTC",
+                "signal": "BULLISH",
                 "weight": 14,
-                "evidence": "NQ 1d % 0"
+                "evidence": "NQ 1d % 0.5885"
               },
               "F10 BTC Dominance / Crypto Structure": {
                 "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
                 "signal": "BULLISH",
                 "weight": 3,
-                "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+                "evidence": "Fear/Greed 18, BTC delta 3.4147063199015193%"
               }
             }
           },
           "next_week": {
-            "reason": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
-            "warnings": [],
+            "reason": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
+            "warnings": [
+              "Missing/neutral input: F1 BTC Own Price Delta",
+              "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+              "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+            ],
             "bear_case": [
               "F2 DXY / USD Pressure (14): DXY 20d % 1.755335916130279",
-              "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 25.00000000000002",
-              "F5 VIX Level and Risk Regime (10): VIX 19.87, VIX d5 4.100000000000001"
+              "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 17.000000000000014",
+              "F5 VIX Level and Risk Regime (10): VIX 19.44, VIX d5 4.040000000000001"
             ],
             "bull_case": [
-              "F8 BTC ETF / Institutional Flow (11): ETF flow 1825800000",
-              "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "F8 BTC ETF / Institutional Flow (11): ETF flow 1825800000"
             ],
             "direction": "BEARISH",
-            "conviction": 74,
+            "conviction": 79,
             "neutral_case": [
-              "F1 BTC Own Price Delta (6): BTC 20d % 1.5091004976584494",
+              "F1 BTC Own Price Delta (6): Missing BTC 20d %",
               "F4 Fed Bias / Policy Liquidity (16): Fed bias neutral",
-              "F6 NQ / High-Beta Risk Confirmation (7): NQ 20d % 0",
+              "F6 NQ / High-Beta Risk Confirmation (7): Missing NQ 20d %",
               "F7 US Economic Surprise Direction (5): No recent US event",
-              "F9 Stablecoin / Crypto Liquidity (9): Stablecoin supply delta 0%"
+              "F9 Stablecoin / Crypto Liquidity (9): Missing stablecoin and crypto market cap deltas",
+              "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 18"
             ],
             "score_bearish": 3,
-            "score_bullish": 2,
-            "score_neutral": 5,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 57,
-              "weight_margin": 27,
+              "active_weight": 53,
+              "weight_margin": 31,
               "bearish_weight": 42,
-              "bullish_weight": 15,
-              "neutral_weight": 43
+              "bullish_weight": 11,
+              "neutral_weight": 47
             },
             "conviction_model": {
-              "net_edge_pct": -48,
+              "net_edge_pct": -58,
               "winning_side": "BEARISH",
-              "participation": 57,
-              "weighted_edge": 0.48,
-              "raw_conviction": 74,
+              "participation": 53,
+              "weighted_edge": 0.58,
+              "raw_conviction": 79,
               "agreement_boost": 0,
-              "base_conviction": 74,
+              "base_conviction": 79,
               "bear_case_weight": 42,
-              "bull_case_weight": 15,
+              "bull_case_weight": 11,
               "conflict_penalty": 0,
-              "final_conviction": 74,
+              "final_conviction": 79,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 57,
-              "bearish_argument_pct": 74,
-              "bullish_argument_pct": 26,
-              "neutral_evidence_pct": 43,
+              "participation_cap": 53,
+              "bearish_argument_pct": 79,
+              "bullish_argument_pct": 21,
+              "neutral_evidence_pct": 47,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "next_week BTC deterministic score: bull case 15 weight, bear case 42 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 74%, net edge -48, directional participation 57%.",
-              "directional_participation_pct": 57
+              "final_conviction_logic": "next_week BTC deterministic score: bull case 11 weight, bear case 42 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 53%.",
+              "directional_participation_pct": 53
             },
             "factor_breakdown": {
               "F2 DXY / USD Pressure": {
@@ -8876,22 +8920,22 @@
                 "evidence": "DXY 20d % 1.755335916130279"
               },
               "F1 BTC Own Price Delta": {
-                "reason": "BTC move is inside normal noise threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 6,
-                "evidence": "BTC 20d % 1.5091004976584494"
+                "evidence": "Missing BTC 20d %"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Rising real yields tighten financial conditions and pressure BTC",
                 "signal": "BEARISH",
                 "weight": 18,
-                "evidence": "Real yield 20d bps 25.00000000000002"
+                "evidence": "Real yield 20d bps 17.000000000000014"
               },
               "F5 VIX Level and Risk Regime": {
                 "reason": "VIX rising materially increases BTC risk pressure",
                 "signal": "BEARISH",
                 "weight": 10,
-                "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+                "evidence": "VIX 19.44, VIX d5 4.040000000000001"
               },
               "F4 Fed Bias / Policy Liquidity": {
                 "reason": "No clear Fed liquidity impulse",
@@ -8906,10 +8950,10 @@
                 "evidence": "ETF flow 1825800000"
               },
               "F9 Stablecoin / Crypto Liquidity": {
-                "reason": "Stablecoin liquidity flat",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 9,
-                "evidence": "Stablecoin supply delta 0%"
+                "evidence": "Missing stablecoin and crypto market cap deltas"
               },
               "F7 US Economic Surprise Direction": {
                 "reason": "No confirmed surprise",
@@ -8918,70 +8962,74 @@
                 "evidence": "No recent US event"
               },
               "F6 NQ / High-Beta Risk Confirmation": {
-                "reason": "NQ move below threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 7,
-                "evidence": "NQ 20d % 0"
+                "evidence": "Missing NQ 20d %"
               },
               "F10 BTC Dominance / Crypto Structure": {
-                "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-                "signal": "BULLISH",
+                "reason": "Sentiment alone is not enough to drive BTC factor",
+                "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+                "evidence": "Fear/Greed 18"
               }
             }
           },
           "current_week": {
-            "reason": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-            "warnings": [],
+            "reason": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+            "warnings": [
+              "Missing/neutral input: F1 BTC Own Price Delta",
+              "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+              "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+            ],
             "bear_case": [
               "F2 DXY / USD Pressure (15): DXY 5d % 1.013473443008527",
-              "F3 US 10Y Real Yield Delta (16): Real yield 5d bps 13.000000000000034",
-              "F5 VIX Level and Risk Regime (13): VIX 19.87, VIX d5 4.100000000000001"
+              "F3 US 10Y Real Yield Delta (16): Real yield 5d bps 5.000000000000027",
+              "F5 VIX Level and Risk Regime (13): VIX 19.44, VIX d5 4.040000000000001"
             ],
             "bull_case": [
-              "F8 BTC ETF / Institutional Flow (9): ETF flow 1259400000",
-              "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "F8 BTC ETF / Institutional Flow (9): ETF flow 1259400000"
             ],
             "direction": "BEARISH",
-            "conviction": 79,
+            "conviction": 83,
             "neutral_case": [
-              "F1 BTC Own Price Delta (10): BTC 5d % 1.5091004976584494",
+              "F1 BTC Own Price Delta (10): Missing BTC 5d %",
               "F4 Fed Bias / Policy Liquidity (13): Fed bias neutral",
-              "F6 NQ / High-Beta Risk Confirmation (10): NQ 5d % 0",
+              "F6 NQ / High-Beta Risk Confirmation (10): Missing NQ 5d %",
               "F7 US Economic Surprise Direction (6): No recent US event",
-              "F9 Stablecoin / Crypto Liquidity (5): Stablecoin supply delta 0%"
+              "F9 Stablecoin / Crypto Liquidity (5): Missing stablecoin and crypto market cap deltas",
+              "F10 BTC Dominance / Crypto Structure (3): Fear/Greed 18"
             ],
             "score_bearish": 3,
-            "score_bullish": 2,
-            "score_neutral": 5,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 56,
-              "weight_margin": 32,
+              "active_weight": 53,
+              "weight_margin": 35,
               "bearish_weight": 44,
-              "bullish_weight": 12,
-              "neutral_weight": 44
+              "bullish_weight": 9,
+              "neutral_weight": 47
             },
             "conviction_model": {
-              "net_edge_pct": -58,
+              "net_edge_pct": -66,
               "winning_side": "BEARISH",
-              "participation": 56,
-              "weighted_edge": 0.58,
-              "raw_conviction": 79,
+              "participation": 53,
+              "weighted_edge": 0.66,
+              "raw_conviction": 83,
               "agreement_boost": 0,
-              "base_conviction": 79,
+              "base_conviction": 83,
               "bear_case_weight": 44,
-              "bull_case_weight": 12,
+              "bull_case_weight": 9,
               "conflict_penalty": 0,
-              "final_conviction": 79,
+              "final_conviction": 83,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 56,
-              "bearish_argument_pct": 79,
-              "bullish_argument_pct": 21,
-              "neutral_evidence_pct": 44,
+              "participation_cap": 53,
+              "bearish_argument_pct": 83,
+              "bullish_argument_pct": 17,
+              "neutral_evidence_pct": 47,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-              "directional_participation_pct": 56
+              "final_conviction_logic": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+              "directional_participation_pct": 53
             },
             "factor_breakdown": {
               "F2 DXY / USD Pressure": {
@@ -8991,22 +9039,22 @@
                 "evidence": "DXY 5d % 1.013473443008527"
               },
               "F1 BTC Own Price Delta": {
-                "reason": "BTC move is inside normal noise threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 10,
-                "evidence": "BTC 5d % 1.5091004976584494"
+                "evidence": "Missing BTC 5d %"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Rising real yields tighten financial conditions and pressure BTC",
                 "signal": "BEARISH",
                 "weight": 16,
-                "evidence": "Real yield 5d bps 13.000000000000034"
+                "evidence": "Real yield 5d bps 5.000000000000027"
               },
               "F5 VIX Level and Risk Regime": {
                 "reason": "VIX rising materially increases BTC risk pressure",
                 "signal": "BEARISH",
                 "weight": 13,
-                "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+                "evidence": "VIX 19.44, VIX d5 4.040000000000001"
               },
               "F4 Fed Bias / Policy Liquidity": {
                 "reason": "No clear Fed liquidity impulse",
@@ -9021,10 +9069,10 @@
                 "evidence": "ETF flow 1259400000"
               },
               "F9 Stablecoin / Crypto Liquidity": {
-                "reason": "Stablecoin liquidity flat",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 5,
-                "evidence": "Stablecoin supply delta 0%"
+                "evidence": "Missing stablecoin and crypto market cap deltas"
               },
               "F7 US Economic Surprise Direction": {
                 "reason": "No confirmed surprise",
@@ -9033,70 +9081,74 @@
                 "evidence": "No recent US event"
               },
               "F6 NQ / High-Beta Risk Confirmation": {
-                "reason": "NQ move below threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 10,
-                "evidence": "NQ 5d % 0"
+                "evidence": "Missing NQ 5d %"
               },
               "F10 BTC Dominance / Crypto Structure": {
-                "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-                "signal": "BULLISH",
+                "reason": "Sentiment alone is not enough to drive BTC factor",
+                "signal": "NEUTRAL",
                 "weight": 3,
-                "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+                "evidence": "Fear/Greed 18"
               }
             }
           },
           "current_month": {
-            "reason": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
-            "warnings": [],
+            "reason": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
+            "warnings": [
+              "Missing/neutral input: F1 BTC Own Price Delta",
+              "Missing/neutral input: F6 NQ / High-Beta Risk Confirmation",
+              "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+            ],
             "bear_case": [
               "F2 DXY / USD Pressure (14): DXY 20d % 1.755335916130279",
-              "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 25.00000000000002",
-              "F5 VIX Level and Risk Regime (9): VIX 19.87, VIX d5 4.100000000000001"
+              "F3 US 10Y Real Yield Delta (18): Real yield 20d bps 17.000000000000014",
+              "F5 VIX Level and Risk Regime (9): VIX 19.44, VIX d5 4.040000000000001"
             ],
             "bull_case": [
-              "F8 BTC ETF / Institutional Flow (12): ETF flow 1825800000",
-              "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 12, BTC delta 1.5091004976584494%"
+              "F8 BTC ETF / Institutional Flow (12): ETF flow 1825800000"
             ],
             "direction": "BEARISH",
-            "conviction": 72,
+            "conviction": 77,
             "neutral_case": [
-              "F1 BTC Own Price Delta (7): BTC 20d % 1.5091004976584494",
+              "F1 BTC Own Price Delta (7): Missing BTC 20d %",
               "F4 Fed Bias / Policy Liquidity (17): Fed bias neutral",
-              "F6 NQ / High-Beta Risk Confirmation (6): NQ 20d % 0",
+              "F6 NQ / High-Beta Risk Confirmation (6): Missing NQ 20d %",
               "F7 US Economic Surprise Direction (4): No recent US event",
-              "F9 Stablecoin / Crypto Liquidity (9): Stablecoin supply delta 0%"
+              "F9 Stablecoin / Crypto Liquidity (9): Missing stablecoin and crypto market cap deltas",
+              "F10 BTC Dominance / Crypto Structure (4): Fear/Greed 18"
             ],
             "score_bearish": 3,
-            "score_bullish": 2,
-            "score_neutral": 5,
+            "score_bullish": 1,
+            "score_neutral": 6,
             "weighted_score": {
-              "active_weight": 57,
-              "weight_margin": 25,
+              "active_weight": 53,
+              "weight_margin": 29,
               "bearish_weight": 41,
-              "bullish_weight": 16,
-              "neutral_weight": 43
+              "bullish_weight": 12,
+              "neutral_weight": 47
             },
             "conviction_model": {
-              "net_edge_pct": -44,
+              "net_edge_pct": -54,
               "winning_side": "BEARISH",
-              "participation": 57,
-              "weighted_edge": 0.44,
-              "raw_conviction": 72,
+              "participation": 53,
+              "weighted_edge": 0.54,
+              "raw_conviction": 77,
               "agreement_boost": 0,
-              "base_conviction": 72,
+              "base_conviction": 77,
               "bear_case_weight": 41,
-              "bull_case_weight": 16,
+              "bull_case_weight": 12,
               "conflict_penalty": 0,
-              "final_conviction": 72,
+              "final_conviction": 77,
               "verdict_strength": "VERY_STRONG",
-              "participation_cap": 57,
-              "bearish_argument_pct": 72,
-              "bullish_argument_pct": 28,
-              "neutral_evidence_pct": 43,
+              "participation_cap": 53,
+              "bearish_argument_pct": 77,
+              "bullish_argument_pct": 23,
+              "neutral_evidence_pct": 47,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
-              "directional_participation_pct": 57
+              "final_conviction_logic": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
+              "directional_participation_pct": 53
             },
             "factor_breakdown": {
               "F2 DXY / USD Pressure": {
@@ -9106,22 +9158,22 @@
                 "evidence": "DXY 20d % 1.755335916130279"
               },
               "F1 BTC Own Price Delta": {
-                "reason": "BTC move is inside normal noise threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 7,
-                "evidence": "BTC 20d % 1.5091004976584494"
+                "evidence": "Missing BTC 20d %"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Rising real yields tighten financial conditions and pressure BTC",
                 "signal": "BEARISH",
                 "weight": 18,
-                "evidence": "Real yield 20d bps 25.00000000000002"
+                "evidence": "Real yield 20d bps 17.000000000000014"
               },
               "F5 VIX Level and Risk Regime": {
                 "reason": "VIX rising materially increases BTC risk pressure",
                 "signal": "BEARISH",
                 "weight": 9,
-                "evidence": "VIX 19.87, VIX d5 4.100000000000001"
+                "evidence": "VIX 19.44, VIX d5 4.040000000000001"
               },
               "F4 Fed Bias / Policy Liquidity": {
                 "reason": "No clear Fed liquidity impulse",
@@ -9136,10 +9188,10 @@
                 "evidence": "ETF flow 1825800000"
               },
               "F9 Stablecoin / Crypto Liquidity": {
-                "reason": "Stablecoin liquidity flat",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 9,
-                "evidence": "Stablecoin supply delta 0%"
+                "evidence": "Missing stablecoin and crypto market cap deltas"
               },
               "F7 US Economic Surprise Direction": {
                 "reason": "No confirmed surprise",
@@ -9148,31 +9200,31 @@
                 "evidence": "No recent US event"
               },
               "F6 NQ / High-Beta Risk Confirmation": {
-                "reason": "NQ move below threshold",
+                "reason": "Missing input",
                 "signal": "NEUTRAL",
                 "weight": 6,
-                "evidence": "NQ 20d % 0"
+                "evidence": "Missing NQ 20d %"
               },
               "F10 BTC Dominance / Crypto Structure": {
-                "reason": "Extreme fear with stabilising BTC can support contrarian bullish pressure",
-                "signal": "BULLISH",
+                "reason": "Sentiment alone is not enough to drive BTC factor",
+                "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Fear/Greed 12, BTC delta 1.5091004976584494%"
+                "evidence": "Fear/Greed 18"
               }
             }
           }
         },
-        "non_neutral_count": 5,
-        "reasoning_summary": "BTC weighted verdicts calculated deterministically by timeframe. 24h BEARISH 78%, 3d BEARISH 81%, current week BEARISH 79%, next week BEARISH 74%, current month BEARISH 72%.",
+        "non_neutral_count": 4,
+        "reasoning_summary": "BTC weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 51%, 3d BEARISH 84%, current week BEARISH 83%, next week BEARISH 79%, current month BEARISH 77%.",
         "direction_next_week": "BEARISH",
-        "reason_current_week": "current_week BTC deterministic score: bull case 12 weight, bear case 44 weight, neutral evidence 44 weight. Winning side BEARISH, conviction 79%, net edge -58, directional participation 56%.",
-        "conviction_next_week": 74,
-        "reason_current_month": "current_month BTC deterministic score: bull case 16 weight, bear case 41 weight, neutral evidence 43 weight. Winning side BEARISH, conviction 72%, net edge -44, directional participation 57%.",
+        "reason_current_week": "current_week BTC deterministic score: bull case 9 weight, bear case 44 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 83%, net edge -66, directional participation 53%.",
+        "conviction_next_week": 79,
+        "reason_current_month": "current_month BTC deterministic score: bull case 12 weight, bear case 41 weight, neutral evidence 47 weight. Winning side BEARISH, conviction 77%, net edge -54, directional participation 53%.",
         "direction_current_week": "BEARISH",
         "logic_document_version": "2.0_weighted_engine",
-        "conviction_current_week": 79,
+        "conviction_current_week": 83,
         "direction_current_month": "BEARISH",
-        "conviction_current_month": 72
+        "conviction_current_month": 77
       }
     }
   ]
