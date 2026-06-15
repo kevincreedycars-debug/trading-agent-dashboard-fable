@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-15T15:00:42.383Z",
+    "last_updated_et": "2026-06-15T17:47:24.427Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Monday"
@@ -6288,64 +6288,64 @@
       "agent": "NQ",
       "status": "live",
       "market_status": "open",
-      "last_run_et": "2026-06-11T05:17:08.923+00:00",
+      "last_run_et": "2026-06-15T17:39:38.698+00:00",
       "summary": "NQ Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
-          "direction": "BEARISH",
-          "conviction": 75,
-          "reason": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
+          "direction": "BULLISH_LEAN",
+          "conviction": 55,
+          "reason": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
           "conviction_model": {
-            "neutral_pct": 84,
-            "net_edge_pct": -50,
-            "winning_side": "BEARISH",
-            "participation": 16,
-            "weighted_edge": 0.5,
-            "neutral_weight": 84,
-            "raw_conviction": 75,
+            "neutral_pct": 56,
+            "net_edge_pct": 10,
+            "winning_side": "BULLISH",
+            "participation": 44,
+            "weighted_edge": 0.1,
+            "neutral_weight": 56,
+            "raw_conviction": 55,
             "agreement_boost": 0,
-            "base_conviction": 75,
-            "bear_case_weight": 12,
-            "bull_case_weight": 4,
+            "base_conviction": 55,
+            "bear_case_weight": 20,
+            "bull_case_weight": 24,
             "conflict_penalty": 0,
-            "final_conviction": 75,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 16,
-            "bearish_argument_pct": 75,
-            "bullish_argument_pct": 25,
-            "neutral_evidence_pct": 84,
+            "final_conviction": 55,
+            "verdict_strength": "WEAK",
+            "participation_cap": 44,
+            "bearish_argument_pct": 45,
+            "bullish_argument_pct": 55,
+            "neutral_evidence_pct": 56,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-            "active_participation_pct": 16,
-            "directional_participation_pct": 16,
+            "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+            "active_participation_pct": 44,
+            "directional_participation_pct": 44,
             "weighted_score": {
-              "bullish_weight": 4,
-              "bearish_weight": 12,
-              "neutral_weight": 84,
-              "active_weight": 16,
-              "weight_margin": 8
+              "bullish_weight": 24,
+              "bearish_weight": 20,
+              "neutral_weight": 56,
+              "active_weight": 44,
+              "weight_margin": 4
             },
-            "alignment": 25
+            "alignment": 55
           },
           "weighted_score": {
-            "active_weight": 16,
-            "weight_margin": 8,
-            "bearish_weight": 12,
-            "bullish_weight": 4,
-            "neutral_weight": 84
+            "active_weight": 44,
+            "weight_margin": 4,
+            "bearish_weight": 20,
+            "bullish_weight": 24,
+            "neutral_weight": 56
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 20,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
               "reason": "Volatility change below threshold",
               "signal": "NEUTRAL",
               "weight": 14,
-              "evidence": "VIX delta 0.95"
+              "evidence": "VIX delta -1.76"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6366,92 +6366,92 @@
               "evidence": "US 10Y real yield delta 0 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
-              "reason": "NQ price move below confirmation threshold",
-              "signal": "NEUTRAL",
+              "reason": "NQ own price action confirms bullish pressure",
+              "signal": "BULLISH",
               "weight": 10,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.59%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 2,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 4.75%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 2.62%"
             }
           }
         },
         "3d": {
-          "direction": "BEARISH",
-          "conviction": 91,
-          "reason": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 53,
+          "reason": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
           "conviction_model": {
-            "neutral_pct": 46,
-            "net_edge_pct": -82,
+            "neutral_pct": 34,
+            "net_edge_pct": -6,
             "winning_side": "BEARISH",
-            "participation": 54,
-            "weighted_edge": 0.82,
-            "neutral_weight": 46,
-            "raw_conviction": 91,
+            "participation": 66,
+            "weighted_edge": 0.06,
+            "neutral_weight": 34,
+            "raw_conviction": 53,
             "agreement_boost": 0,
-            "base_conviction": 91,
-            "bear_case_weight": 49,
-            "bull_case_weight": 5,
+            "base_conviction": 53,
+            "bear_case_weight": 35,
+            "bull_case_weight": 31,
             "conflict_penalty": 0,
-            "final_conviction": 91,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 54,
-            "bearish_argument_pct": 91,
-            "bullish_argument_pct": 9,
-            "neutral_evidence_pct": 46,
+            "final_conviction": 53,
+            "verdict_strength": "WEAK",
+            "participation_cap": 66,
+            "bearish_argument_pct": 53,
+            "bullish_argument_pct": 47,
+            "neutral_evidence_pct": 34,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-            "active_participation_pct": 54,
-            "directional_participation_pct": 54,
+            "final_conviction_logic": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+            "active_participation_pct": 66,
+            "directional_participation_pct": 66,
             "weighted_score": {
-              "bullish_weight": 5,
-              "bearish_weight": 49,
-              "neutral_weight": 46,
-              "active_weight": 54,
-              "weight_margin": 44
+              "bullish_weight": 31,
+              "bearish_weight": 35,
+              "neutral_weight": 34,
+              "active_weight": 66,
+              "weight_margin": 4
             },
-            "alignment": 9
+            "alignment": 47
           },
           "weighted_score": {
-            "active_weight": 54,
-            "weight_margin": 44,
-            "bearish_weight": 49,
-            "bullish_weight": 5,
-            "neutral_weight": 46
+            "active_weight": 66,
+            "weight_margin": 4,
+            "bearish_weight": 35,
+            "bullish_weight": 31,
+            "neutral_weight": 34
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 18,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6460,104 +6460,104 @@
               "evidence": "DXY delta 1.01%"
             },
             "F4": {
-              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-              "signal": "BEARISH",
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "US 10Y nominal delta 7 bps"
+              "evidence": "US 10Y nominal delta -2 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "US 10Y real yield delta 13 bps"
+              "evidence": "US 10Y real yield delta 5 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 7,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.74%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 3,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 8.32%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 1.38%"
             }
           }
         },
         "current_week": {
-          "direction": "BEARISH",
-          "conviction": 89,
-          "reason": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 53,
+          "reason": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
           "conviction_model": {
-            "neutral_pct": 44,
-            "net_edge_pct": -78,
+            "neutral_pct": 32,
+            "net_edge_pct": -6,
             "winning_side": "BEARISH",
-            "participation": 56,
-            "weighted_edge": 0.78,
-            "neutral_weight": 44,
-            "raw_conviction": 89,
+            "participation": 68,
+            "weighted_edge": 0.06,
+            "neutral_weight": 32,
+            "raw_conviction": 53,
             "agreement_boost": 0,
-            "base_conviction": 89,
-            "bear_case_weight": 50,
-            "bull_case_weight": 6,
+            "base_conviction": 53,
+            "bear_case_weight": 36,
+            "bull_case_weight": 32,
             "conflict_penalty": 0,
-            "final_conviction": 89,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 56,
-            "bearish_argument_pct": 89,
-            "bullish_argument_pct": 11,
-            "neutral_evidence_pct": 44,
+            "final_conviction": 53,
+            "verdict_strength": "WEAK",
+            "participation_cap": 68,
+            "bearish_argument_pct": 53,
+            "bullish_argument_pct": 47,
+            "neutral_evidence_pct": 32,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-            "active_participation_pct": 56,
-            "directional_participation_pct": 56,
+            "final_conviction_logic": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+            "active_participation_pct": 68,
+            "directional_participation_pct": 68,
             "weighted_score": {
-              "bullish_weight": 6,
-              "bearish_weight": 50,
-              "neutral_weight": 44,
-              "active_weight": 56,
-              "weight_margin": 44
+              "bullish_weight": 32,
+              "bearish_weight": 36,
+              "neutral_weight": 32,
+              "active_weight": 68,
+              "weight_margin": 4
             },
-            "alignment": 11
+            "alignment": 47
           },
           "weighted_score": {
-            "active_weight": 56,
-            "weight_margin": 44,
-            "bearish_weight": 50,
-            "bullish_weight": 6,
-            "neutral_weight": 44
+            "active_weight": 68,
+            "weight_margin": 4,
+            "bearish_weight": 36,
+            "bullish_weight": 32,
+            "neutral_weight": 32
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 16,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6566,104 +6566,104 @@
               "evidence": "DXY delta 1.01%"
             },
             "F4": {
-              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-              "signal": "BEARISH",
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 7 bps"
+              "evidence": "US 10Y nominal delta -2 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "US 10Y real yield delta 13 bps"
+              "evidence": "US 10Y real yield delta 5 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 16,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 6,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.74%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 4,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 8.32%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 1.38%"
             }
           }
         },
         "next_week": {
-          "direction": "BEARISH",
-          "conviction": 83,
-          "reason": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 57,
+          "reason": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
           "conviction_model": {
-            "neutral_pct": 52,
-            "net_edge_pct": -66,
+            "neutral_pct": 35,
+            "net_edge_pct": -14,
             "winning_side": "BEARISH",
-            "participation": 48,
-            "weighted_edge": 0.66,
-            "neutral_weight": 52,
-            "raw_conviction": 83,
+            "participation": 65,
+            "weighted_edge": 0.14,
+            "neutral_weight": 35,
+            "raw_conviction": 57,
             "agreement_boost": 0,
-            "base_conviction": 83,
-            "bear_case_weight": 40,
-            "bull_case_weight": 8,
+            "base_conviction": 57,
+            "bear_case_weight": 37,
+            "bull_case_weight": 28,
             "conflict_penalty": 0,
-            "final_conviction": 83,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 48,
-            "bearish_argument_pct": 83,
-            "bullish_argument_pct": 17,
-            "neutral_evidence_pct": 52,
+            "final_conviction": 57,
+            "verdict_strength": "WEAK",
+            "participation_cap": 65,
+            "bearish_argument_pct": 57,
+            "bullish_argument_pct": 43,
+            "neutral_evidence_pct": 35,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
-            "active_participation_pct": 48,
-            "directional_participation_pct": 48,
+            "final_conviction_logic": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
+            "active_participation_pct": 65,
+            "directional_participation_pct": 65,
             "weighted_score": {
-              "bullish_weight": 8,
-              "bearish_weight": 40,
-              "neutral_weight": 52,
-              "active_weight": 48,
-              "weight_margin": 32
+              "bullish_weight": 28,
+              "bearish_weight": 37,
+              "neutral_weight": 35,
+              "active_weight": 65,
+              "weight_margin": 9
             },
-            "alignment": 17
+            "alignment": 43
           },
           "weighted_score": {
-            "active_weight": 48,
-            "weight_margin": 32,
-            "bearish_weight": 40,
-            "bullish_weight": 8,
-            "neutral_weight": 52
+            "active_weight": 65,
+            "weight_margin": 9,
+            "bearish_weight": 37,
+            "bullish_weight": 28,
+            "neutral_weight": 35
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 14,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 8,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6675,25 +6675,25 @@
               "reason": "Nominal yield move below threshold",
               "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 0 bps"
+              "evidence": "US 10Y nominal delta -1 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 20,
-              "evidence": "US 10Y real yield delta 25 bps"
+              "evidence": "US 10Y real yield delta 17 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 20,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 5,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
@@ -6702,74 +6702,74 @@
               "evidence": "NQ delta 0%"
             },
             "F9": {
-              "reason": "BTC strength confirms high-beta risk appetite",
-              "signal": "BULLISH",
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 0%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 0%"
             }
           }
         },
         "current_month": {
           "direction": "BEARISH",
-          "conviction": 82,
-          "reason": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
+          "conviction": 60,
+          "reason": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
           "conviction_model": {
-            "neutral_pct": 51,
-            "net_edge_pct": -64,
+            "neutral_pct": 35,
+            "net_edge_pct": -20,
             "winning_side": "BEARISH",
-            "participation": 49,
-            "weighted_edge": 0.64,
-            "neutral_weight": 51,
-            "raw_conviction": 82,
+            "participation": 65,
+            "weighted_edge": 0.2,
+            "neutral_weight": 35,
+            "raw_conviction": 60,
             "agreement_boost": 0,
-            "base_conviction": 82,
-            "bear_case_weight": 40,
-            "bull_case_weight": 9,
+            "base_conviction": 60,
+            "bear_case_weight": 39,
+            "bull_case_weight": 26,
             "conflict_penalty": 0,
-            "final_conviction": 82,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 49,
-            "bearish_argument_pct": 82,
-            "bullish_argument_pct": 18,
-            "neutral_evidence_pct": 51,
+            "final_conviction": 60,
+            "verdict_strength": "MODERATE",
+            "participation_cap": 65,
+            "bearish_argument_pct": 60,
+            "bullish_argument_pct": 40,
+            "neutral_evidence_pct": 35,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
-            "active_participation_pct": 49,
-            "directional_participation_pct": 49,
+            "final_conviction_logic": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
+            "active_participation_pct": 65,
+            "directional_participation_pct": 65,
             "weighted_score": {
-              "bullish_weight": 9,
-              "bearish_weight": 40,
-              "neutral_weight": 51,
-              "active_weight": 49,
-              "weight_margin": 31
+              "bullish_weight": 26,
+              "bearish_weight": 39,
+              "neutral_weight": 35,
+              "active_weight": 65,
+              "weight_margin": 13
             },
-            "alignment": 18
+            "alignment": 40
           },
           "weighted_score": {
-            "active_weight": 49,
-            "weight_margin": 31,
-            "bearish_weight": 40,
-            "bullish_weight": 9,
-            "neutral_weight": 51
+            "active_weight": 65,
+            "weight_margin": 13,
+            "bearish_weight": 39,
+            "bullish_weight": 26,
+            "neutral_weight": 35
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 6,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6781,25 +6781,25 @@
               "reason": "Nominal yield move below threshold",
               "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 0 bps"
+              "evidence": "US 10Y nominal delta -1 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US 10Y real yield delta 25 bps"
+              "evidence": "US 10Y real yield delta 17 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 20,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 5,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
@@ -6808,76 +6808,76 @@
               "evidence": "NQ delta 0%"
             },
             "F9": {
-              "reason": "BTC strength confirms high-beta risk appetite",
-              "signal": "BULLISH",
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 0%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 0%"
             }
           }
         }
       },
       "priority_timeframe": "24h",
       "priority_call": {
-        "direction": "BEARISH",
-        "conviction": 75,
-        "reason": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
+        "direction": "BULLISH_LEAN",
+        "conviction": 55,
+        "reason": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
         "conviction_model": {
-          "neutral_pct": 84,
-          "net_edge_pct": -50,
-          "winning_side": "BEARISH",
-          "participation": 16,
-          "weighted_edge": 0.5,
-          "neutral_weight": 84,
-          "raw_conviction": 75,
+          "neutral_pct": 56,
+          "net_edge_pct": 10,
+          "winning_side": "BULLISH",
+          "participation": 44,
+          "weighted_edge": 0.1,
+          "neutral_weight": 56,
+          "raw_conviction": 55,
           "agreement_boost": 0,
-          "base_conviction": 75,
-          "bear_case_weight": 12,
-          "bull_case_weight": 4,
+          "base_conviction": 55,
+          "bear_case_weight": 20,
+          "bull_case_weight": 24,
           "conflict_penalty": 0,
-          "final_conviction": 75,
-          "verdict_strength": "VERY_STRONG",
-          "participation_cap": 16,
-          "bearish_argument_pct": 75,
-          "bullish_argument_pct": 25,
-          "neutral_evidence_pct": 84,
+          "final_conviction": 55,
+          "verdict_strength": "WEAK",
+          "participation_cap": 44,
+          "bearish_argument_pct": 45,
+          "bullish_argument_pct": 55,
+          "neutral_evidence_pct": 56,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-          "active_participation_pct": 16,
-          "directional_participation_pct": 16,
+          "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+          "active_participation_pct": 44,
+          "directional_participation_pct": 44,
           "weighted_score": {
-            "bullish_weight": 4,
-            "bearish_weight": 12,
-            "neutral_weight": 84,
-            "active_weight": 16,
-            "weight_margin": 8
+            "bullish_weight": 24,
+            "bearish_weight": 20,
+            "neutral_weight": 56,
+            "active_weight": 44,
+            "weight_margin": 4
           },
-          "alignment": 25
+          "alignment": 55
         },
         "weighted_score": {
-          "active_weight": 16,
-          "weight_margin": 8,
-          "bearish_weight": 12,
-          "bullish_weight": 4,
-          "neutral_weight": 84
+          "active_weight": 44,
+          "weight_margin": 4,
+          "bearish_weight": 20,
+          "bullish_weight": 24,
+          "neutral_weight": 56
         },
         "factor_breakdown": {
           "F1": {
             "reason": "Neutral VIX regime",
             "signal": "NEUTRAL",
             "weight": 20,
-            "evidence": "VIX 19.87"
+            "evidence": "VIX 17.68"
           },
           "F2": {
             "reason": "Volatility change below threshold",
             "signal": "NEUTRAL",
             "weight": 14,
-            "evidence": "VIX delta 0.95"
+            "evidence": "VIX delta -1.76"
           },
           "F3": {
             "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6898,34 +6898,34 @@
             "evidence": "US 10Y real yield delta 0 bps"
           },
           "F6": {
-            "reason": "No clear Fed liquidity impulse",
-            "signal": "NEUTRAL",
+            "reason": "Dovish Fed bias eases liquidity and supports NQ",
+            "signal": "BULLISH",
             "weight": 12,
-            "evidence": "Fed bias neutral"
+            "evidence": "Fed bias dovish"
           },
           "F7": {
-            "reason": "No confirmed US economic surprise",
-            "signal": "NEUTRAL",
+            "reason": "Negative US surprise pressures NQ through growth risk",
+            "signal": "BEARISH",
             "weight": 8,
-            "evidence": "No recent US event"
+            "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
           },
           "F8": {
-            "reason": "NQ price move below confirmation threshold",
-            "signal": "NEUTRAL",
+            "reason": "NQ own price action confirms bullish pressure",
+            "signal": "BULLISH",
             "weight": 10,
-            "evidence": "NQ delta 0%"
+            "evidence": "NQ delta 0.59%"
           },
           "F9": {
             "reason": "BTC strength confirms high-beta risk appetite",
             "signal": "BULLISH",
             "weight": 2,
-            "evidence": "BTC delta 1.51%"
+            "evidence": "BTC delta 4.75%"
           },
           "F10": {
-            "reason": "Gold weakness outside risk-off supports risk appetite",
-            "signal": "BULLISH",
+            "reason": "Gold does not provide a clean defensive-flow signal",
+            "signal": "NEUTRAL",
             "weight": 2,
-            "evidence": "Gold delta -4.4%, VIX 19.87"
+            "evidence": "Gold delta 2.62%"
           }
         }
       },
@@ -6934,13 +6934,13 @@
           "reason": "Neutral VIX regime",
           "signal": "NEUTRAL",
           "weight": 20,
-          "evidence": "VIX 19.87"
+          "evidence": "VIX 17.68"
         },
         "F2": {
           "reason": "Volatility change below threshold",
           "signal": "NEUTRAL",
           "weight": 14,
-          "evidence": "VIX delta 0.95"
+          "evidence": "VIX delta -1.76"
         },
         "F3": {
           "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -6961,139 +6961,141 @@
           "evidence": "US 10Y real yield delta 0 bps"
         },
         "F6": {
-          "reason": "No clear Fed liquidity impulse",
-          "signal": "NEUTRAL",
+          "reason": "Dovish Fed bias eases liquidity and supports NQ",
+          "signal": "BULLISH",
           "weight": 12,
-          "evidence": "Fed bias neutral"
+          "evidence": "Fed bias dovish"
         },
         "F7": {
-          "reason": "No confirmed US economic surprise",
-          "signal": "NEUTRAL",
+          "reason": "Negative US surprise pressures NQ through growth risk",
+          "signal": "BEARISH",
           "weight": 8,
-          "evidence": "No recent US event"
+          "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
         },
         "F8": {
-          "reason": "NQ price move below confirmation threshold",
-          "signal": "NEUTRAL",
+          "reason": "NQ own price action confirms bullish pressure",
+          "signal": "BULLISH",
           "weight": 10,
-          "evidence": "NQ delta 0%"
+          "evidence": "NQ delta 0.59%"
         },
         "F9": {
           "reason": "BTC strength confirms high-beta risk appetite",
           "signal": "BULLISH",
           "weight": 2,
-          "evidence": "BTC delta 1.51%"
+          "evidence": "BTC delta 4.75%"
         },
         "F10": {
-          "reason": "Gold weakness outside risk-off supports risk appetite",
-          "signal": "BULLISH",
+          "reason": "Gold does not provide a clean defensive-flow signal",
+          "signal": "NEUTRAL",
           "weight": 2,
-          "evidence": "Gold delta -4.4%, VIX 19.87"
+          "evidence": "Gold delta 2.62%"
         }
       },
       "key_factors": [
-        "F1 [20]: NEUTRAL — VIX 19.87 (Neutral VIX regime)",
-        "F2 [14]: NEUTRAL — VIX delta 0.95 (Volatility change below threshold)",
+        "F1 [20]: NEUTRAL — VIX 17.68 (Neutral VIX regime)",
+        "F2 [14]: NEUTRAL — VIX delta -1.76 (Volatility change below threshold)",
         "F3 [12]: BEARISH — DXY delta 0.6% (Rising USD tightens financial conditions and pressures NQ)",
         "F4 [6]: NEUTRAL — US 10Y nominal delta 0 bps (Nominal yield move below threshold)",
         "F5 [14]: NEUTRAL — US 10Y real yield delta 0 bps (Real yield move below threshold)",
-        "F6 [12]: NEUTRAL — Fed bias neutral (No clear Fed liquidity impulse)",
-        "F7 [8]: NEUTRAL — No recent US event (No confirmed US economic surprise)",
-        "F8 [10]: NEUTRAL — NQ delta 0% (NQ price move below confirmation threshold)",
-        "F9 [2]: BULLISH — BTC delta 1.51% (BTC strength confirms high-beta risk appetite)",
-        "F10 [2]: BULLISH — Gold delta -4.4%, VIX 19.87 (Gold weakness outside risk-off supports risk appetite)"
+        "F6 [12]: BULLISH — Fed bias dovish (Dovish Fed bias eases liquidity and supports NQ)",
+        "F7 [8]: BEARISH — {\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null} (Negative US surprise pressures NQ through growth risk)",
+        "F8 [10]: BULLISH — NQ delta 0.59% (NQ own price action confirms bullish pressure)",
+        "F9 [2]: BULLISH — BTC delta 4.75% (BTC strength confirms high-beta risk appetite)",
+        "F10 [2]: NEUTRAL — Gold delta 2.62% (Gold does not provide a clean defensive-flow signal)"
       ],
-      "warnings": [],
-      "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BEARISH 75%, 3d BEARISH 91%, current week BEARISH 89%, next week BEARISH 83%, current month BEARISH 82%.",
-      "score_bullish": 2,
-      "score_bearish": 1,
-      "score_neutral": 7,
-      "non_neutral_count": 4,
+      "warnings": [
+        "NQ_GOLD_DEFENSIVE_FLOW_CONFLICT"
+      ],
+      "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 55%, 3d BEARISH_LEAN 53%, current week BEARISH_LEAN 53%, next week BEARISH_LEAN 57%, current month BEARISH 60%.",
+      "score_bullish": 3,
+      "score_bearish": 2,
+      "score_neutral": 5,
+      "non_neutral_count": 8,
       "logic_document": "agent_nq_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
-        "neutral_pct": 84,
-        "net_edge_pct": -50,
-        "winning_side": "BEARISH",
-        "participation": 16,
-        "weighted_edge": 0.5,
-        "neutral_weight": 84,
-        "raw_conviction": 75,
+        "neutral_pct": 56,
+        "net_edge_pct": 10,
+        "winning_side": "BULLISH",
+        "participation": 44,
+        "weighted_edge": 0.1,
+        "neutral_weight": 56,
+        "raw_conviction": 55,
         "agreement_boost": 0,
-        "base_conviction": 75,
-        "bear_case_weight": 12,
-        "bull_case_weight": 4,
+        "base_conviction": 55,
+        "bear_case_weight": 20,
+        "bull_case_weight": 24,
         "conflict_penalty": 0,
-        "final_conviction": 75,
-        "verdict_strength": "VERY_STRONG",
-        "participation_cap": 16,
-        "bearish_argument_pct": 75,
-        "bullish_argument_pct": 25,
-        "neutral_evidence_pct": 84,
+        "final_conviction": 55,
+        "verdict_strength": "WEAK",
+        "participation_cap": 44,
+        "bearish_argument_pct": 45,
+        "bullish_argument_pct": 55,
+        "neutral_evidence_pct": 56,
         "missing_input_penalty": 0,
-        "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-        "active_participation_pct": 16,
-        "directional_participation_pct": 16,
+        "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+        "active_participation_pct": 44,
+        "directional_participation_pct": 44,
         "weighted_score": {
-          "bullish_weight": 4,
-          "bearish_weight": 12,
-          "neutral_weight": 84,
-          "active_weight": 16,
-          "weight_margin": 8
+          "bullish_weight": 24,
+          "bearish_weight": 20,
+          "neutral_weight": 56,
+          "active_weight": 44,
+          "weight_margin": 4
         },
-        "alignment": 25
+        "alignment": 55
       },
       "timeframe_models": {
         "3d": {
-          "reason": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-          "direction": "BEARISH",
-          "conviction": 91,
-          "score_bearish": 4,
-          "score_bullish": 2,
+          "reason": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 53,
+          "score_bearish": 3,
+          "score_bullish": 3,
           "score_neutral": 4,
           "weighted_score": {
-            "active_weight": 54,
-            "weight_margin": 44,
-            "bearish_weight": 49,
-            "bullish_weight": 5,
-            "neutral_weight": 46
+            "active_weight": 66,
+            "weight_margin": 4,
+            "bearish_weight": 35,
+            "bullish_weight": 31,
+            "neutral_weight": 34
           },
           "conviction_model": {
-            "neutral_pct": 46,
-            "net_edge_pct": -82,
+            "neutral_pct": 34,
+            "net_edge_pct": -6,
             "winning_side": "BEARISH",
-            "participation": 54,
-            "weighted_edge": 0.82,
-            "neutral_weight": 46,
-            "raw_conviction": 91,
+            "participation": 66,
+            "weighted_edge": 0.06,
+            "neutral_weight": 34,
+            "raw_conviction": 53,
             "agreement_boost": 0,
-            "base_conviction": 91,
-            "bear_case_weight": 49,
-            "bull_case_weight": 5,
+            "base_conviction": 53,
+            "bear_case_weight": 35,
+            "bull_case_weight": 31,
             "conflict_penalty": 0,
-            "final_conviction": 91,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 54,
-            "bearish_argument_pct": 91,
-            "bullish_argument_pct": 9,
-            "neutral_evidence_pct": 46,
+            "final_conviction": 53,
+            "verdict_strength": "WEAK",
+            "participation_cap": 66,
+            "bearish_argument_pct": 53,
+            "bullish_argument_pct": 47,
+            "neutral_evidence_pct": 34,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-            "active_participation_pct": 54,
-            "directional_participation_pct": 54
+            "final_conviction_logic": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+            "active_participation_pct": 66,
+            "directional_participation_pct": 66
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 18,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7102,99 +7104,99 @@
               "evidence": "DXY delta 1.01%"
             },
             "F4": {
-              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-              "signal": "BEARISH",
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "US 10Y nominal delta 7 bps"
+              "evidence": "US 10Y nominal delta -2 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 16,
-              "evidence": "US 10Y real yield delta 13 bps"
+              "evidence": "US 10Y real yield delta 5 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 14,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 7,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 7,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.74%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 3,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 8.32%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 1.38%"
             }
           }
         },
         "24h": {
-          "reason": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-          "direction": "BEARISH",
-          "conviction": 75,
-          "score_bearish": 1,
-          "score_bullish": 2,
-          "score_neutral": 7,
+          "reason": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+          "direction": "BULLISH_LEAN",
+          "conviction": 55,
+          "score_bearish": 2,
+          "score_bullish": 3,
+          "score_neutral": 5,
           "weighted_score": {
-            "active_weight": 16,
-            "weight_margin": 8,
-            "bearish_weight": 12,
-            "bullish_weight": 4,
-            "neutral_weight": 84
+            "active_weight": 44,
+            "weight_margin": 4,
+            "bearish_weight": 20,
+            "bullish_weight": 24,
+            "neutral_weight": 56
           },
           "conviction_model": {
-            "neutral_pct": 84,
-            "net_edge_pct": -50,
-            "winning_side": "BEARISH",
-            "participation": 16,
-            "weighted_edge": 0.5,
-            "neutral_weight": 84,
-            "raw_conviction": 75,
+            "neutral_pct": 56,
+            "net_edge_pct": 10,
+            "winning_side": "BULLISH",
+            "participation": 44,
+            "weighted_edge": 0.1,
+            "neutral_weight": 56,
+            "raw_conviction": 55,
             "agreement_boost": 0,
-            "base_conviction": 75,
-            "bear_case_weight": 12,
-            "bull_case_weight": 4,
+            "base_conviction": 55,
+            "bear_case_weight": 20,
+            "bull_case_weight": 24,
             "conflict_penalty": 0,
-            "final_conviction": 75,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 16,
-            "bearish_argument_pct": 75,
-            "bullish_argument_pct": 25,
-            "neutral_evidence_pct": 84,
+            "final_conviction": 55,
+            "verdict_strength": "WEAK",
+            "participation_cap": 44,
+            "bearish_argument_pct": 45,
+            "bullish_argument_pct": 55,
+            "neutral_evidence_pct": 56,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-            "active_participation_pct": 16,
-            "directional_participation_pct": 16
+            "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+            "active_participation_pct": 44,
+            "directional_participation_pct": 44
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 20,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
               "reason": "Volatility change below threshold",
               "signal": "NEUTRAL",
               "weight": 14,
-              "evidence": "VIX delta 0.95"
+              "evidence": "VIX delta -1.76"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7215,87 +7217,87 @@
               "evidence": "US 10Y real yield delta 0 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 8,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
-              "reason": "NQ price move below confirmation threshold",
-              "signal": "NEUTRAL",
+              "reason": "NQ own price action confirms bullish pressure",
+              "signal": "BULLISH",
               "weight": 10,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.59%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 2,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 4.75%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 2.62%"
             }
           }
         },
         "next_week": {
-          "reason": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
-          "direction": "BEARISH",
-          "conviction": 83,
+          "reason": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 57,
           "score_bearish": 3,
           "score_bullish": 2,
           "score_neutral": 5,
           "weighted_score": {
-            "active_weight": 48,
-            "weight_margin": 32,
-            "bearish_weight": 40,
-            "bullish_weight": 8,
-            "neutral_weight": 52
+            "active_weight": 65,
+            "weight_margin": 9,
+            "bearish_weight": 37,
+            "bullish_weight": 28,
+            "neutral_weight": 35
           },
           "conviction_model": {
-            "neutral_pct": 52,
-            "net_edge_pct": -66,
+            "neutral_pct": 35,
+            "net_edge_pct": -14,
             "winning_side": "BEARISH",
-            "participation": 48,
-            "weighted_edge": 0.66,
-            "neutral_weight": 52,
-            "raw_conviction": 83,
+            "participation": 65,
+            "weighted_edge": 0.14,
+            "neutral_weight": 35,
+            "raw_conviction": 57,
             "agreement_boost": 0,
-            "base_conviction": 83,
-            "bear_case_weight": 40,
-            "bull_case_weight": 8,
+            "base_conviction": 57,
+            "bear_case_weight": 37,
+            "bull_case_weight": 28,
             "conflict_penalty": 0,
-            "final_conviction": 83,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 48,
-            "bearish_argument_pct": 83,
-            "bullish_argument_pct": 17,
-            "neutral_evidence_pct": 52,
+            "final_conviction": 57,
+            "verdict_strength": "WEAK",
+            "participation_cap": 65,
+            "bearish_argument_pct": 57,
+            "bullish_argument_pct": 43,
+            "neutral_evidence_pct": 35,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
-            "active_participation_pct": 48,
-            "directional_participation_pct": 48
+            "final_conviction_logic": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
+            "active_participation_pct": 65,
+            "directional_participation_pct": 65
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 14,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 8,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7307,25 +7309,25 @@
               "reason": "Nominal yield move below threshold",
               "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 0 bps"
+              "evidence": "US 10Y nominal delta -1 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 20,
-              "evidence": "US 10Y real yield delta 25 bps"
+              "evidence": "US 10Y real yield delta 17 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 20,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 5,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
@@ -7334,69 +7336,69 @@
               "evidence": "NQ delta 0%"
             },
             "F9": {
-              "reason": "BTC strength confirms high-beta risk appetite",
-              "signal": "BULLISH",
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 0%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 3,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 0%"
             }
           }
         },
         "current_week": {
-          "reason": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-          "direction": "BEARISH",
-          "conviction": 89,
-          "score_bearish": 4,
-          "score_bullish": 2,
+          "reason": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+          "direction": "BEARISH_LEAN",
+          "conviction": 53,
+          "score_bearish": 3,
+          "score_bullish": 3,
           "score_neutral": 4,
           "weighted_score": {
-            "active_weight": 56,
-            "weight_margin": 44,
-            "bearish_weight": 50,
-            "bullish_weight": 6,
-            "neutral_weight": 44
+            "active_weight": 68,
+            "weight_margin": 4,
+            "bearish_weight": 36,
+            "bullish_weight": 32,
+            "neutral_weight": 32
           },
           "conviction_model": {
-            "neutral_pct": 44,
-            "net_edge_pct": -78,
+            "neutral_pct": 32,
+            "net_edge_pct": -6,
             "winning_side": "BEARISH",
-            "participation": 56,
-            "weighted_edge": 0.78,
-            "neutral_weight": 44,
-            "raw_conviction": 89,
+            "participation": 68,
+            "weighted_edge": 0.06,
+            "neutral_weight": 32,
+            "raw_conviction": 53,
             "agreement_boost": 0,
-            "base_conviction": 89,
-            "bear_case_weight": 50,
-            "bull_case_weight": 6,
+            "base_conviction": 53,
+            "bear_case_weight": 36,
+            "bull_case_weight": 32,
             "conflict_penalty": 0,
-            "final_conviction": 89,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 56,
-            "bearish_argument_pct": 89,
-            "bullish_argument_pct": 11,
-            "neutral_evidence_pct": 44,
+            "final_conviction": 53,
+            "verdict_strength": "WEAK",
+            "participation_cap": 68,
+            "bearish_argument_pct": 53,
+            "bullish_argument_pct": 47,
+            "neutral_evidence_pct": 32,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-            "active_participation_pct": 56,
-            "directional_participation_pct": 56
+            "final_conviction_logic": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+            "active_participation_pct": 68,
+            "directional_participation_pct": 68
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 16,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 12,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7405,99 +7407,99 @@
               "evidence": "DXY delta 1.01%"
             },
             "F4": {
-              "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-              "signal": "BEARISH",
+              "reason": "Nominal yield move below threshold",
+              "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 7 bps"
+              "evidence": "US 10Y nominal delta -2 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 18,
-              "evidence": "US 10Y real yield delta 13 bps"
+              "evidence": "US 10Y real yield delta 5 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 16,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 6,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
               "signal": "NEUTRAL",
               "weight": 6,
-              "evidence": "NQ delta 0%"
+              "evidence": "NQ delta 0.74%"
             },
             "F9": {
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 4,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 8.32%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 2,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 1.38%"
             }
           }
         },
         "current_month": {
-          "reason": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
+          "reason": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
           "direction": "BEARISH",
-          "conviction": 82,
+          "conviction": 60,
           "score_bearish": 3,
           "score_bullish": 2,
           "score_neutral": 5,
           "weighted_score": {
-            "active_weight": 49,
-            "weight_margin": 31,
-            "bearish_weight": 40,
-            "bullish_weight": 9,
-            "neutral_weight": 51
+            "active_weight": 65,
+            "weight_margin": 13,
+            "bearish_weight": 39,
+            "bullish_weight": 26,
+            "neutral_weight": 35
           },
           "conviction_model": {
-            "neutral_pct": 51,
-            "net_edge_pct": -64,
+            "neutral_pct": 35,
+            "net_edge_pct": -20,
             "winning_side": "BEARISH",
-            "participation": 49,
-            "weighted_edge": 0.64,
-            "neutral_weight": 51,
-            "raw_conviction": 82,
+            "participation": 65,
+            "weighted_edge": 0.2,
+            "neutral_weight": 35,
+            "raw_conviction": 60,
             "agreement_boost": 0,
-            "base_conviction": 82,
-            "bear_case_weight": 40,
-            "bull_case_weight": 9,
+            "base_conviction": 60,
+            "bear_case_weight": 39,
+            "bull_case_weight": 26,
             "conflict_penalty": 0,
-            "final_conviction": 82,
-            "verdict_strength": "VERY_STRONG",
-            "participation_cap": 49,
-            "bearish_argument_pct": 82,
-            "bullish_argument_pct": 18,
-            "neutral_evidence_pct": 51,
+            "final_conviction": 60,
+            "verdict_strength": "MODERATE",
+            "participation_cap": 65,
+            "bearish_argument_pct": 60,
+            "bullish_argument_pct": 40,
+            "neutral_evidence_pct": 35,
             "missing_input_penalty": 0,
-            "final_conviction_logic": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
-            "active_participation_pct": 49,
-            "directional_participation_pct": 49
+            "final_conviction_logic": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
+            "active_participation_pct": 65,
+            "directional_participation_pct": 65
           },
           "factor_breakdown": {
             "F1": {
               "reason": "Neutral VIX regime",
               "signal": "NEUTRAL",
               "weight": 12,
-              "evidence": "VIX 19.87"
+              "evidence": "VIX 17.68"
             },
             "F2": {
-              "reason": "Rising volatility pressures NQ",
-              "signal": "BEARISH",
+              "reason": "Falling volatility supports NQ",
+              "signal": "BULLISH",
               "weight": 6,
-              "evidence": "VIX delta 4.1"
+              "evidence": "VIX delta -3.83"
             },
             "F3": {
               "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7509,25 +7511,25 @@
               "reason": "Nominal yield move below threshold",
               "signal": "NEUTRAL",
               "weight": 8,
-              "evidence": "US 10Y nominal delta 0 bps"
+              "evidence": "US 10Y nominal delta -1 bps"
             },
             "F5": {
               "reason": "Rising real yields are bearish long-duration growth equities",
               "signal": "BEARISH",
               "weight": 22,
-              "evidence": "US 10Y real yield delta 25 bps"
+              "evidence": "US 10Y real yield delta 17 bps"
             },
             "F6": {
-              "reason": "No clear Fed liquidity impulse",
-              "signal": "NEUTRAL",
+              "reason": "Dovish Fed bias eases liquidity and supports NQ",
+              "signal": "BULLISH",
               "weight": 20,
-              "evidence": "Fed bias neutral"
+              "evidence": "Fed bias dovish"
             },
             "F7": {
-              "reason": "No confirmed US economic surprise",
-              "signal": "NEUTRAL",
+              "reason": "Negative US surprise pressures NQ through growth risk",
+              "signal": "BEARISH",
               "weight": 5,
-              "evidence": "No recent US event"
+              "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
             },
             "F8": {
               "reason": "NQ price move below confirmation threshold",
@@ -7536,98 +7538,99 @@
               "evidence": "NQ delta 0%"
             },
             "F9": {
-              "reason": "BTC strength confirms high-beta risk appetite",
-              "signal": "BULLISH",
+              "reason": "BTC move below confirmation threshold",
+              "signal": "NEUTRAL",
               "weight": 5,
-              "evidence": "BTC delta 1.51%"
+              "evidence": "BTC delta 0%"
             },
             "F10": {
-              "reason": "Gold weakness outside risk-off supports risk appetite",
-              "signal": "BULLISH",
+              "reason": "Gold does not provide a clean defensive-flow signal",
+              "signal": "NEUTRAL",
               "weight": 4,
-              "evidence": "Gold delta -4.4%, VIX 19.87"
+              "evidence": "Gold delta 0%"
             }
           }
         }
       },
       "display_metrics": {
-        "bull_case": 25,
-        "bear_case": 75,
-        "winning_side": "BEARISH",
-        "conviction": 75,
-        "net_edge": -50,
-        "directional_participation": 16,
-        "neutral": 84,
-        "verdict_strength": "VERY_STRONG",
-        "bull_case_weight": 4,
-        "bear_case_weight": 12
+        "bull_case": 55,
+        "bear_case": 45,
+        "winning_side": "BULLISH",
+        "conviction": 55,
+        "net_edge": 10,
+        "directional_participation": 44,
+        "neutral": 56,
+        "verdict_strength": "WEAK",
+        "bull_case_weight": 24,
+        "bear_case_weight": 20
       },
       "full_output": {
         "asset": "NQ",
         "layer": "layer_1_raw",
         "created_at": null,
-        "reason_24h": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-        "risk_flags": [],
-        "reason_3_day": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-        "direction_24h": "BEARISH",
-        "score_bearish": 1,
-        "score_bullish": 2,
-        "score_neutral": 7,
-        "snapshot_date": "2026-06-11",
-        "conviction_24h": 75,
+        "reason_24h": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+        "risk_flags": [
+          "NQ_GOLD_DEFENSIVE_FLOW_CONFLICT"
+        ],
+        "reason_3_day": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+        "direction_24h": "BULLISH_LEAN",
+        "score_bearish": 2,
+        "score_bullish": 3,
+        "score_neutral": 5,
+        "snapshot_date": "2026-06-15",
+        "conviction_24h": 55,
         "logic_document": "agent_nq_direction.md",
         "missing_inputs": [
-          "latest_us_event",
-          "nq_price",
-          "nq_d1_pct",
-          "nq_d5_pct",
-          "nq_d20_pct"
+          "us_10y_real_yield_d20_bps",
+          "nq_d20_pct",
+          "btc_d20_pct",
+          "gold_d20_pct"
         ],
         "weighted_score": {
-          "active_weight": 16,
-          "weight_margin": 8,
-          "bearish_weight": 12,
-          "bullish_weight": 4,
-          "neutral_weight": 84
+          "active_weight": 44,
+          "weight_margin": 4,
+          "bearish_weight": 20,
+          "bullish_weight": 24,
+          "neutral_weight": 56
         },
-        "direction_3_day": "BEARISH",
-        "conviction_3_day": 91,
+        "direction_3_day": "BEARISH_LEAN",
+        "conviction_3_day": 53,
         "conviction_model": {
-          "neutral_pct": 84,
-          "net_edge_pct": -50,
-          "winning_side": "BEARISH",
-          "participation": 16,
-          "weighted_edge": 0.5,
-          "neutral_weight": 84,
-          "raw_conviction": 75,
+          "neutral_pct": 56,
+          "net_edge_pct": 10,
+          "winning_side": "BULLISH",
+          "participation": 44,
+          "weighted_edge": 0.1,
+          "neutral_weight": 56,
+          "raw_conviction": 55,
           "agreement_boost": 0,
-          "base_conviction": 75,
-          "bear_case_weight": 12,
-          "bull_case_weight": 4,
+          "base_conviction": 55,
+          "bear_case_weight": 20,
+          "bull_case_weight": 24,
           "conflict_penalty": 0,
-          "final_conviction": 75,
-          "verdict_strength": "VERY_STRONG",
-          "participation_cap": 16,
-          "bearish_argument_pct": 75,
-          "bullish_argument_pct": 25,
-          "neutral_evidence_pct": 84,
+          "final_conviction": 55,
+          "verdict_strength": "WEAK",
+          "participation_cap": 44,
+          "bearish_argument_pct": 45,
+          "bullish_argument_pct": 55,
+          "neutral_evidence_pct": 56,
           "missing_input_penalty": 0,
-          "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-          "active_participation_pct": 16,
-          "directional_participation_pct": 16
+          "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+          "active_participation_pct": 44,
+          "directional_participation_pct": 44
         },
         "factor_breakdown": {
           "F1": {
             "reason": "Neutral VIX regime",
             "signal": "NEUTRAL",
             "weight": 20,
-            "evidence": "VIX 19.87"
+            "evidence": "VIX 17.68"
           },
           "F2": {
             "reason": "Volatility change below threshold",
             "signal": "NEUTRAL",
             "weight": 14,
-            "evidence": "VIX delta 0.95"
+            "evidence": "VIX delta -1.76"
           },
           "F3": {
             "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7648,88 +7651,88 @@
             "evidence": "US 10Y real yield delta 0 bps"
           },
           "F6": {
-            "reason": "No clear Fed liquidity impulse",
-            "signal": "NEUTRAL",
+            "reason": "Dovish Fed bias eases liquidity and supports NQ",
+            "signal": "BULLISH",
             "weight": 12,
-            "evidence": "Fed bias neutral"
+            "evidence": "Fed bias dovish"
           },
           "F7": {
-            "reason": "No confirmed US economic surprise",
-            "signal": "NEUTRAL",
+            "reason": "Negative US surprise pressures NQ through growth risk",
+            "signal": "BEARISH",
             "weight": 8,
-            "evidence": "No recent US event"
+            "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
           },
           "F8": {
-            "reason": "NQ price move below confirmation threshold",
-            "signal": "NEUTRAL",
+            "reason": "NQ own price action confirms bullish pressure",
+            "signal": "BULLISH",
             "weight": 10,
-            "evidence": "NQ delta 0%"
+            "evidence": "NQ delta 0.59%"
           },
           "F9": {
             "reason": "BTC strength confirms high-beta risk appetite",
             "signal": "BULLISH",
             "weight": 2,
-            "evidence": "BTC delta 1.51%"
+            "evidence": "BTC delta 4.75%"
           },
           "F10": {
-            "reason": "Gold weakness outside risk-off supports risk appetite",
-            "signal": "BULLISH",
+            "reason": "Gold does not provide a clean defensive-flow signal",
+            "signal": "NEUTRAL",
             "weight": 2,
-            "evidence": "Gold delta -4.4%, VIX 19.87"
+            "evidence": "Gold delta 2.62%"
           }
         },
-        "reason_next_week": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
+        "reason_next_week": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
         "timeframe_models": {
           "3d": {
-            "reason": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-            "direction": "BEARISH",
-            "conviction": 91,
-            "score_bearish": 4,
-            "score_bullish": 2,
+            "reason": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+            "direction": "BEARISH_LEAN",
+            "conviction": 53,
+            "score_bearish": 3,
+            "score_bullish": 3,
             "score_neutral": 4,
             "weighted_score": {
-              "active_weight": 54,
-              "weight_margin": 44,
-              "bearish_weight": 49,
-              "bullish_weight": 5,
-              "neutral_weight": 46
+              "active_weight": 66,
+              "weight_margin": 4,
+              "bearish_weight": 35,
+              "bullish_weight": 31,
+              "neutral_weight": 34
             },
             "conviction_model": {
-              "neutral_pct": 46,
-              "net_edge_pct": -82,
+              "neutral_pct": 34,
+              "net_edge_pct": -6,
               "winning_side": "BEARISH",
-              "participation": 54,
-              "weighted_edge": 0.82,
-              "neutral_weight": 46,
-              "raw_conviction": 91,
+              "participation": 66,
+              "weighted_edge": 0.06,
+              "neutral_weight": 34,
+              "raw_conviction": 53,
               "agreement_boost": 0,
-              "base_conviction": 91,
-              "bear_case_weight": 49,
-              "bull_case_weight": 5,
+              "base_conviction": 53,
+              "bear_case_weight": 35,
+              "bull_case_weight": 31,
               "conflict_penalty": 0,
-              "final_conviction": 91,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 54,
-              "bearish_argument_pct": 91,
-              "bullish_argument_pct": 9,
-              "neutral_evidence_pct": 46,
+              "final_conviction": 53,
+              "verdict_strength": "WEAK",
+              "participation_cap": 66,
+              "bearish_argument_pct": 53,
+              "bullish_argument_pct": 47,
+              "neutral_evidence_pct": 34,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "3d NQ deterministic score: bull case 9%, bear case 91%, neutral/inactive 46%, directional participation 54%, net edge -82.",
-              "active_participation_pct": 54,
-              "directional_participation_pct": 54
+              "final_conviction_logic": "3d NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 34%, directional participation 66%, net edge -6.",
+              "active_participation_pct": 66,
+              "directional_participation_pct": 66
             },
             "factor_breakdown": {
               "F1": {
                 "reason": "Neutral VIX regime",
                 "signal": "NEUTRAL",
                 "weight": 18,
-                "evidence": "VIX 19.87"
+                "evidence": "VIX 17.68"
               },
               "F2": {
-                "reason": "Rising volatility pressures NQ",
-                "signal": "BEARISH",
+                "reason": "Falling volatility supports NQ",
+                "signal": "BULLISH",
                 "weight": 14,
-                "evidence": "VIX delta 4.1"
+                "evidence": "VIX delta -3.83"
               },
               "F3": {
                 "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7738,99 +7741,99 @@
                 "evidence": "DXY delta 1.01%"
               },
               "F4": {
-                "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-                "signal": "BEARISH",
+                "reason": "Nominal yield move below threshold",
+                "signal": "NEUTRAL",
                 "weight": 7,
-                "evidence": "US 10Y nominal delta 7 bps"
+                "evidence": "US 10Y nominal delta -2 bps"
               },
               "F5": {
                 "reason": "Rising real yields are bearish long-duration growth equities",
                 "signal": "BEARISH",
                 "weight": 16,
-                "evidence": "US 10Y real yield delta 13 bps"
+                "evidence": "US 10Y real yield delta 5 bps"
               },
               "F6": {
-                "reason": "No clear Fed liquidity impulse",
-                "signal": "NEUTRAL",
+                "reason": "Dovish Fed bias eases liquidity and supports NQ",
+                "signal": "BULLISH",
                 "weight": 14,
-                "evidence": "Fed bias neutral"
+                "evidence": "Fed bias dovish"
               },
               "F7": {
-                "reason": "No confirmed US economic surprise",
-                "signal": "NEUTRAL",
+                "reason": "Negative US surprise pressures NQ through growth risk",
+                "signal": "BEARISH",
                 "weight": 7,
-                "evidence": "No recent US event"
+                "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
               },
               "F8": {
                 "reason": "NQ price move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 7,
-                "evidence": "NQ delta 0%"
+                "evidence": "NQ delta 0.74%"
               },
               "F9": {
                 "reason": "BTC strength confirms high-beta risk appetite",
                 "signal": "BULLISH",
                 "weight": 3,
-                "evidence": "BTC delta 1.51%"
+                "evidence": "BTC delta 8.32%"
               },
               "F10": {
-                "reason": "Gold weakness outside risk-off supports risk appetite",
-                "signal": "BULLISH",
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
                 "weight": 2,
-                "evidence": "Gold delta -4.4%, VIX 19.87"
+                "evidence": "Gold delta 1.38%"
               }
             }
           },
           "24h": {
-            "reason": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-            "direction": "BEARISH",
-            "conviction": 75,
-            "score_bearish": 1,
-            "score_bullish": 2,
-            "score_neutral": 7,
+            "reason": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+            "direction": "BULLISH_LEAN",
+            "conviction": 55,
+            "score_bearish": 2,
+            "score_bullish": 3,
+            "score_neutral": 5,
             "weighted_score": {
-              "active_weight": 16,
-              "weight_margin": 8,
-              "bearish_weight": 12,
-              "bullish_weight": 4,
-              "neutral_weight": 84
+              "active_weight": 44,
+              "weight_margin": 4,
+              "bearish_weight": 20,
+              "bullish_weight": 24,
+              "neutral_weight": 56
             },
             "conviction_model": {
-              "neutral_pct": 84,
-              "net_edge_pct": -50,
-              "winning_side": "BEARISH",
-              "participation": 16,
-              "weighted_edge": 0.5,
-              "neutral_weight": 84,
-              "raw_conviction": 75,
+              "neutral_pct": 56,
+              "net_edge_pct": 10,
+              "winning_side": "BULLISH",
+              "participation": 44,
+              "weighted_edge": 0.1,
+              "neutral_weight": 56,
+              "raw_conviction": 55,
               "agreement_boost": 0,
-              "base_conviction": 75,
-              "bear_case_weight": 12,
-              "bull_case_weight": 4,
+              "base_conviction": 55,
+              "bear_case_weight": 20,
+              "bull_case_weight": 24,
               "conflict_penalty": 0,
-              "final_conviction": 75,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 16,
-              "bearish_argument_pct": 75,
-              "bullish_argument_pct": 25,
-              "neutral_evidence_pct": 84,
+              "final_conviction": 55,
+              "verdict_strength": "WEAK",
+              "participation_cap": 44,
+              "bearish_argument_pct": 45,
+              "bullish_argument_pct": 55,
+              "neutral_evidence_pct": 56,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "24h NQ deterministic score: bull case 25%, bear case 75%, neutral/inactive 84%, directional participation 16%, net edge -50.",
-              "active_participation_pct": 16,
-              "directional_participation_pct": 16
+              "final_conviction_logic": "24h NQ deterministic score: bull case 55%, bear case 45%, neutral/inactive 56%, directional participation 44%, net edge +10.",
+              "active_participation_pct": 44,
+              "directional_participation_pct": 44
             },
             "factor_breakdown": {
               "F1": {
                 "reason": "Neutral VIX regime",
                 "signal": "NEUTRAL",
                 "weight": 20,
-                "evidence": "VIX 19.87"
+                "evidence": "VIX 17.68"
               },
               "F2": {
                 "reason": "Volatility change below threshold",
                 "signal": "NEUTRAL",
                 "weight": 14,
-                "evidence": "VIX delta 0.95"
+                "evidence": "VIX delta -1.76"
               },
               "F3": {
                 "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7851,87 +7854,87 @@
                 "evidence": "US 10Y real yield delta 0 bps"
               },
               "F6": {
-                "reason": "No clear Fed liquidity impulse",
-                "signal": "NEUTRAL",
+                "reason": "Dovish Fed bias eases liquidity and supports NQ",
+                "signal": "BULLISH",
                 "weight": 12,
-                "evidence": "Fed bias neutral"
+                "evidence": "Fed bias dovish"
               },
               "F7": {
-                "reason": "No confirmed US economic surprise",
-                "signal": "NEUTRAL",
+                "reason": "Negative US surprise pressures NQ through growth risk",
+                "signal": "BEARISH",
                 "weight": 8,
-                "evidence": "No recent US event"
+                "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
               },
               "F8": {
-                "reason": "NQ price move below confirmation threshold",
-                "signal": "NEUTRAL",
+                "reason": "NQ own price action confirms bullish pressure",
+                "signal": "BULLISH",
                 "weight": 10,
-                "evidence": "NQ delta 0%"
+                "evidence": "NQ delta 0.59%"
               },
               "F9": {
                 "reason": "BTC strength confirms high-beta risk appetite",
                 "signal": "BULLISH",
                 "weight": 2,
-                "evidence": "BTC delta 1.51%"
+                "evidence": "BTC delta 4.75%"
               },
               "F10": {
-                "reason": "Gold weakness outside risk-off supports risk appetite",
-                "signal": "BULLISH",
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
                 "weight": 2,
-                "evidence": "Gold delta -4.4%, VIX 19.87"
+                "evidence": "Gold delta 2.62%"
               }
             }
           },
           "next_week": {
-            "reason": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
-            "direction": "BEARISH",
-            "conviction": 83,
+            "reason": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
+            "direction": "BEARISH_LEAN",
+            "conviction": 57,
             "score_bearish": 3,
             "score_bullish": 2,
             "score_neutral": 5,
             "weighted_score": {
-              "active_weight": 48,
-              "weight_margin": 32,
-              "bearish_weight": 40,
-              "bullish_weight": 8,
-              "neutral_weight": 52
+              "active_weight": 65,
+              "weight_margin": 9,
+              "bearish_weight": 37,
+              "bullish_weight": 28,
+              "neutral_weight": 35
             },
             "conviction_model": {
-              "neutral_pct": 52,
-              "net_edge_pct": -66,
+              "neutral_pct": 35,
+              "net_edge_pct": -14,
               "winning_side": "BEARISH",
-              "participation": 48,
-              "weighted_edge": 0.66,
-              "neutral_weight": 52,
-              "raw_conviction": 83,
+              "participation": 65,
+              "weighted_edge": 0.14,
+              "neutral_weight": 35,
+              "raw_conviction": 57,
               "agreement_boost": 0,
-              "base_conviction": 83,
-              "bear_case_weight": 40,
-              "bull_case_weight": 8,
+              "base_conviction": 57,
+              "bear_case_weight": 37,
+              "bull_case_weight": 28,
               "conflict_penalty": 0,
-              "final_conviction": 83,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 48,
-              "bearish_argument_pct": 83,
-              "bullish_argument_pct": 17,
-              "neutral_evidence_pct": 52,
+              "final_conviction": 57,
+              "verdict_strength": "WEAK",
+              "participation_cap": 65,
+              "bearish_argument_pct": 57,
+              "bullish_argument_pct": 43,
+              "neutral_evidence_pct": 35,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "next_week NQ deterministic score: bull case 17%, bear case 83%, neutral/inactive 52%, directional participation 48%, net edge -66.",
-              "active_participation_pct": 48,
-              "directional_participation_pct": 48
+              "final_conviction_logic": "next_week NQ deterministic score: bull case 43%, bear case 57%, neutral/inactive 35%, directional participation 65%, net edge -14.",
+              "active_participation_pct": 65,
+              "directional_participation_pct": 65
             },
             "factor_breakdown": {
               "F1": {
                 "reason": "Neutral VIX regime",
                 "signal": "NEUTRAL",
                 "weight": 14,
-                "evidence": "VIX 19.87"
+                "evidence": "VIX 17.68"
               },
               "F2": {
-                "reason": "Rising volatility pressures NQ",
-                "signal": "BEARISH",
+                "reason": "Falling volatility supports NQ",
+                "signal": "BULLISH",
                 "weight": 8,
-                "evidence": "VIX delta 4.1"
+                "evidence": "VIX delta -3.83"
               },
               "F3": {
                 "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -7943,25 +7946,25 @@
                 "reason": "Nominal yield move below threshold",
                 "signal": "NEUTRAL",
                 "weight": 8,
-                "evidence": "US 10Y nominal delta 0 bps"
+                "evidence": "US 10Y nominal delta -1 bps"
               },
               "F5": {
                 "reason": "Rising real yields are bearish long-duration growth equities",
                 "signal": "BEARISH",
                 "weight": 20,
-                "evidence": "US 10Y real yield delta 25 bps"
+                "evidence": "US 10Y real yield delta 17 bps"
               },
               "F6": {
-                "reason": "No clear Fed liquidity impulse",
-                "signal": "NEUTRAL",
+                "reason": "Dovish Fed bias eases liquidity and supports NQ",
+                "signal": "BULLISH",
                 "weight": 20,
-                "evidence": "Fed bias neutral"
+                "evidence": "Fed bias dovish"
               },
               "F7": {
-                "reason": "No confirmed US economic surprise",
-                "signal": "NEUTRAL",
+                "reason": "Negative US surprise pressures NQ through growth risk",
+                "signal": "BEARISH",
                 "weight": 5,
-                "evidence": "No recent US event"
+                "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
               },
               "F8": {
                 "reason": "NQ price move below confirmation threshold",
@@ -7970,69 +7973,69 @@
                 "evidence": "NQ delta 0%"
               },
               "F9": {
-                "reason": "BTC strength confirms high-beta risk appetite",
-                "signal": "BULLISH",
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
                 "weight": 5,
-                "evidence": "BTC delta 1.51%"
+                "evidence": "BTC delta 0%"
               },
               "F10": {
-                "reason": "Gold weakness outside risk-off supports risk appetite",
-                "signal": "BULLISH",
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
                 "weight": 3,
-                "evidence": "Gold delta -4.4%, VIX 19.87"
+                "evidence": "Gold delta 0%"
               }
             }
           },
           "current_week": {
-            "reason": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-            "direction": "BEARISH",
-            "conviction": 89,
-            "score_bearish": 4,
-            "score_bullish": 2,
+            "reason": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+            "direction": "BEARISH_LEAN",
+            "conviction": 53,
+            "score_bearish": 3,
+            "score_bullish": 3,
             "score_neutral": 4,
             "weighted_score": {
-              "active_weight": 56,
-              "weight_margin": 44,
-              "bearish_weight": 50,
-              "bullish_weight": 6,
-              "neutral_weight": 44
+              "active_weight": 68,
+              "weight_margin": 4,
+              "bearish_weight": 36,
+              "bullish_weight": 32,
+              "neutral_weight": 32
             },
             "conviction_model": {
-              "neutral_pct": 44,
-              "net_edge_pct": -78,
+              "neutral_pct": 32,
+              "net_edge_pct": -6,
               "winning_side": "BEARISH",
-              "participation": 56,
-              "weighted_edge": 0.78,
-              "neutral_weight": 44,
-              "raw_conviction": 89,
+              "participation": 68,
+              "weighted_edge": 0.06,
+              "neutral_weight": 32,
+              "raw_conviction": 53,
               "agreement_boost": 0,
-              "base_conviction": 89,
-              "bear_case_weight": 50,
-              "bull_case_weight": 6,
+              "base_conviction": 53,
+              "bear_case_weight": 36,
+              "bull_case_weight": 32,
               "conflict_penalty": 0,
-              "final_conviction": 89,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 56,
-              "bearish_argument_pct": 89,
-              "bullish_argument_pct": 11,
-              "neutral_evidence_pct": 44,
+              "final_conviction": 53,
+              "verdict_strength": "WEAK",
+              "participation_cap": 68,
+              "bearish_argument_pct": 53,
+              "bullish_argument_pct": 47,
+              "neutral_evidence_pct": 32,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-              "active_participation_pct": 56,
-              "directional_participation_pct": 56
+              "final_conviction_logic": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+              "active_participation_pct": 68,
+              "directional_participation_pct": 68
             },
             "factor_breakdown": {
               "F1": {
                 "reason": "Neutral VIX regime",
                 "signal": "NEUTRAL",
                 "weight": 16,
-                "evidence": "VIX 19.87"
+                "evidence": "VIX 17.68"
               },
               "F2": {
-                "reason": "Rising volatility pressures NQ",
-                "signal": "BEARISH",
+                "reason": "Falling volatility supports NQ",
+                "signal": "BULLISH",
                 "weight": 12,
-                "evidence": "VIX delta 4.1"
+                "evidence": "VIX delta -3.83"
               },
               "F3": {
                 "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -8041,99 +8044,99 @@
                 "evidence": "DXY delta 1.01%"
               },
               "F4": {
-                "reason": "Rising nominal yields can pressure duration-sensitive NQ",
-                "signal": "BEARISH",
+                "reason": "Nominal yield move below threshold",
+                "signal": "NEUTRAL",
                 "weight": 8,
-                "evidence": "US 10Y nominal delta 7 bps"
+                "evidence": "US 10Y nominal delta -2 bps"
               },
               "F5": {
                 "reason": "Rising real yields are bearish long-duration growth equities",
                 "signal": "BEARISH",
                 "weight": 18,
-                "evidence": "US 10Y real yield delta 13 bps"
+                "evidence": "US 10Y real yield delta 5 bps"
               },
               "F6": {
-                "reason": "No clear Fed liquidity impulse",
-                "signal": "NEUTRAL",
+                "reason": "Dovish Fed bias eases liquidity and supports NQ",
+                "signal": "BULLISH",
                 "weight": 16,
-                "evidence": "Fed bias neutral"
+                "evidence": "Fed bias dovish"
               },
               "F7": {
-                "reason": "No confirmed US economic surprise",
-                "signal": "NEUTRAL",
+                "reason": "Negative US surprise pressures NQ through growth risk",
+                "signal": "BEARISH",
                 "weight": 6,
-                "evidence": "No recent US event"
+                "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
               },
               "F8": {
                 "reason": "NQ price move below confirmation threshold",
                 "signal": "NEUTRAL",
                 "weight": 6,
-                "evidence": "NQ delta 0%"
+                "evidence": "NQ delta 0.74%"
               },
               "F9": {
                 "reason": "BTC strength confirms high-beta risk appetite",
                 "signal": "BULLISH",
                 "weight": 4,
-                "evidence": "BTC delta 1.51%"
+                "evidence": "BTC delta 8.32%"
               },
               "F10": {
-                "reason": "Gold weakness outside risk-off supports risk appetite",
-                "signal": "BULLISH",
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
                 "weight": 2,
-                "evidence": "Gold delta -4.4%, VIX 19.87"
+                "evidence": "Gold delta 1.38%"
               }
             }
           },
           "current_month": {
-            "reason": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
+            "reason": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
             "direction": "BEARISH",
-            "conviction": 82,
+            "conviction": 60,
             "score_bearish": 3,
             "score_bullish": 2,
             "score_neutral": 5,
             "weighted_score": {
-              "active_weight": 49,
-              "weight_margin": 31,
-              "bearish_weight": 40,
-              "bullish_weight": 9,
-              "neutral_weight": 51
+              "active_weight": 65,
+              "weight_margin": 13,
+              "bearish_weight": 39,
+              "bullish_weight": 26,
+              "neutral_weight": 35
             },
             "conviction_model": {
-              "neutral_pct": 51,
-              "net_edge_pct": -64,
+              "neutral_pct": 35,
+              "net_edge_pct": -20,
               "winning_side": "BEARISH",
-              "participation": 49,
-              "weighted_edge": 0.64,
-              "neutral_weight": 51,
-              "raw_conviction": 82,
+              "participation": 65,
+              "weighted_edge": 0.2,
+              "neutral_weight": 35,
+              "raw_conviction": 60,
               "agreement_boost": 0,
-              "base_conviction": 82,
-              "bear_case_weight": 40,
-              "bull_case_weight": 9,
+              "base_conviction": 60,
+              "bear_case_weight": 39,
+              "bull_case_weight": 26,
               "conflict_penalty": 0,
-              "final_conviction": 82,
-              "verdict_strength": "VERY_STRONG",
-              "participation_cap": 49,
-              "bearish_argument_pct": 82,
-              "bullish_argument_pct": 18,
-              "neutral_evidence_pct": 51,
+              "final_conviction": 60,
+              "verdict_strength": "MODERATE",
+              "participation_cap": 65,
+              "bearish_argument_pct": 60,
+              "bullish_argument_pct": 40,
+              "neutral_evidence_pct": 35,
               "missing_input_penalty": 0,
-              "final_conviction_logic": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
-              "active_participation_pct": 49,
-              "directional_participation_pct": 49
+              "final_conviction_logic": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
+              "active_participation_pct": 65,
+              "directional_participation_pct": 65
             },
             "factor_breakdown": {
               "F1": {
                 "reason": "Neutral VIX regime",
                 "signal": "NEUTRAL",
                 "weight": 12,
-                "evidence": "VIX 19.87"
+                "evidence": "VIX 17.68"
               },
               "F2": {
-                "reason": "Rising volatility pressures NQ",
-                "signal": "BEARISH",
+                "reason": "Falling volatility supports NQ",
+                "signal": "BULLISH",
                 "weight": 6,
-                "evidence": "VIX delta 4.1"
+                "evidence": "VIX delta -3.83"
               },
               "F3": {
                 "reason": "Rising USD tightens financial conditions and pressures NQ",
@@ -8145,25 +8148,25 @@
                 "reason": "Nominal yield move below threshold",
                 "signal": "NEUTRAL",
                 "weight": 8,
-                "evidence": "US 10Y nominal delta 0 bps"
+                "evidence": "US 10Y nominal delta -1 bps"
               },
               "F5": {
                 "reason": "Rising real yields are bearish long-duration growth equities",
                 "signal": "BEARISH",
                 "weight": 22,
-                "evidence": "US 10Y real yield delta 25 bps"
+                "evidence": "US 10Y real yield delta 17 bps"
               },
               "F6": {
-                "reason": "No clear Fed liquidity impulse",
-                "signal": "NEUTRAL",
+                "reason": "Dovish Fed bias eases liquidity and supports NQ",
+                "signal": "BULLISH",
                 "weight": 20,
-                "evidence": "Fed bias neutral"
+                "evidence": "Fed bias dovish"
               },
               "F7": {
-                "reason": "No confirmed US economic surprise",
-                "signal": "NEUTRAL",
+                "reason": "Negative US surprise pressures NQ through growth risk",
+                "signal": "BEARISH",
                 "weight": 5,
-                "evidence": "No recent US event"
+                "evidence": "{\"raw\":{\"id\":\"d5c57266-3b32-4872-82bb-feb23d2cd992\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"forex_factory_rapidapi\",\"revised\":null,\"currency\":\"USD\",\"forecast\":\"36\",\"previous\":\"37\",\"raw_json\":{\"date\":\"2026-06-15\",\"name\":\"NAHB Housing Market Index\",\"time\":\"09:00am\",\"year\":\"2026\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"source\":\"https://www.nahb.org/\",\"currency\":\"USD\",\"ff_notes\":\"Above 50 indicates a favorable outlook on home sales, below indicates a negative outlook\",\"forecast\":\"36\",\"measures\":\"Level of a diffusion index based on surveyed home builders\",\"previous\":\"37\",\"acro_expand\":\"National Association of Home Builders (NAHB)\",\"also_called\":\"NAHB/Wells Fargo Housing Market Index\",\"derived_via\":\"Survey of about 900 home builders which asks respondents to rate the relative level of current and future single-family home sales\",\"description\":null,\"history_data\":\"[{'history': 'May 18, 2026', 'actual': '37', 'forecast': '34', 'previous': '34'}, {'history': 'Apr 15, 2026', 'actual': '34', 'forecast': '37', 'previous': '38'}, {'history': 'Mar 16, 2026', 'actual': '38', 'forecast': '37', 'previous': '36'}, {'history': 'Feb 17, 2026', 'actual': '36', 'forecast': '38', 'previous': '37'}, {'history': 'Jan 16, 2026', 'actual': '37', 'forecast': '40', 'previous': '39'}]\",\"usual_effect\":\"'Actual' greater than 'Forecast' is good for currency\",\"why_traders_care\":null,\"next_release_date\":\"Jul 16, 2026\",\"source_last_release\":\"http://nahbnow.com/\"},\"created_at\":\"2026-06-15T14:50:52.252086+00:00\",\"event_date\":\"2026-06-15\",\"event_name\":\"NAHB Housing Market Index\",\"impact_rank\":1,\"event_time_utc\":null,\"asset_relevance\":[\"USD\",\"EUR\",\"Gold\",\"NQ\",\"BTC\"],\"currency_signal\":\"BEARISH\",\"event_time_text\":\"09:00am\",\"surprise_direction\":\"miss\"},\"date\":\"2026-06-15\",\"time\":\"09:00am\",\"event\":\"NAHB Housing Market Index\",\"actual\":\"35\",\"impact\":\"Low Impact Expected\",\"forecast\":\"36\",\"previous\":\"37\",\"priority\":50,\"surprise\":\"miss\",\"timestamp\":1781514000000,\"usd_signal\":\"BEARISH\",\"impact_rank\":1,\"surprise_score\":null}"
               },
               "F8": {
                 "reason": "NQ price move below confirmation threshold",
@@ -8172,31 +8175,31 @@
                 "evidence": "NQ delta 0%"
               },
               "F9": {
-                "reason": "BTC strength confirms high-beta risk appetite",
-                "signal": "BULLISH",
+                "reason": "BTC move below confirmation threshold",
+                "signal": "NEUTRAL",
                 "weight": 5,
-                "evidence": "BTC delta 1.51%"
+                "evidence": "BTC delta 0%"
               },
               "F10": {
-                "reason": "Gold weakness outside risk-off supports risk appetite",
-                "signal": "BULLISH",
+                "reason": "Gold does not provide a clean defensive-flow signal",
+                "signal": "NEUTRAL",
                 "weight": 4,
-                "evidence": "Gold delta -4.4%, VIX 19.87"
+                "evidence": "Gold delta 0%"
               }
             }
           }
         },
-        "non_neutral_count": 4,
-        "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BEARISH 75%, 3d BEARISH 91%, current week BEARISH 89%, next week BEARISH 83%, current month BEARISH 82%.",
-        "direction_next_week": "BEARISH",
-        "reason_current_week": "current_week NQ deterministic score: bull case 11%, bear case 89%, neutral/inactive 44%, directional participation 56%, net edge -78.",
-        "conviction_next_week": 83,
-        "reason_current_month": "current_month NQ deterministic score: bull case 18%, bear case 82%, neutral/inactive 51%, directional participation 49%, net edge -64.",
-        "direction_current_week": "BEARISH",
+        "non_neutral_count": 8,
+        "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 55%, 3d BEARISH_LEAN 53%, current week BEARISH_LEAN 53%, next week BEARISH_LEAN 57%, current month BEARISH 60%.",
+        "direction_next_week": "BEARISH_LEAN",
+        "reason_current_week": "current_week NQ deterministic score: bull case 47%, bear case 53%, neutral/inactive 32%, directional participation 68%, net edge -6.",
+        "conviction_next_week": 57,
+        "reason_current_month": "current_month NQ deterministic score: bull case 40%, bear case 60%, neutral/inactive 35%, directional participation 65%, net edge -20.",
+        "direction_current_week": "BEARISH_LEAN",
         "logic_document_version": "2.0_weighted_engine",
-        "conviction_current_week": 89,
+        "conviction_current_week": 53,
         "direction_current_month": "BEARISH",
-        "conviction_current_month": 82
+        "conviction_current_month": 60
       }
     },
     {
