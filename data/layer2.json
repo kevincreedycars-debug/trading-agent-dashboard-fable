@@ -1,40 +1,29 @@
 {
   "dashboard_meta": {
-    "last_updated_et": "pending",
-    "architecture": "Layer 2 reads Layer 1 outputs plus economic events and produces event-adjusted calls."
+    "last_updated_et": "2026-06-19T17:51:53.076Z",
+    "source": "layer_2_trade_selection_agent"
   },
-  "eco_events_agent": {
-    "status": "not_configured",
-    "last_run_et": null,
-    "event_risk": "PENDING",
-    "summary": "Eco Events Agent not connected yet.",
-    "adjusted_calls": {
-      "USD": {
-        "direction": "PENDING",
-        "conviction": null,
-        "adjustment": "Awaiting event layer"
-      },
-      "EUR": {
-        "direction": "PENDING",
-        "conviction": null,
-        "adjustment": "Awaiting event layer"
-      },
-      "GOLD": {
-        "direction": "PENDING",
-        "conviction": null,
-        "adjustment": "Awaiting event layer"
-      },
-      "NQ": {
-        "direction": "PENDING",
-        "conviction": null,
-        "adjustment": "Awaiting event layer"
-      },
-      "BTC": {
-        "direction": "PENDING",
-        "conviction": null,
-        "adjustment": "Awaiting event layer"
-      }
+  "trade_opportunities": [
+    {
+      "instrument": "EUR/USD",
+      "direction": "SELL",
+      "confidence": 73,
+      "reason": "USD is independently bullish while EUR is independently bearish during today's session.",
+      "rank": 1
+    }
+  ],
+  "avoid_today": [
+    {
+      "instrument": "XAU/USD",
+      "reason": "Mixed or low conviction 24H signals."
     },
-    "events": []
-  }
+    {
+      "instrument": "BTC/USD",
+      "reason": "Both assets point in the same 24H direction, so there is no clear relative edge."
+    },
+    {
+      "instrument": "NQ/USD",
+      "reason": "Both assets point in the same 24H direction, so there is no clear relative edge."
+    }
+  ]
 }
