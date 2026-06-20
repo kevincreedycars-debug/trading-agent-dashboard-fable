@@ -1,9 +1,63 @@
 {
-  "status": "pending",
-  "last_run_started_at": null,
-  "last_run_finished_at": null,
-  "triggered_by": null,
-  "message": "Dashboard trigger is connected. Awaiting next Master Orchestrator run.",
-  "steps": [],
+  "status": "success",
+  "last_run_started_at": "2026-06-20T12:29:50.799Z",
+  "last_run_finished_at": "2026-06-20T12:29:50.800Z",
+  "triggered_by": "dashboard_or_manual",
+  "message": "Manual Refresh Complete",
+  "failed_step": null,
+  "steps": [
+    {
+      "name": "Call '1. Economic Events Collector'",
+      "status": "success"
+    },
+    {
+      "name": "USD Collector",
+      "status": "success"
+    },
+    {
+      "name": "EUR Collector",
+      "status": "success"
+    },
+    {
+      "name": "Gold Collector",
+      "status": "success"
+    },
+    {
+      "name": "NQ Collector",
+      "status": "success"
+    },
+    {
+      "name": "BTC Collector",
+      "status": "success"
+    },
+    {
+      "name": "USD Layer 1 Agent",
+      "status": "success"
+    },
+    {
+      "name": "EUR Layer 1 Agent",
+      "status": "success"
+    },
+    {
+      "name": "Gold Layer 1 Agent",
+      "status": "success"
+    },
+    {
+      "name": "NQ Layer 1 Agent",
+      "status": "success"
+    },
+    {
+      "name": "BTC Layer 1 Agent",
+      "status": "success"
+    },
+    {
+      "name": "Layer 2 Trade Selection Agent",
+      "status": "success"
+    },
+    {
+      "name": "Dashboard Writer",
+      "status": "success"
+    }
+  ],
   "error": null
 }
