@@ -214,6 +214,7 @@ The canonical project memory set is:
 - `CODEX_STARTUP.md`
 - `docs/CURRENT_STATE.md`
 - `docs/CURRENT_TASK.md`
+- `docs/ACTIVE_MILESTONE.md`
 - `docs/NEXT_STEPS.md`
 - `docs/CHANGELOG.md`
 - `docs/DECISIONS.md`

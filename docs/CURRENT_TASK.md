@@ -21,6 +21,7 @@ In progress.
 - Project memory documentation scaffold created
 - `docs/CURRENT_STATE.md` created
 - `docs/CURRENT_TASK.md` created
+- `docs/ACTIVE_MILESTONE.md` created
 - `docs/NEXT_STEPS.md` created
 - `docs/ARCHITECTURE.md` created
 - `docs/CHANGELOG.md` created
@@ -93,6 +94,7 @@ and then read:
 - `CODEX_STARTUP.md`
 - `docs/CURRENT_TASK.md`
 - `docs/CURRENT_STATE.md`
+- `docs/ACTIVE_MILESTONE.md`
 - `docs/NEXT_STEPS.md`
 - `docs/CHANGELOG.md`
 - `docs/DECISIONS.md`

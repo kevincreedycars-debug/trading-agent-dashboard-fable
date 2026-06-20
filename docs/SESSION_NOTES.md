@@ -9,6 +9,7 @@ Last updated: 2026-06-20
 - Updated Codex operating instructions so future sessions read the full memory set before editing.
 - Updated project memory docs to record the new session management system.
 - Added continuous project memory maintenance rules to `CODEX_STARTUP.md`, including milestone documentation updates, logical commits, and startup recovery from repository memory.
+- Added `docs/ACTIVE_MILESTONE.md` as the live current-feature checkpoint and updated startup rules to include it.
 
 ## Unfinished Work
 
@@ -26,6 +27,7 @@ Last updated: 2026-06-20
 ## Assumptions
 
 - Canonical memory documents live in `docs/`, with `CODEX_STARTUP.md` kept at the repository root.
+- `docs/ACTIVE_MILESTONE.md` is the current checkpoint only; completed milestone history belongs in `docs/CHANGELOG.md`.
 - GitHub remains the source of truth, n8n remains execution, Supabase remains data, and Netlify/dashboard remains presentation.
 - Existing uncommitted dashboard and design-reference changes are user work and should not be altered unless explicitly requested.
 

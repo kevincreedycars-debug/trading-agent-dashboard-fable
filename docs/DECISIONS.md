@@ -55,3 +55,11 @@ Decision: Meaningful completed work must update the relevant project memory docu
 Reason: Long Codex sessions can end unexpectedly. Updating memory and committing at each milestone keeps GitHub recoverable as the project source of truth without relying on chat history.
 
 Alternatives considered: updating documentation only at session end or making very large combined commits. These were rejected because they increase the amount of project state that can be lost or become hard to review.
+
+## 2026-06-20 - Active Milestone Checkpoint
+
+Decision: Add `docs/ACTIVE_MILESTONE.md` as the live checkpoint for the current feature, read it during startup immediately after `docs/CURRENT_TASK.md`, and keep it current whenever work pauses or the active task changes.
+
+Reason: `docs/CHANGELOG.md` records completed history, but new Codex sessions need one concise file that states what is being worked on right now and the exact next action.
+
+Alternatives considered: using only `docs/SESSION_NOTES.md` or adding milestone history to `docs/CHANGELOG.md`. These were rejected because session notes can be broader handoff text, and changelog should remain completed-work history rather than a live checkpoint.
