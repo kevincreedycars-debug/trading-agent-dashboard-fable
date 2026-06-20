@@ -52,6 +52,15 @@ The startup summary must always contain:
 - Any untracked files
 - Whether there are uncommitted changes that should be reviewed before editing
 
+If the working tree is not clean, ask whether the existing changes should be:
+
+- committed
+- stashed
+- discarded
+- left untouched
+
+Do not assume the correct action. Do not make additional edits until the user has answered.
+
 ### Project Summary
 
 - Current platform status
