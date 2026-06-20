@@ -1,0 +1,330 @@
+{
+  "updatedAt": "2026-06-19T09:33:04.442Z",
+  "createdAt": "2026-06-07T19:57:41.075Z",
+  "id": "Px0bsH7chlRWH9ZD",
+  "name": "EUR Layer 1 Agent",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are the EUR Layer 1 Direction Agent.\n\nYou must follow the supplied EUR logic document exactly.\n\nYou analyse EUR only.\n\nYou must not produce EUR/USD calls, pair calls, trade recommendations, cross-asset calls, consensus calls, or Layer 2 event-adjusted calls.\n\nYou must not use technical analysis, chart patterns, support/resistance, RSI, MACD, moving averages, or indicator logic.\n\nUse only the supplied market snapshot and supplied logic document.\n\nIf required inputs are missing, score the affected factor as NEUTRAL and clearly state the missing input.\n\nReturn valid JSON only.\n\nDo not wrap the JSON in markdown fences. Do not include ```json. Return raw JSON only."
+            },
+            {
+              "content": "={\n  \"logic_document\": \"{{ $json.logic_document }}\",\n  \"market_snapshot\": {{ JSON.stringify($json.market_snapshot) }},\n  \"output_requirement\": {\n    \"asset\": \"EUR\",\n    \"layer\": \"Layer 1 Raw\",\n    \"format\": \"valid_json_only\"\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "31dcd136-bc7c-45e8-929f-e4ba75259300",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "VY1FMMlFQNwU3Ctt",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "market_snapshots",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "8b1bfb19-3147-4f2a-baf2-00cd298e3ce9",
+      "name": "Supabase Get Many",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "agent_outputs",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "11d4476b-8f3d-47c0-93c8-1b59cb7e92ee",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const logicItem = $('Get EUR Logic Document').first().json;\nconst marketItem = $('Build EUR Input Pack').first().json;\n\nlet logicDocument = logicItem.content || '';\n\nif (logicItem.encoding === 'base64') {\n  logicDocument = Buffer.from(logicDocument, 'base64').toString('utf8');\n}\n\nreturn [\n  {\n    json: {\n      logic_document: logicDocument,\n      market_snapshot: marketItem\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "491d09da-ab89-4920-9e71-ad2f7085a289",
+      "name": "Combine md & market snapshot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(item => item.json);\n\nfunction hasValue(v) {\n  return v !== null && v !== undefined && v !== '';\n}\n\nfunction parseQuality(row) {\n  if (!row.data_quality) return {};\n  if (typeof row.data_quality === 'object') return row.data_quality;\n  try {\n    return JSON.parse(row.data_quality);\n  } catch {\n    return {};\n  }\n}\n\nfunction parseMaybeJson(v) {\n  if (!hasValue(v)) return null;\n  if (typeof v === 'object') return v;\n  try {\n    return JSON.parse(v);\n  } catch {\n    return v;\n  }\n}\n\nfunction numOrNull(v) {\n  if (!hasValue(v)) return null;\n  const n = Number(v);\n  return Number.isFinite(n) ? n : null;\n}\n\nfunction isUsableEurSnapshot(row) {\n  if (!row.snapshot_date || !row.run_time_et) return false;\n\n  const required = [\n    'vix_level',\n    'dxy_level',\n    'de_2y_yield',\n    'de_2y_d5_bps',\n    'us_de_2y_spread',\n    'us_de_2y_spread_d5_bps',\n    'eurusd_price',\n    'eurusd_d1_pct',\n    'eurusd_d5_pct',\n    'ecb_bias'\n  ];\n\n  return required.every(key => hasValue(row[key]));\n}\n\nconst sortedRows = rows\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .sort((a, b) => {\n    const bTime = new Date(b.run_time_et || b.created_at || 0).getTime();\n    const aTime = new Date(a.run_time_et || a.created_at || 0).getTime();\n    return bTime - aTime;\n  });\n\nconst snapshot =\n  sortedRows.find(r => r.collector_version === 'v11_eur_forex_factory_events' && isUsableEurSnapshot(r)) ||\n  sortedRows.find(isUsableEurSnapshot) ||\n  sortedRows[0];\n\nif (!snapshot) {\n  throw new Error(\"No valid market snapshot found\");\n}\n\nconst quality = parseQuality(snapshot);\n\nconst missingInputs = [];\nconst selectedInputWarnings = [];\n\nfunction requireInput(key, label = key) {\n  const value = snapshot[key];\n  if (!hasValue(value)) {\n    missingInputs.push(label);\n    return null;\n  }\n  return value;\n}\n\nconst goldD5 = hasValue(snapshot.gold_d5_pct)\n  ? snapshot.gold_d5_pct\n  : snapshot.gold_d1_pct;\n\nif (!hasValue(snapshot.gold_d5_pct) && hasValue(snapshot.gold_d1_pct)) {\n  selectedInputWarnings.push(\"gold_d5_pct missing; using gold_d1_pct fallback\");\n}\n\nconst selectedBy = snapshot.collector_version === 'v11_eur_forex_factory_events' && isUsableEurSnapshot(snapshot)\n  ? \"latest_v11_eur_usable_snapshot\"\n  : isUsableEurSnapshot(snapshot)\n    ? \"latest_eur_usable_snapshot\"\n    : \"latest_available_snapshot_fallback\";\n\nconst debugTopRows = sortedRows.slice(0, 5).map((r, index) => ({\n  rank: index + 1,\n  id: r.id,\n  created_at: r.created_at,\n  run_time_et: r.run_time_et,\n  snapshot_date: r.snapshot_date,\n  source_status: r.source_status,\n  collector_version: r.collector_version,\n\n  ecb_bias: r.ecb_bias,\n  fed_bias: r.fed_bias,\n\n  de_2y_yield: r.de_2y_yield,\n  de_2y_d5_bps: r.de_2y_d5_bps,\n  de_2y_d20_bps: r.de_2y_d20_bps,\n\n  us_de_2y_spread: r.us_de_2y_spread,\n  us_de_2y_spread_d5_bps: r.us_de_2y_spread_d5_bps,\n  us_de_2y_spread_d20_bps: r.us_de_2y_spread_d20_bps,\n\n  eurusd_price: r.eurusd_price,\n  eurusd_d1_pct: r.eurusd_d1_pct,\n  eurusd_d5_pct: r.eurusd_d5_pct,\n  eurusd_d20_pct: r.eurusd_d20_pct,\n\n  latest_ez_event: r.latest_ez_event,\n  ez_composite_pmi: r.ez_composite_pmi,\n  ez_composite_pmi_direction: r.ez_composite_pmi_direction,\n\n  eur_usable: isUsableEurSnapshot(r)\n}));\n\nconst eurInputPack = {\n  agent_name: \"EUR\",\n  layer: 1,\n  isolation_rule: \"This Layer 1 agent may only use this market snapshot and the EUR logic document. It must not read other agent outputs, dashboard data, Layer 2 outputs, or cross-agent synthesis.\",\n  execution_question: \"Based on confirmed value-driving factors available at execution time, what is the likely direction of EUR?\",\n\n  snapshot_id: snapshot.id,\n  snapshot_date: snapshot.snapshot_date,\n  run_time_et: snapshot.run_time_et,\n  created_at: snapshot.created_at || null,\n  collector_version: snapshot.collector_version || null,\n  source_status: snapshot.source_status || null,\n  data_quality: quality,\n\n  snapshot_selection: {\n    selected_snapshot_id: snapshot.id,\n    selected_run_time_et: snapshot.run_time_et,\n    selected_created_at: snapshot.created_at || null,\n    selected_snapshot_date: snapshot.snapshot_date,\n    selected_from_rows: rows.length,\n    selected_by: selectedBy,\n    missing_required_inputs_for_eur: missingInputs,\n    warnings: selectedInputWarnings,\n    top_5_rows_seen_by_workflow: debugTopRows\n  },\n\n  available_inputs: {\n    ecb_bias: requireInput(\"ecb_bias\"),\n    fed_bias: snapshot.fed_bias ?? null,\n\n    de_2y_yield: requireInput(\"de_2y_yield\"),\n    de_2y_d5_bps: requireInput(\"de_2y_d5_bps\"),\n    de_2y_d20_bps: numOrNull(snapshot.de_2y_d20_bps),\n\n    us_2y_yield: numOrNull(snapshot.us_2y_yield),\n    us_2y_d5_bps: numOrNull(snapshot.us_2y_d5_bps),\n    us_2y_d20_bps: numOrNull(snapshot.us_2y_d20_bps),\n\n    us_de_2y_spread: requireInput(\"us_de_2y_spread\"),\n    us_de_2y_spread_d5_bps: requireInput(\"us_de_2y_spread_d5_bps\"),\n    us_de_2y_spread_d20_bps: numOrNull(snapshot.us_de_2y_spread_d20_bps),\n\n    de_10y_yield: numOrNull(snapshot.de_10y_yield),\n    de_10y_d5_bps: numOrNull(snapshot.de_10y_d5_bps),\n    de_10y_d20_bps: numOrNull(snapshot.de_10y_d20_bps),\n\n    us_de_10y_spread: numOrNull(snapshot.us_de_10y_spread),\n    us_de_10y_spread_d5_bps: numOrNull(snapshot.us_de_10y_spread_d5_bps),\n    us_de_10y_spread_d20_bps: numOrNull(snapshot.us_de_10y_spread_d20_bps),\n\n    eurusd_price: requireInput(\"eurusd_price\"),\n    eurusd_d1_pct: requireInput(\"eurusd_d1_pct\"),\n    eurusd_d5_pct: requireInput(\"eurusd_d5_pct\"),\n    eurusd_d20_pct: numOrNull(snapshot.eurusd_d20_pct),\n\n    dxy_level: requireInput(\"dxy_level\"),\n    dxy_d1: numOrNull(snapshot.dxy_d1),\n    dxy_d5: numOrNull(snapshot.dxy_d5),\n    dxy_d20: numOrNull(snapshot.dxy_d20),\n\n    gold_price: numOrNull(snapshot.gold_price),\n    gold_d1_pct: numOrNull(snapshot.gold_d1_pct),\n    gold_d5_pct: numOrNull(goldD5),\n    gold_d20_pct: numOrNull(snapshot.gold_d20_pct),\n\n    vix_level: requireInput(\"vix_level\"),\n    vix_d1: numOrNull(snapshot.vix_d1),\n    vix_d5: numOrNull(snapshot.vix_d5),\n\n    latest_ez_event: parseMaybeJson(snapshot.latest_ez_event),\n    latest_us_event: parseMaybeJson(snapshot.latest_us_event),\n    upcoming_events: parseMaybeJson(snapshot.upcoming_events),\n\n    ez_composite_pmi: numOrNull(snapshot.ez_composite_pmi),\n    ez_composite_pmi_direction: snapshot.ez_composite_pmi_direction ?? null,\n    ez_stress_flag: snapshot.ez_stress_flag ?? null,\n\n    global_growth_regime: snapshot.global_growth_regime ?? null,\n    china_growth_signal: snapshot.china_growth_signal ?? null,\n\n    equities_regime: snapshot.equities_regime ?? null\n  },\n\n  missing_inputs_must_be_scored_neutral: [\n    \"ecb_bias if unavailable\",\n    \"de_2y_d5_bps or de_2y_d20_bps if unavailable\",\n    \"us_de_2y_spread_d5_bps or us_de_2y_spread_d20_bps if unavailable\",\n    \"latest_ez_event if unavailable\",\n    \"ez_composite_pmi or ez_composite_pmi_direction if unavailable\",\n    \"eurusd_d1_pct, eurusd_d5_pct or eurusd_d20_pct if unavailable\",\n    \"gold_d5_pct or gold_d20_pct if unavailable\",\n    \"ez_stress_flag if unavailable\",\n    \"global_growth_regime or china_growth_signal if unavailable\",\n    \"vix_level, vix_d1 or vix_d5 if unavailable\"\n  ],\n\n  eur_factor_map: {\n    F1: \"ECB Bias / Policy Delta\",\n    F2: \"Germany 2Y Yield Delta\",\n    F3: \"US-DE 2Y Spread Delta\",\n    F4: \"Eurozone Economic Surprise\",\n    F5: \"Eurozone PMI Trend\",\n    F6: \"EUR Own Price Delta\",\n    F7: \"Gold Confirmation\",\n    F8: \"Eurozone Stress Risk\",\n    F9: \"Global Growth Regime\",\n    F10: \"Risk Appetite / VIX Regime\"\n  }\n};\n\nreturn [{ json: eurInputPack }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "5431db74-7a2a-4372-9b8c-02af02f8d33b",
+      "name": "Build EUR Input Pack"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "kevincreedycars-debug",
+          "mode": "list",
+          "cachedResultName": "kevincreedycars-debug",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "trading-agent-dashboard",
+          "mode": "list",
+          "cachedResultName": "trading-agent-dashboard",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+        },
+        "filePath": "logic/agent_eur_direction.md",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "095d6d93-b5d1-4fe2-8d93-281f163ab5d3",
+      "name": "Get EUR Logic Document",
+      "webhookId": "41d8206a-49f2-4657-9ba5-aece4c39601c",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "wr4dhSbWkjNonhfi",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const openAiItem = $input.first().json;\n\nlet raw =\n  openAiItem.output?.[0]?.content?.[0]?.text ??\n  openAiItem.output?.[0]?.content?.[0] ??\n  openAiItem.text ??\n  openAiItem.message ??\n  openAiItem;\n\nif (!raw) {\n  throw new Error('No OpenAI output found');\n}\n\nlet report;\n\nif (typeof raw === 'object') {\n  report = raw;\n} else {\n  try {\n    report = JSON.parse(String(raw));\n  } catch (error) {\n    throw new Error(`OpenAI returned invalid JSON: ${error.message}. Raw text: ${String(raw).slice(0, 1000)}`);\n  }\n}\n\nconst marketSnapshot = $('Build EUR Input Pack').first().json || {};\nconst marketInputs = marketSnapshot.available_inputs || {};\n\nfunction pct(value) {\n  if (value === null || value === undefined || value === '') return null;\n  const match = String(value).match(/(\\d+(\\.\\d+)?)/);\n  return match ? Number(match[1]) : null;\n}\n\nfunction reasonFor(tf) {\n  return (\n    report[`${tf}_reason`] ||\n    report[`reason_${tf}`] ||\n    report.reasoning_summary ||\n    ''\n  );\n}\n\nreturn [\n  {\n    json: {\n      snapshot_id: marketSnapshot.snapshot_id || null,\n      agent_name: 'EUR',\n      layer: 1,\n\n      run_time_et: marketSnapshot.run_time_et || new Date().toISOString(),\n      snapshot_date: marketSnapshot.snapshot_date || new Date().toISOString().slice(0, 10),\n\n      market_inputs: marketInputs,\n      snapshot_selection: marketSnapshot.snapshot_selection || null,\n\n      call_24h_direction: report.direction_24h || null,\n      call_24h_conviction: pct(report.conviction_24h),\n      call_24h_reason: reasonFor('24h'),\n\n      call_3d_direction: report.direction_3_day || null,\n      call_3d_conviction: pct(report.conviction_3_day),\n      call_3d_reason: reasonFor('3d'),\n\n      call_current_week_direction: report.direction_current_week || null,\n      call_current_week_conviction: pct(report.conviction_current_week),\n      call_current_week_reason: reasonFor('current_week'),\n\n      call_next_week_direction: report.direction_next_week || null,\n      call_next_week_conviction: pct(report.conviction_next_week),\n      call_next_week_reason: reasonFor('next_week'),\n\n      call_current_month_direction: report.direction_current_month || null,\n      call_current_month_conviction: pct(report.conviction_current_month),\n      call_current_month_reason: reasonFor('current_month'),\n\n      direction_24h: report.direction_24h || null,\n      conviction_24h: pct(report.conviction_24h),\n\n      direction_3_day: report.direction_3_day || null,\n      conviction_3_day: pct(report.conviction_3_day),\n\n      direction_current_week: report.direction_current_week || null,\n      conviction_current_week: pct(report.conviction_current_week),\n\n      direction_next_week: report.direction_next_week || null,\n      conviction_next_week: pct(report.conviction_next_week),\n\n      direction_current_month: report.direction_current_month || null,\n      conviction_current_month: pct(report.conviction_current_month),\n\n      factor_breakdown: report.factor_breakdown || {},\n\n      warnings: report.risk_flags || report.warnings || [],\n\n      full_output: {\n        ...report,\n        market_inputs_seen_by_workflow: marketInputs,\n        snapshot_selection: marketSnapshot.snapshot_selection || null\n      },\n\n      raw_agent_output: report,\n\n      logic_document: 'agent_eur_direction.md',\n      logic_document_version: report.logic_document_version || '2.0_weighted_engine',\n\n      reasoning_summary: report.reasoning_summary || '',\n\n      score_bullish: report.score_bullish ?? null,\n      score_bearish: report.score_bearish ?? null,\n      score_neutral: report.score_neutral ?? null\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "f221e25a-de93-4825-a21a-16bfda628bb7",
+      "name": "Parse EUR Agent Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst inputs = item.market_inputs || {};\n\nfunction hasValue(v) {\n  return v !== null && v !== undefined && v !== \"\";\n}\n\nfunction n(v) {\n  if (!hasValue(v)) return null;\n  const x = Number(v);\n  return Number.isFinite(x) ? x : null;\n}\n\nfunction makeFactor(signal, evidence, reason) {\n  return { signal, evidence, reason };\n}\n\nfunction pctLabel(v) {\n  const x = n(v);\n  return x === null ? \"missing\" : `${Math.round(x * 100) / 100}`;\n}\n\nconst TIMEFRAME_WEIGHTS = {\n  \"24h\": { F1: 20, F2: 18, F3: 20, F4: 14, F5: 4, F6: 12, F7: 4, F8: 4, F9: 2, F10: 2 },\n  \"3d\": { F1: 18, F2: 18, F3: 20, F4: 10, F5: 8, F6: 10, F7: 4, F8: 5, F9: 4, F10: 3 },\n  \"current_week\": { F1: 18, F2: 14, F3: 22, F4: 8, F5: 12, F6: 8, F7: 4, F8: 8, F9: 4, F10: 2 },\n  \"next_week\": { F1: 18, F2: 12, F3: 24, F4: 5, F5: 14, F6: 6, F7: 3, F8: 10, F9: 6, F10: 2 },\n  \"current_month\": { F1: 16, F2: 12, F3: 22, F4: 5, F5: 16, F6: 8, F7: 3, F8: 10, F9: 6, F10: 2 }\n};\n\nfunction chooseDelta(tf, d1, d5, d20) {\n  if (tf === \"24h\" && n(d1) !== null) return d1;\n  if ((tf === \"next_week\" || tf === \"current_month\") && n(d20) !== null) return d20;\n  if (n(d5) !== null) return d5;\n  if (n(d1) !== null) return d1;\n  return null;\n}\n\nfunction latestEzEventSignal() {\n  const ev = inputs.latest_ez_event;\n  const text = JSON.stringify(ev || {}).toLowerCase();\n\n  if (!ev) return makeFactor(\"NEUTRAL\", \"No recent Eurozone event\", \"No confirmed EZ economic surprise\");\n  if (text.includes(\"bullish\") || text.includes(\"positive\") || text.includes(\"beat\")) {\n    return makeFactor(\"BULLISH\", JSON.stringify(ev), \"Positive Eurozone surprise supports EUR\");\n  }\n  if (text.includes(\"bearish\") || text.includes(\"negative\") || text.includes(\"miss\")) {\n    return makeFactor(\"BEARISH\", JSON.stringify(ev), \"Negative Eurozone surprise pressures EUR\");\n  }\n\n  return makeFactor(\"NEUTRAL\", JSON.stringify(ev), \"No clear EUR economic surprise signal\");\n}\n\nfunction factorSignals(tf) {\n  const ecb = String(inputs.ecb_bias || \"\").toLowerCase();\n\n  const de2yDelta = chooseDelta(tf, null, inputs.de_2y_d5_bps, inputs.de_2y_d20_bps);\n  const spreadDelta = chooseDelta(tf, null, inputs.us_de_2y_spread_d5_bps, inputs.us_de_2y_spread_d20_bps);\n  const eurDelta = chooseDelta(tf, inputs.eurusd_d1_pct, inputs.eurusd_d5_pct, inputs.eurusd_d20_pct);\n  const goldDelta = chooseDelta(tf, inputs.gold_d1_pct, inputs.gold_d5_pct, inputs.gold_d20_pct);\n\n  const vix = n(inputs.vix_level);\n  const pmi = n(inputs.ez_composite_pmi);\n  const pmiDirection = String(inputs.ez_composite_pmi_direction || \"\").toLowerCase();\n  const stress = String(inputs.ez_stress_flag || \"\").toLowerCase();\n  const growth = String(inputs.global_growth_regime || inputs.china_growth_signal || \"\").toLowerCase();\n\n  const signals = {};\n\n  signals.F1 = (() => {\n    if (!ecb || ecb === \"unknown\") return makeFactor(\"NEUTRAL\", \"ECB bias unknown\", \"Missing input\");\n    if (ecb.includes(\"hawkish\")) return makeFactor(\"BULLISH\", `ECB bias ${ecb}`, \"Hawkish ECB bias supports EUR\");\n    if (ecb.includes(\"dovish\")) return makeFactor(\"BEARISH\", `ECB bias ${ecb}`, \"Dovish ECB bias pressures EUR\");\n    return makeFactor(\"NEUTRAL\", `ECB bias ${ecb}`, \"No clear ECB impulse\");\n  })();\n\n  signals.F2 = (() => {\n    const d = n(de2yDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing Germany 2Y delta\", \"Missing input\");\n    if (d >= 5) return makeFactor(\"BULLISH\", `Germany 2Y delta ${pctLabel(d)} bps`, \"Rising German front-end yields support EUR\");\n    if (d <= -5) return makeFactor(\"BEARISH\", `Germany 2Y delta ${pctLabel(d)} bps`, \"Falling German front-end yields pressure EUR\");\n    return makeFactor(\"NEUTRAL\", `Germany 2Y delta ${pctLabel(d)} bps`, \"German 2Y move below threshold\");\n  })();\n\n  signals.F3 = (() => {\n    const d = n(spreadDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing US-DE 2Y spread delta\", \"Missing input\");\n    if (d <= -5) return makeFactor(\"BULLISH\", `US-DE 2Y spread delta ${pctLabel(d)} bps`, \"US-DE spread narrowing supports EUR\");\n    if (d >= 5) return makeFactor(\"BEARISH\", `US-DE 2Y spread delta ${pctLabel(d)} bps`, \"US-DE spread widening pressures EUR\");\n    return makeFactor(\"NEUTRAL\", `US-DE 2Y spread delta ${pctLabel(d)} bps`, \"Spread move below threshold\");\n  })();\n\n  signals.F4 = latestEzEventSignal();\n\n  signals.F5 = (() => {\n    if (pmi === null && !pmiDirection) return makeFactor(\"NEUTRAL\", \"Missing EZ PMI trend\", \"Missing input\");\n    if ((pmi !== null && pmi > 50 && pmiDirection.includes(\"rising\")) || pmiDirection.includes(\"improving\")) {\n      return makeFactor(\"BULLISH\", `EZ PMI ${pmi ?? \"unknown\"} ${pmiDirection}`, \"Improving Eurozone PMI trend supports EUR\");\n    }\n    if ((pmi !== null && pmi < 50) || pmiDirection.includes(\"falling\") || pmiDirection.includes(\"deteriorating\")) {\n      return makeFactor(\"BEARISH\", `EZ PMI ${pmi ?? \"unknown\"} ${pmiDirection}`, \"Weak or deteriorating Eurozone PMI trend pressures EUR\");\n    }\n    return makeFactor(\"NEUTRAL\", `EZ PMI ${pmi ?? \"unknown\"} ${pmiDirection}`, \"PMI trend not decisive\");\n  })();\n\n  signals.F6 = (() => {\n    const d = n(eurDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing EURUSD delta\", \"Missing input\");\n    const upThreshold = tf === \"24h\" ? 0.2 : 0.5;\n    const downThreshold = tf === \"24h\" ? -0.2 : -0.5;\n    if (d >= upThreshold) return makeFactor(\"BULLISH\", `EURUSD delta ${pctLabel(d)}%`, \"EUR own price delta confirms bullish pressure\");\n    if (d <= downThreshold) return makeFactor(\"BEARISH\", `EURUSD delta ${pctLabel(d)}%`, \"EUR own price delta confirms bearish pressure\");\n    return makeFactor(\"NEUTRAL\", `EURUSD delta ${pctLabel(d)}%`, \"EUR own price move below threshold\");\n  })();\n\n  signals.F7 = (() => {\n    const d = n(goldDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing gold delta\", \"Missing input\");\n    const upThreshold = tf === \"24h\" ? 0.3 : 0.75;\n    const downThreshold = tf === \"24h\" ? -0.3 : -0.75;\n    if (d >= upThreshold) return makeFactor(\"BULLISH\", `Gold delta ${pctLabel(d)}%`, \"Gold strength confirms anti-USD pressure supportive for EUR\");\n    if (d <= downThreshold) return makeFactor(\"BEARISH\", `Gold delta ${pctLabel(d)}%`, \"Gold weakness confirms USD strength pressure against EUR\");\n    return makeFactor(\"NEUTRAL\", `Gold delta ${pctLabel(d)}%`, \"Gold move below confirmation threshold\");\n  })();\n\n  signals.F8 = (() => {\n    if (!stress || stress === \"null\" || stress === \"unknown\") {\n      return makeFactor(\"NEUTRAL\", \"EZ stress unavailable\", \"Missing or inactive stress input\");\n    }\n    if (stress.includes(\"active\") || stress.includes(\"true\") || stress.includes(\"elevated\") || stress.includes(\"risk\") || stress.includes(\"stress\")) {\n      return makeFactor(\"BEARISH\", `EZ stress ${stress}`, \"Eurozone stress is bearish EUR\");\n    }\n    return makeFactor(\"NEUTRAL\", `EZ stress ${stress}`, \"No active Eurozone stress signal\");\n  })();\n\n  signals.F9 = (() => {\n    if (!growth || growth === \"null\" || growth === \"unknown\") {\n      return makeFactor(\"NEUTRAL\", \"Global growth unavailable\", \"Missing input\");\n    }\n    if (growth.includes(\"expanding\") || growth.includes(\"positive\") || growth.includes(\"improving\") || growth.includes(\"risk_on\")) {\n      return makeFactor(\"BULLISH\", `Growth regime ${growth}`, \"Global growth expansion supports EUR\");\n    }\n    if (growth.includes(\"contracting\") || growth.includes(\"negative\") || growth.includes(\"deteriorating\") || growth.includes(\"risk_off\")) {\n      return makeFactor(\"BEARISH\", `Growth regime ${growth}`, \"Global growth deterioration pressures EUR\");\n    }\n    return makeFactor(\"NEUTRAL\", `Growth regime ${growth}`, \"Global growth signal mixed\");\n  })();\n\n  signals.F10 = (() => {\n    if (vix === null) return makeFactor(\"NEUTRAL\", \"Missing VIX\", \"Missing input\");\n    if (vix < 16) return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Risk-on regime supports EUR versus safe-haven USD\");\n    if (vix > 25) return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-off regime favours USD over EUR\");\n    return makeFactor(\"NEUTRAL\", `VIX ${vix}`, \"Neutral risk regime\");\n  })();\n\n  return signals;\n}\n\nfunction scoreTimeframe(tf) {\n  const weights = TIMEFRAME_WEIGHTS[tf];\n  const signals = factorSignals(tf);\n\n  let bullish = 0;\n  let bearish = 0;\n  let neutral = 0;\n  let bullishCount = 0;\n  let bearishCount = 0;\n  let neutralCount = 0;\n\n  const factorBreakdown = {};\n\n  for (const [id, sig] of Object.entries(signals)) {\n    const weight = weights[id] || 0;\n    factorBreakdown[id] = { ...sig, weight };\n\n    if (sig.signal === \"BULLISH\") {\n      bullish += weight;\n      bullishCount++;\n    } else if (sig.signal === \"BEARISH\") {\n      bearish += weight;\n      bearishCount++;\n    } else {\n      neutral += weight;\n      neutralCount++;\n    }\n  }\n\n  const active = bullish + bearish;\n  const bullishArgument = active > 0 ? Math.round((bullish / active) * 100) : 0;\n  const bearishArgument = active > 0 ? Math.round((bearish / active) * 100) : 0;\n  const neutralPct = Math.round(neutral);\n  const directionalParticipationPct = Math.round(active);\n  const netEdge = bullishArgument - bearishArgument;\n\n  const baseDirection =\n    bullish > bearish ? \"BULLISH\" :\n    bearish > bullish ? \"BEARISH\" :\n    \"NO_CLEAR_BIAS\";\n\n  const absEdge = Math.abs(netEdge);\n\n  const direction =\n    baseDirection === \"NO_CLEAR_BIAS\" ? \"NO_CLEAR_BIAS\" :\n    absEdge < 20 ? `${baseDirection}_LEAN` :\n    baseDirection;\n\n  const conviction =\n    baseDirection === \"BULLISH\" ? bullishArgument :\n    baseDirection === \"BEARISH\" ? bearishArgument :\n    0;\n\n  const strength =\n    absEdge >= 40 ? \"VERY_STRONG\" :\n    absEdge >= 25 ? \"STRONG\" :\n    absEdge >= 15 ? \"MODERATE\" :\n    \"WEAK\";\n\n  const reason = `${tf} EUR deterministic score: bull case ${bullishArgument}%, bear case ${bearishArgument}%, neutral/inactive ${neutralPct}%, directional participation ${directionalParticipationPct}%, net edge ${netEdge > 0 ? \"+\" : \"\"}${netEdge}.`;\n\n  return {\n    direction,\n    conviction,\n    reason,\n    factor_breakdown: factorBreakdown,\n    score_bullish: bullishCount,\n    score_bearish: bearishCount,\n    score_neutral: neutralCount,\n    weighted_score: {\n      bullish_weight: bullish,\n      bearish_weight: bearish,\n      neutral_weight: neutral,\n      active_weight: active,\n      weight_margin: Math.abs(bullish - bearish)\n    },\n    conviction_model: {\n      bullish_argument_pct: bullishArgument,\n      bearish_argument_pct: bearishArgument,\n      neutral_evidence_pct: neutralPct,\n      neutral_pct: neutralPct,\n      directional_participation_pct: directionalParticipationPct,\n      active_participation_pct: directionalParticipationPct,\n      winning_side: baseDirection,\n      net_edge_pct: netEdge,\n      final_conviction: conviction,\n      verdict_strength: strength,\n      bull_case_weight: bullish,\n      bear_case_weight: bearish,\n      neutral_weight: neutral,\n      final_conviction_logic: reason,\n      weighted_edge: Math.abs(netEdge) / 100,\n      raw_conviction: conviction,\n      base_conviction: conviction,\n      participation: directionalParticipationPct,\n      participation_cap: directionalParticipationPct,\n      conflict_penalty: 0,\n      missing_input_penalty: 0,\n      agreement_boost: 0\n    }\n  };\n}\n\nconst r24h = scoreTimeframe(\"24h\");\nconst r3d = scoreTimeframe(\"3d\");\nconst rWeek = scoreTimeframe(\"current_week\");\nconst rNextWeek = scoreTimeframe(\"next_week\");\nconst rMonth = scoreTimeframe(\"current_month\");\n\nconst output = {\n  ...(item.full_output || {}),\n  direction_24h: r24h.direction,\n  conviction_24h: r24h.conviction,\n  reason_24h: r24h.reason,\n  direction_3_day: r3d.direction,\n  conviction_3_day: r3d.conviction,\n  reason_3_day: r3d.reason,\n  direction_current_week: rWeek.direction,\n  conviction_current_week: rWeek.conviction,\n  reason_current_week: rWeek.reason,\n  direction_next_week: rNextWeek.direction,\n  conviction_next_week: rNextWeek.conviction,\n  reason_next_week: rNextWeek.reason,\n  direction_current_month: rMonth.direction,\n  conviction_current_month: rMonth.conviction,\n  reason_current_month: rMonth.reason,\n  weighted_score: r24h.weighted_score,\n  conviction_model: r24h.conviction_model,\n  factor_breakdown: r24h.factor_breakdown,\n  timeframe_models: {\n    \"24h\": r24h,\n    \"3d\": r3d,\n    \"current_week\": rWeek,\n    \"next_week\": rNextWeek,\n    \"current_month\": rMonth\n  },\n  score_bullish: r24h.score_bullish,\n  score_bearish: r24h.score_bearish,\n  score_neutral: r24h.score_neutral,\n  market_inputs_seen_by_conviction_node: inputs,\n  reasoning_summary: `EUR weighted verdicts calculated deterministically by timeframe. 24h ${r24h.direction} ${r24h.conviction}%, 3d ${r3d.direction} ${r3d.conviction}%, current week ${rWeek.direction} ${rWeek.conviction}%, next week ${rNextWeek.direction} ${rNextWeek.conviction}%, current month ${rMonth.direction} ${rMonth.conviction}%.`\n};\n\nconst {\n  market_inputs,\n  snapshot_selection,\n  bull_case,\n  bear_case,\n  winning_side,\n  risk_flags,\n  timeframe_models,\n  ...safeItem\n} = item;\n\nreturn [{\n  json: {\n    ...safeItem,\n    call_24h_direction: output.direction_24h,\n    call_24h_conviction: output.conviction_24h,\n    call_24h_reason: output.reason_24h,\n    call_3d_direction: output.direction_3_day,\n    call_3d_conviction: output.conviction_3_day,\n    call_3d_reason: output.reason_3_day,\n    call_current_week_direction: output.direction_current_week,\n    call_current_week_conviction: output.conviction_current_week,\n    call_current_week_reason: output.reason_current_week,\n    call_next_week_direction: output.direction_next_week,\n    call_next_week_conviction: output.conviction_next_week,\n    call_next_week_reason: output.reason_next_week,\n    call_current_month_direction: output.direction_current_month,\n    call_current_month_conviction: output.conviction_current_month,\n    call_current_month_reason: output.reason_current_month,\n    direction_24h: output.direction_24h,\n    conviction_24h: output.conviction_24h,\n    direction_3_day: output.direction_3_day,\n    conviction_3_day: output.conviction_3_day,\n    direction_current_week: output.direction_current_week,\n    conviction_current_week: output.conviction_current_week,\n    direction_next_week: output.direction_next_week,\n    conviction_next_week: output.conviction_next_week,\n    direction_current_month: output.direction_current_month,\n    conviction_current_month: output.conviction_current_month,\n    weighted_score: output.weighted_score,\n    conviction_model: output.conviction_model,\n    factor_breakdown: output.factor_breakdown,\n    full_output: output,\n    raw_agent_output: output,\n    reasoning_summary: output.reasoning_summary,\n    score_bullish: output.score_bullish,\n    score_bearish: output.score_bearish,\n    score_neutral: output.score_neutral\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        256
+      ],
+      "id": "f467a05c-9c13-409a-b32d-bb758ff2b9fe",
+      "name": "Calculate EUR Conviction"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e15e650f-8d20-4011-b63c-b08b07db3f4a",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Supabase Get Many": {
+      "main": [
+        [
+          {
+            "node": "Build EUR Input Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse EUR Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine md & market snapshot": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build EUR Input Pack": {
+      "main": [
+        [
+          {
+            "node": "Get EUR Logic Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get EUR Logic Document": {
+      "main": [
+        [
+          {
+            "node": "Combine md & market snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse EUR Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Calculate EUR Conviction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate EUR Conviction": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Supabase Get Many",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "310f6bfe-1ce0-47e6-bbfb-29fe19fc24c5",
+  "activeVersionId": null,
+  "versionCounter": 38,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-07T19:57:41.077Z",
+      "createdAt": "2026-06-07T19:57:41.077Z",
+      "role": "workflow:owner",
+      "workflowId": "Px0bsH7chlRWH9ZD",
+      "projectId": "ISQG9XU7TGTT6Fcu",
+      "project": {
+        "updatedAt": "2026-04-29T19:10:21.640Z",
+        "createdAt": "2026-04-29T19:10:11.212Z",
+        "id": "ISQG9XU7TGTT6Fcu",
+        "name": "Daniel Silver <a17@live.co.uk>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

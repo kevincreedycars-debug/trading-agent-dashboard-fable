@@ -1,0 +1,324 @@
+{
+  "updatedAt": "2026-06-18T19:45:55.810Z",
+  "createdAt": "2026-06-07T19:17:29.408Z",
+  "id": "FOpFp3AzTJVYdLXe",
+  "name": "NQ Layer 1 Agent",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are the NQ Layer 1 Direction Agent.\n\nYou must follow the supplied NQ logic document exactly.\n\nYou analyse NQ only.\n\nYou must not produce pair calls, trade recommendations, cross-asset calls, consensus calls, or Layer 2 event-adjusted calls.\n\nYou must not use technical analysis, chart patterns, support/resistance, RSI, MACD, moving averages, or indicator logic.\n\nUse only the supplied market snapshot and supplied logic document.\n\nIf required inputs are missing, score the affected factor as NEUTRAL and clearly state the missing input.\n\nReturn valid JSON only.\n\nDo not wrap the JSON in markdown fences. Do not include ```json. Return raw JSON only."
+            },
+            {
+              "content": "={\n  \"logic_document\": \"{{ $json.logic_document }}\",\n  \"market_snapshot\": {{ JSON.stringify($json.market_snapshot) }},\n  \"output_requirement\": {\n    \"asset\": \"NQ\",\n    \"layer\": \"Layer 1 Raw\",\n    \"format\": \"valid_json_only\"\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "1f0951f2-5979-43b8-8494-f57af18481e9",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "VY1FMMlFQNwU3Ctt",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "market_snapshots",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "cce706a2-e6e2-4481-93da-9129ab850255",
+      "name": "Supabase Get Many",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "agent_outputs",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "6ed3dc35-c650-4b8e-af3f-93d7708764cf",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const logicItem = $('Get NQ Logic Document').first().json;\nconst marketItem = $('Build NQ Input Pack').first().json;\n\nlet logicDocument = logicItem.content || '';\n\nif (logicItem.encoding === 'base64') {\n  logicDocument = Buffer.from(logicDocument, 'base64').toString('utf8');\n}\n\nreturn [\n  {\n    json: {\n      logic_document: logicDocument,\n      market_snapshot: marketItem\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "785d78d5-f481-446d-95db-506822a5aaca",
+      "name": "Combine md & market snapshot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(item => item.json);\n\nconst snapshot = rows\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .sort((a, b) => new Date(b.run_time_et) - new Date(a.run_time_et))[0];\n\nif (!snapshot) {\n  throw new Error(\"No valid market snapshot found\");\n}\n\nconst nqInputPack = {\n  agent_name: \"NQ\",\n  layer: 1,\n  isolation_rule: \"This Layer 1 agent may only use this market snapshot and the NQ logic document. It must not read other agent outputs, dashboard data, Layer 2 outputs, or cross-agent synthesis.\",\n  execution_question: \"Based on confirmed value-driving factors available at execution time, what is the likely direction of NQ?\",\n\n  snapshot_id: snapshot.id,\n  snapshot_date: snapshot.snapshot_date,\n  run_time_et: snapshot.run_time_et,\n\n  available_inputs: {\n    vix_level: snapshot.vix_level,\n    vix_d1: snapshot.vix_d1,\n    vix_d5: snapshot.vix_d5,\n\n    dxy_level: snapshot.dxy_level,\n    dxy_d1: snapshot.dxy_d1,\n    dxy_d5: snapshot.dxy_d5,\n    dxy_d20: snapshot.dxy_d20,\n\n    us_10y_yield: snapshot.us_10y_yield,\n    us_10y_d5_bps: snapshot.us_10y_d5_bps,\n    us_10y_d20_bps: snapshot.us_10y_d20_bps,\n\n    us_10y_real_yield: snapshot.us_10y_real_yield,\n    us_10y_real_yield_d5_bps: snapshot.us_10y_real_yield_d5_bps,\n    us_10y_real_yield_d20_bps: snapshot.us_10y_real_yield_d20_bps,\n\n    fed_bias: snapshot.fed_bias,\n    latest_us_event: snapshot.latest_us_event,\n    upcoming_events: snapshot.upcoming_events,\n\n    nq_price: snapshot.nq_price,\n    nq_d1_pct: snapshot.nq_d1_pct,\n    nq_d5_pct: snapshot.nq_d5_pct,\n    nq_d20_pct: snapshot.nq_d20_pct,\n\n    btc_price: snapshot.btc_price,\n    btc_d1_pct: snapshot.btc_d1_pct,\n    btc_d5_pct: snapshot.btc_d5_pct,\n    btc_d20_pct: snapshot.btc_d20_pct,\n\n    gold_price: snapshot.gold_price,\n    gold_d1_pct: snapshot.gold_d1_pct,\n    gold_d5_pct: snapshot.gold_d5_pct,\n    gold_d20_pct: snapshot.gold_d20_pct,\n\n    equities_regime: snapshot.equities_regime\n  },\n\n  missing_inputs_must_be_scored_neutral: [\n    \"vix_level if unavailable\",\n    \"vix_d1 if unavailable\",\n    \"vix_d5 if unavailable\",\n    \"dxy_d5 or dxy_d20 if unavailable\",\n    \"us_10y_d5_bps or us_10y_d20_bps if unavailable\",\n    \"us_10y_real_yield_d5_bps or us_10y_real_yield_d20_bps if unavailable\",\n    \"fed_bias if unavailable\",\n    \"latest_us_event if unavailable\",\n    \"nq_d1_pct, nq_d5_pct or nq_d20_pct if unavailable\",\n    \"btc_d5_pct or btc_d20_pct if unavailable\",\n    \"gold_d5_pct or gold_d20_pct if unavailable\",\n    \"equities_regime if unavailable\"\n  ],\n\n  nq_factor_map: {\n    F1: \"VIX Level and Risk Regime\",\n    F2: \"VIX Delta\",\n    F3: \"DXY / USD Financial Conditions\",\n    F4: \"US 10-Year Nominal Yield Delta\",\n    F5: \"US 10-Year Real Yield Delta\",\n    F6: \"Fed Bias / Policy Liquidity\",\n    F7: \"US Economic Surprise Direction\",\n    F8: \"NQ Own Price Delta\",\n    F9: \"BTC / High-Beta Risk Confirmation\",\n    F10: \"Gold / Defensive Flow Confirmation\"\n  }\n};\n\nreturn [{ json: nqInputPack }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "2acf9354-ccd8-43c4-90ee-6ef6b94b3a8c",
+      "name": "Build NQ Input Pack"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "kevincreedycars-debug",
+          "mode": "list",
+          "cachedResultName": "kevincreedycars-debug",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "trading-agent-dashboard",
+          "mode": "list",
+          "cachedResultName": "trading-agent-dashboard",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+        },
+        "filePath": "logic/agent_nq_direction.md",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "3ec2125d-e128-4ff0-872d-ba1ae78a0bb4",
+      "name": "Get NQ Logic Document",
+      "webhookId": "0739ba83-e7b5-425a-b698-84a4b5810111",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "wr4dhSbWkjNonhfi",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const openAiItem = $input.first().json;\n\nlet text =\n  openAiItem.output?.[0]?.content?.[0]?.text ||\n  openAiItem.text ||\n  openAiItem.message ||\n  '';\n\nif (!text) {\n  throw new Error('No OpenAI text output found');\n}\n\nconst report = JSON.parse(text);\n\nconst marketSnapshot = $('Combine md & market snapshot').first().json.market_snapshot || {};\n\nfunction pct(value) {\n  if (value === null || value === undefined || value === '') return null;\n  const match = String(value).match(/(\\d+(\\.\\d+)?)/);\n  return match ? Number(match[1]) : null;\n}\n\nfunction reasonFor(tf) {\n  return (\n    report[`${tf}_reason`] ||\n    report.reasoning_summary ||\n    ''\n  );\n}\n\nreturn [\n  {\n    json: {\n      snapshot_id: marketSnapshot.snapshot_id || null,\n      agent_name: 'NQ',\n      layer: 1,\n      run_time_et: marketSnapshot.run_time_et || new Date().toISOString(),\n      snapshot_date: marketSnapshot.snapshot_date || new Date().toISOString().slice(0, 10),\n      market_inputs: marketSnapshot.available_inputs || {},\n      \n\n      call_24h_direction: report.direction_24h || null,\n      call_24h_conviction: pct(report.conviction_24h),\n      call_24h_reason: reasonFor('24h'),\n\n      call_3d_direction: report.direction_3_day || null,\n      call_3d_conviction: pct(report.conviction_3_day),\n      call_3d_reason: reasonFor('3d'),\n\n      call_current_week_direction: report.direction_current_week || null,\n      call_current_week_conviction: pct(report.conviction_current_week),\n      call_current_week_reason: reasonFor('current_week'),\n\n      call_next_week_direction: report.direction_next_week || null,\n      call_next_week_conviction: pct(report.conviction_next_week),\n      call_next_week_reason: reasonFor('next_week'),\n\n      call_current_month_direction: report.direction_current_month || null,\n      call_current_month_conviction: pct(report.conviction_current_month),\n      call_current_month_reason: reasonFor('current_month'),\n\n      direction_24h: report.direction_24h || null,\n      conviction_24h: pct(report.conviction_24h),\n      direction_3_day: report.direction_3_day || null,\n      conviction_3_day: pct(report.conviction_3_day),\n      direction_current_week: report.direction_current_week || null,\n      conviction_current_week: pct(report.conviction_current_week),\n      direction_next_week: report.direction_next_week || null,\n      conviction_next_week: pct(report.conviction_next_week),\n      direction_current_month: report.direction_current_month || null,\n      conviction_current_month: pct(report.conviction_current_month),\n\n      factor_breakdown: report.factor_breakdown || {},\n      conviction_model: report.conviction_model || {},\ntimeframe_models: report.timeframe_models || {},\nweighted_score: report.weighted_score || null,\n     warnings: report.risk_flags || report.warnings || [],\n      full_output: report,\n      raw_agent_output: report,\n\n      logic_document: 'agent_nq_direction.md',\n      logic_document_version: report.logic_document_version || '2.0_weighted_engine',\n      bull_case: report.bull_case || null,\nbear_case: report.bear_case || null,\nwinning_side: report.winning_side || null,\n\n      score_bullish: report.score_bullish ?? null,\n      score_bearish: report.score_bearish ?? null,\n      score_neutral: report.score_neutral ?? null\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "8087f160-baa6-4903-81f7-511a327d2404",
+      "name": "Parse NQ Agent Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst inputs = item.market_inputs || {};\n\nfunction n(v) {\n  const x = Number(v);\n  return Number.isFinite(x) ? x : null;\n}\n\nfunction makeFactor(signal, evidence, reason) {\n  return { signal, evidence, reason };\n}\n\nfunction pctLabel(v) {\n  const x = n(v);\n  return x === null ? \"missing\" : `${Math.round(x * 100) / 100}`;\n}\n\nconst TIMEFRAME_WEIGHTS = {\n  \"24h\": {\n    F1: 20, F2: 14, F3: 12, F4: 6, F5: 14,\n    F6: 12, F7: 8, F8: 10, F9: 2, F10: 2\n  },\n  \"3d\": {\n    F1: 18, F2: 14, F3: 12, F4: 7, F5: 16,\n    F6: 14, F7: 7, F8: 7, F9: 3, F10: 2\n  },\n  \"current_week\": {\n    F1: 16, F2: 12, F3: 12, F4: 8, F5: 18,\n    F6: 16, F7: 6, F8: 6, F9: 4, F10: 2\n  },\n  \"next_week\": {\n    F1: 14, F2: 8, F3: 12, F4: 8, F5: 20,\n    F6: 20, F7: 5, F8: 5, F9: 5, F10: 3\n  },\n  \"current_month\": {\n    F1: 12, F2: 6, F3: 12, F4: 8, F5: 22,\n    F6: 20, F7: 5, F8: 6, F9: 5, F10: 4\n  }\n};\n\nfunction chooseDelta(tf, d1, d5, d20) {\n  if (tf === \"24h\" && n(d1) !== null) return d1;\n  if ((tf === \"next_week\" || tf === \"current_month\") && n(d20) !== null) return d20;\n  if (n(d5) !== null) return d5;\n  if (n(d1) !== null) return d1;\n  return null;\n}\n\nfunction latestEventSignal() {\n  const ev = inputs.latest_us_event;\n  const text = JSON.stringify(ev || {}).toLowerCase();\n\n  if (!ev) {\n    return makeFactor(\"NEUTRAL\", \"No recent US event\", \"No confirmed US economic surprise\");\n  }\n\n  if (text.includes(\"bullish\") || text.includes(\"positive\") || text.includes(\"beat\")) {\n    return makeFactor(\"BULLISH\", JSON.stringify(ev), \"Positive US surprise supports NQ through growth/liquidity confidence\");\n  }\n\n  if (text.includes(\"bearish\") || text.includes(\"negative\") || text.includes(\"miss\")) {\n    return makeFactor(\"BEARISH\", JSON.stringify(ev), \"Negative US surprise pressures NQ through growth risk\");\n  }\n\n  return makeFactor(\"NEUTRAL\", JSON.stringify(ev), \"No clear NQ economic surprise signal\");\n}\n\nfunction factorSignals(tf) {\n  const vix = n(inputs.vix_level);\n  const vixDelta = tf === \"24h\" && n(inputs.vix_d1) !== null ? inputs.vix_d1 : inputs.vix_d5;\n\n  const dxyDelta = chooseDelta(tf, inputs.dxy_d1, inputs.dxy_d5, inputs.dxy_d20);\n  const nominal10yDelta = chooseDelta(tf, null, inputs.us_10y_d5_bps, inputs.us_10y_d20_bps);\n  const real10yDelta = chooseDelta(tf, null, inputs.us_10y_real_yield_d5_bps, inputs.us_10y_real_yield_d20_bps);\n\n  const nqDelta = chooseDelta(tf, inputs.nq_d1_pct, inputs.nq_d5_pct, inputs.nq_d20_pct);\n  const btcDelta = chooseDelta(tf, inputs.btc_d1_pct, inputs.btc_d5_pct, inputs.btc_d20_pct);\n  const goldDelta = chooseDelta(tf, inputs.gold_d1_pct, inputs.gold_d5_pct, inputs.gold_d20_pct);\n\n  const fed = String(inputs.fed_bias || \"\").toLowerCase();\n\n  const signals = {};\n\n  signals.F1 = (() => {\n    if (vix === null) return makeFactor(\"NEUTRAL\", \"Missing VIX\", \"Missing input\");\n\n    if (vix > 30) {\n      return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Crisis volatility regime is strongly bearish NQ\");\n    }\n\n    if (vix > 22) {\n      return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-off volatility regime is bearish NQ\");\n    }\n\n    if (vix < 16) {\n      return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Low-volatility risk-on regime supports NQ\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `VIX ${vix}`, \"Neutral VIX regime\");\n  })();\n\n  signals.F2 = (() => {\n    const d = n(vixDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing VIX delta\", \"Missing input\");\n\n    if (d >= 2) {\n      return makeFactor(\"BEARISH\", `VIX delta ${pctLabel(d)}`, \"Rising volatility pressures NQ\");\n    }\n\n    if (d <= -2) {\n      return makeFactor(\"BULLISH\", `VIX delta ${pctLabel(d)}`, \"Falling volatility supports NQ\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `VIX delta ${pctLabel(d)}`, \"Volatility change below threshold\");\n  })();\n\n  signals.F3 = (() => {\n    const d = n(dxyDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing DXY delta\", \"Missing input\");\n\n    const upThreshold = tf === \"24h\" ? 0.15 : 0.3;\n    const downThreshold = tf === \"24h\" ? -0.15 : -0.3;\n\n    if (d >= upThreshold) {\n      return makeFactor(\"BEARISH\", `DXY delta ${pctLabel(d)}%`, \"Rising USD tightens financial conditions and pressures NQ\");\n    }\n\n    if (d <= downThreshold) {\n      return makeFactor(\"BULLISH\", `DXY delta ${pctLabel(d)}%`, \"Falling USD eases financial conditions and supports NQ\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `DXY delta ${pctLabel(d)}%`, \"USD move below threshold\");\n  })();\n\n  signals.F4 = (() => {\n    const d = n(nominal10yDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing US 10Y nominal yield delta\", \"Missing input\");\n\n    if (d >= 5) {\n      return makeFactor(\"BEARISH\", `US 10Y nominal delta ${pctLabel(d)} bps`, \"Rising nominal yields can pressure duration-sensitive NQ\");\n    }\n\n    if (d <= -5) {\n      return makeFactor(\"BULLISH\", `US 10Y nominal delta ${pctLabel(d)} bps`, \"Falling nominal yields support duration-sensitive NQ\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `US 10Y nominal delta ${pctLabel(d)} bps`, \"Nominal yield move below threshold\");\n  })();\n\n  signals.F5 = (() => {\n    const d = n(real10yDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing US 10Y real yield delta\", \"Missing input\");\n\n    if (d >= 5) {\n      return makeFactor(\"BEARISH\", `US 10Y real yield delta ${pctLabel(d)} bps`, \"Rising real yields are bearish long-duration growth equities\");\n    }\n\n    if (d <= -5) {\n      return makeFactor(\"BULLISH\", `US 10Y real yield delta ${pctLabel(d)} bps`, \"Falling real yields support long-duration growth equities\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `US 10Y real yield delta ${pctLabel(d)} bps`, \"Real yield move below threshold\");\n  })();\n\n  signals.F6 = (() => {\n    if (!fed || fed === \"unknown\") return makeFactor(\"NEUTRAL\", \"Fed bias unknown\", \"Missing input\");\n\n    if (fed.includes(\"hawkish\")) {\n      return makeFactor(\"BEARISH\", `Fed bias ${fed}`, \"Hawkish Fed bias tightens liquidity and pressures NQ\");\n    }\n\n    if (fed.includes(\"dovish\")) {\n      return makeFactor(\"BULLISH\", `Fed bias ${fed}`, \"Dovish Fed bias eases liquidity and supports NQ\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `Fed bias ${fed}`, \"No clear Fed liquidity impulse\");\n  })();\n\n  signals.F7 = latestEventSignal();\n\n  signals.F8 = (() => {\n    const d = n(nqDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing NQ price delta\", \"Missing input\");\n\n    const upThreshold = tf === \"24h\" ? 0.25 : 0.75;\n    const downThreshold = tf === \"24h\" ? -0.25 : -0.75;\n\n    if (d >= upThreshold) {\n      return makeFactor(\"BULLISH\", `NQ delta ${pctLabel(d)}%`, \"NQ own price action confirms bullish pressure\");\n    }\n\n    if (d <= downThreshold) {\n      return makeFactor(\"BEARISH\", `NQ delta ${pctLabel(d)}%`, \"NQ own price action confirms bearish pressure\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `NQ delta ${pctLabel(d)}%`, \"NQ price move below confirmation threshold\");\n  })();\n\n  signals.F9 = (() => {\n    const d = n(btcDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing BTC delta\", \"Missing input\");\n\n    const upThreshold = tf === \"24h\" ? 0.5 : 1.5;\n    const downThreshold = tf === \"24h\" ? -0.5 : -1.5;\n\n    if (d >= upThreshold) {\n      return makeFactor(\"BULLISH\", `BTC delta ${pctLabel(d)}%`, \"BTC strength confirms high-beta risk appetite\");\n    }\n\n    if (d <= downThreshold) {\n      return makeFactor(\"BEARISH\", `BTC delta ${pctLabel(d)}%`, \"BTC weakness warns of high-beta risk pressure\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `BTC delta ${pctLabel(d)}%`, \"BTC move below confirmation threshold\");\n  })();\n\n  signals.F10 = (() => {\n    const d = n(goldDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing gold delta\", \"Missing input\");\n\n    const upThreshold = tf === \"24h\" ? 0.3 : 0.75;\n    const downThreshold = tf === \"24h\" ? -0.3 : -0.75;\n\n    if (d >= upThreshold && vix !== null && vix > 22) {\n      return makeFactor(\"BEARISH\", `Gold delta ${pctLabel(d)}%, VIX ${vix}`, \"Gold strength during risk-off confirms defensive flows away from NQ\");\n    }\n\n    if (d <= downThreshold && vix !== null && vix < 22) {\n      return makeFactor(\"BULLISH\", `Gold delta ${pctLabel(d)}%, VIX ${vix}`, \"Gold weakness outside risk-off supports risk appetite\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `Gold delta ${pctLabel(d)}%`, \"Gold does not provide a clean defensive-flow signal\");\n  })();\n\n  return signals;\n}\n\nfunction scoreTimeframe(tf) {\n  const weights = TIMEFRAME_WEIGHTS[tf];\n  const signals = factorSignals(tf);\n\n  let bullish = 0;\n  let bearish = 0;\n  let neutral = 0;\n\n  let bullishCount = 0;\n  let bearishCount = 0;\n  let neutralCount = 0;\n\n  const factorBreakdown = {};\n\n  for (const [id, sig] of Object.entries(signals)) {\n    const weight = weights[id] || 0;\n\n    factorBreakdown[id] = {\n      ...sig,\n      weight\n    };\n\n    if (sig.signal === \"BULLISH\") {\n      bullish += weight;\n      bullishCount++;\n    } else if (sig.signal === \"BEARISH\") {\n      bearish += weight;\n      bearishCount++;\n    } else {\n      neutral += weight;\n      neutralCount++;\n    }\n  }\n\n  const active = bullish + bearish;\n  const bullishArgument = active > 0 ? Math.round((bullish / active) * 100) : 0;\n  const bearishArgument = active > 0 ? Math.round((bearish / active) * 100) : 0;\n  const neutralPct = Math.round(neutral);\n  const directionalParticipationPct = Math.round(active);\n  const netEdge = bullishArgument - bearishArgument;\n\n  const baseDirection =\n    bullish > bearish\n      ? \"BULLISH\"\n      : bearish > bullish\n        ? \"BEARISH\"\n        : \"NO_CLEAR_BIAS\";\n\n  const absEdge = Math.abs(netEdge);\n\n  const direction =\n    baseDirection === \"NO_CLEAR_BIAS\"\n      ? \"NO_CLEAR_BIAS\"\n      : absEdge < 20\n        ? `${baseDirection}_LEAN`\n        : baseDirection;\n\n  const conviction =\n    baseDirection === \"BULLISH\"\n      ? bullishArgument\n      : baseDirection === \"BEARISH\"\n        ? bearishArgument\n        : 0;\n\n  const strength =\n    absEdge >= 40 ? \"VERY_STRONG\" :\n    absEdge >= 25 ? \"STRONG\" :\n    absEdge >= 15 ? \"MODERATE\" :\n    \"WEAK\";\n\n  const reason = `${tf} NQ deterministic score: bull case ${bullishArgument}%, bear case ${bearishArgument}%, neutral/inactive ${neutralPct}%, directional participation ${directionalParticipationPct}%, net edge ${netEdge > 0 ? \"+\" : \"\"}${netEdge}.`;\n\n  return {\n    direction,\n    conviction,\n    reason,\n    factor_breakdown: factorBreakdown,\n    score_bullish: bullishCount,\n    score_bearish: bearishCount,\n    score_neutral: neutralCount,\n    weighted_score: {\n      bullish_weight: bullish,\n      bearish_weight: bearish,\n      neutral_weight: neutral,\n      active_weight: active,\n      weight_margin: Math.abs(bullish - bearish)\n    },\n    conviction_model: {\n      bullish_argument_pct: bullishArgument,\n      bearish_argument_pct: bearishArgument,\n      neutral_evidence_pct: neutralPct,\n      neutral_pct: neutralPct,\n      directional_participation_pct: directionalParticipationPct,\n      active_participation_pct: directionalParticipationPct,\n      winning_side: baseDirection,\n      net_edge_pct: netEdge,\n      final_conviction: conviction,\n      verdict_strength: strength,\n      bull_case_weight: bullish,\n      bear_case_weight: bearish,\n      neutral_weight: neutral,\n      final_conviction_logic: reason,\n\n      weighted_edge: Math.abs(netEdge) / 100,\n      raw_conviction: conviction,\n      base_conviction: conviction,\n      participation: directionalParticipationPct,\n      participation_cap: directionalParticipationPct,\n      conflict_penalty: 0,\n      missing_input_penalty: 0,\n      agreement_boost: 0\n    }\n  };\n}\n\nconst r24h = scoreTimeframe(\"24h\");\nconst r3d = scoreTimeframe(\"3d\");\nconst rWeek = scoreTimeframe(\"current_week\");\nconst rNextWeek = scoreTimeframe(\"next_week\");\nconst rMonth = scoreTimeframe(\"current_month\");\n\nconst output = {\n  ...(item.full_output || {}),\n\n  direction_24h: r24h.direction,\n  conviction_24h: r24h.conviction,\n  reason_24h: r24h.reason,\n\n  direction_3_day: r3d.direction,\n  conviction_3_day: r3d.conviction,\n  reason_3_day: r3d.reason,\n\n  direction_current_week: rWeek.direction,\n  conviction_current_week: rWeek.conviction,\n  reason_current_week: rWeek.reason,\n\n  direction_next_week: rNextWeek.direction,\n  conviction_next_week: rNextWeek.conviction,\n  reason_next_week: rNextWeek.reason,\n\n  direction_current_month: rMonth.direction,\n  conviction_current_month: rMonth.conviction,\n  reason_current_month: rMonth.reason,\n\n  weighted_score: r24h.weighted_score,\n  conviction_model: r24h.conviction_model,\n  factor_breakdown: r24h.factor_breakdown,\n\n  timeframe_models: {\n    \"24h\": r24h,\n    \"3d\": r3d,\n    \"current_week\": rWeek,\n    \"next_week\": rNextWeek,\n    \"current_month\": rMonth\n  },\n\n  score_bullish: r24h.score_bullish,\n  score_bearish: r24h.score_bearish,\n  score_neutral: r24h.score_neutral,\n\n  reasoning_summary: `NQ weighted verdicts calculated deterministically by timeframe. 24h ${r24h.direction} ${r24h.conviction}%, 3d ${r3d.direction} ${r3d.conviction}%, current week ${rWeek.direction} ${rWeek.conviction}%, next week ${rNextWeek.direction} ${rNextWeek.conviction}%, current month ${rMonth.direction} ${rMonth.conviction}%.`\n};\n\nconst {\n  market_inputs,\n  bull_case,\n  bear_case,\n  winning_side,\n  risk_flags,\n  timeframe_models,\n  ...safeItem\n} = item;\n\nreturn [{\n  json: {\n    ...safeItem,\n\n    call_24h_direction: output.direction_24h,\n    call_24h_conviction: output.conviction_24h,\n    call_24h_reason: output.reason_24h,\n\n    call_3d_direction: output.direction_3_day,\n    call_3d_conviction: output.conviction_3_day,\n    call_3d_reason: output.reason_3_day,\n\n    call_current_week_direction: output.direction_current_week,\n    call_current_week_conviction: output.conviction_current_week,\n    call_current_week_reason: output.reason_current_week,\n\n    call_next_week_direction: output.direction_next_week,\n    call_next_week_conviction: output.conviction_next_week,\n    call_next_week_reason: output.reason_next_week,\n\n    call_current_month_direction: output.direction_current_month,\n    call_current_month_conviction: output.conviction_current_month,\n    call_current_month_reason: output.reason_current_month,\n\n    direction_24h: output.direction_24h,\n    conviction_24h: output.conviction_24h,\n\n    direction_3_day: output.direction_3_day,\n    conviction_3_day: output.conviction_3_day,\n\n    direction_current_week: output.direction_current_week,\n    conviction_current_week: output.conviction_current_week,\n\n    direction_next_week: output.direction_next_week,\n    conviction_next_week: output.conviction_next_week,\n\n    direction_current_month: output.direction_current_month,\n    conviction_current_month: output.conviction_current_month,\n\n    weighted_score: output.weighted_score,\n    conviction_model: output.conviction_model,\n    \n    factor_breakdown: output.factor_breakdown,\n\n    full_output: output,\n    raw_agent_output: output,\n\n    reasoning_summary: output.reasoning_summary,\n    score_bullish: output.score_bullish,\n    score_bearish: output.score_bearish,\n    score_neutral: output.score_neutral\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        256
+      ],
+      "id": "a9488f8d-8a34-4a81-9482-2756c91ae757",
+      "name": "Calculate NQ Conviction"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "145582b4-0a78-4d7b-87ca-dae83f7910e7",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Supabase Get Many": {
+      "main": [
+        [
+          {
+            "node": "Build NQ Input Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse NQ Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine md & market snapshot": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build NQ Input Pack": {
+      "main": [
+        [
+          {
+            "node": "Get NQ Logic Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get NQ Logic Document": {
+      "main": [
+        [
+          {
+            "node": "Combine md & market snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse NQ Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Calculate NQ Conviction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate NQ Conviction": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Supabase Get Many",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "b6c7045b-f07d-4397-a86b-9440a6e7456e",
+  "activeVersionId": null,
+  "versionCounter": 24,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-07T19:17:29.410Z",
+      "createdAt": "2026-06-07T19:17:29.410Z",
+      "role": "workflow:owner",
+      "workflowId": "FOpFp3AzTJVYdLXe",
+      "projectId": "ISQG9XU7TGTT6Fcu",
+      "project": {
+        "updatedAt": "2026-04-29T19:10:21.640Z",
+        "createdAt": "2026-04-29T19:10:11.212Z",
+        "id": "ISQG9XU7TGTT6Fcu",
+        "name": "Daniel Silver <a17@live.co.uk>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

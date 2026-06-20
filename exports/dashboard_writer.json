@@ -1,0 +1,172 @@
+{
+  "updatedAt": "2026-06-18T19:44:22.689Z",
+  "createdAt": "2026-06-06T17:08:37.617Z",
+  "id": "850DrjzCKKX9fDzD",
+  "name": "Dashboard Writer - Layer 1",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "agent_outputs",
+        "limit": 1000,
+        "filters": {
+          "conditions": []
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "aacf8cac-3da0-42a9-b83b-d0db3dac0a3d",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\n\nconst agents = [\"USD\", \"EUR\", \"GOLD\", \"NQ\", \"BTC\"];\nconst weekendBlockedAssets = [\"USD\", \"EUR\", \"GOLD\", \"NQ\"];\n\nconst nowLondon = new Date();\nconst londonWeekday = nowLondon.toLocaleDateString(\"en-US\", {\n  weekday: \"long\",\n  timeZone: \"Europe/London\"\n});\n\nconst isWeekend = [\"Saturday\", \"Sunday\"].includes(londonWeekday);\n\nfunction isMarketOpen(agent) {\n  if (agent === \"BTC\") return true;\n  return !isWeekend;\n}\n\nfunction parseMaybeJson(value, fallback = {}) {\n  if (value === null || value === undefined || value === \"\") return fallback;\n  if (typeof value === \"object\") return value;\n\n  try {\n    return JSON.parse(value);\n  } catch (e) {\n    return fallback;\n  }\n}\n\nfunction parseMaybeArray(value, fallback = []) {\n  if (value === null || value === undefined || value === \"\") return fallback;\n  if (Array.isArray(value)) return value;\n\n  try {\n    const parsed = JSON.parse(value);\n    return Array.isArray(parsed) ? parsed : fallback;\n  } catch (e) {\n    return fallback;\n  }\n}\n\nfunction toNumber(value) {\n  if (value === null || value === undefined || value === \"\") return null;\n  const n = Number(value);\n  return Number.isFinite(n) ? n : null;\n}\n\nfunction applyWeekend24hCall(agent, calls) {\n  if (isWeekend && weekendBlockedAssets.includes(agent)) {\n    return {\n      ...calls,\n      \"24h\": {\n        direction: \"NO 24H CALL\",\n        conviction: null,\n        reason: \"Weekend rule active: this market is closed, so no 24h bias is issued.\",\n        status: \"market_closed\"\n      }\n    };\n  }\n\n  return calls;\n}\n\nfunction latestFor(agent) {\n  const matches = rows\n    .filter(r => r.agent_name === agent && Number(r.layer) === 1)\n    .filter(r => {\n      const output = parseMaybeJson(r.full_output || r.raw_agent_output, {});\n      return r.direction_24h || r.call_24h_direction || output.direction_24h;\n    })\n    .sort((a, b) => {\n      const dateA = new Date(a.created_at || a.run_time_et || 0).getTime();\n      const dateB = new Date(b.created_at || b.run_time_et || 0).getTime();\n      return dateB - dateA;\n    });\n\n  return matches[0] || null;\n}\n\nfunction emptyAgent(agent) {\n  const baseCalls = {\n    \"24h\": { direction: \"PENDING\", conviction: null, reason: \"Awaiting data\" },\n    \"3d\": { direction: \"PENDING\", conviction: null, reason: \"Awaiting data\" },\n    \"current_week\": { direction: \"PENDING\", conviction: null, reason: \"Awaiting data\" },\n    \"next_week\": { direction: \"PENDING\", conviction: null, reason: \"Awaiting data\" },\n    \"current_month\": { direction: \"PENDING\", conviction: null, reason: \"Awaiting data\" }\n  };\n\n  return {\n    agent,\n    status: \"pending\",\n    market_status: isMarketOpen(agent) ? \"open\" : \"closed\",\n    last_run_et: null,\n    summary: `Awaiting first ${agent} agent run.`,\n    calls: applyWeekend24hCall(agent, baseCalls),\n    priority_timeframe: \"24h\",\n    priority_call: applyWeekend24hCall(agent, baseCalls)[\"24h\"],\n    factor_breakdown: {},\n    key_factors: [],\n    warnings: [],\n    reasoning_summary: \"\",\n    score_bullish: null,\n    score_bearish: null,\n    score_neutral: null,\n    non_neutral_count: null,\n    logic_document: null,\n    logic_document_version: null,\n    conviction_model: {},\n    timeframe_models: {},\n    display_metrics: {\n      bull_case: null,\n      bear_case: null,\n      winning_side: null,\n      conviction: null,\n      net_edge: null,\n      directional_participation: null,\n      neutral: null,\n      verdict_strength: null,\n      bull_case_weight: null,\n      bear_case_weight: null\n    },\n    full_output: {}\n  };\n}\n\nfunction outputFromRow(row) {\n  return parseMaybeJson(row.full_output, parseMaybeJson(row.raw_agent_output, {}));\n}\n\nfunction getDirection(row, output, oldField, newField) {\n  return row[oldField] || row[newField] || output[newField] || \"PENDING\";\n}\n\nfunction getConviction(row, output, oldField, newField) {\n  return toNumber(row[oldField] ?? row[newField] ?? output[newField] ?? null);\n}\n\nfunction buildKeyFactors(factorBreakdown) {\n  if (!factorBreakdown || typeof factorBreakdown !== \"object\" || Array.isArray(factorBreakdown)) {\n    return [];\n  }\n\n  return Object.entries(factorBreakdown).map(([key, value]) => {\n    if (value && typeof value === \"object\") {\n      const signal = value.signal || \"NEUTRAL\";\n      const weight = value.weight !== undefined ? ` [${value.weight}]` : \"\";\n      const evidence = value.evidence ? ` — ${value.evidence}` : \"\";\n      const reason = value.reason ? ` (${value.reason})` : \"\";\n      return `${key}${weight}: ${signal}${evidence}${reason}`;\n    }\n\n    return `${key}: ${value}`;\n  });\n}\n\nfunction normaliseConvictionModel(output, timeframeKey = \"24h\") {\n  const timeframeModel = output.timeframe_models?.[timeframeKey] || {};\n  const model = timeframeModel.conviction_model || output.conviction_model || {};\n  const weightedScore = timeframeModel.weighted_score || output.weighted_score || {};\n\n  const bullishArgument = toNumber(model.bullish_argument_pct);\n  const bearishArgument = toNumber(model.bearish_argument_pct);\n  const neutralPct = toNumber(model.neutral_evidence_pct ?? model.neutral_pct);\n  const directionalParticipation = toNumber(\n    model.directional_participation_pct ??\n    model.active_participation_pct\n  );\n  const netEdge = toNumber(model.net_edge_pct);\n  const finalConviction = toNumber(model.final_conviction);\n\n  const winningSide =\n    model.winning_side ||\n    (\n      bullishArgument !== null && bearishArgument !== null\n        ? bullishArgument > bearishArgument\n          ? \"BULLISH\"\n          : bearishArgument > bullishArgument\n            ? \"BEARISH\"\n            : \"TIED\"\n        : null\n    );\n\n  return {\n    ...model,\n\n    bullish_argument_pct: bullishArgument,\n    bearish_argument_pct: bearishArgument,\n    neutral_pct: neutralPct,\n    neutral_evidence_pct: neutralPct,\n    directional_participation_pct: directionalParticipation,\n    active_participation_pct: directionalParticipation,\n    net_edge_pct: netEdge,\n    final_conviction: finalConviction,\n    verdict_strength: model.verdict_strength || null,\n    winning_side: winningSide,\n    final_conviction_logic: model.final_conviction_logic || \"\",\n\n    bull_case_weight: toNumber(model.bull_case_weight ?? weightedScore.bullish_weight ?? null),\n    bear_case_weight: toNumber(model.bear_case_weight ?? weightedScore.bearish_weight ?? null),\n    neutral_weight: toNumber(model.neutral_weight ?? weightedScore.neutral_weight ?? null),\n\n    weighted_score: {\n      bullish_weight: toNumber(weightedScore.bullish_weight ?? model.bull_case_weight ?? null),\n      bearish_weight: toNumber(weightedScore.bearish_weight ?? model.bear_case_weight ?? null),\n      neutral_weight: toNumber(weightedScore.neutral_weight ?? model.neutral_weight ?? null),\n      active_weight: toNumber(weightedScore.active_weight ?? directionalParticipation ?? null),\n      weight_margin: toNumber(weightedScore.weight_margin ?? null)\n    },\n\n    alignment: bullishArgument,\n    base_conviction: finalConviction,\n    participation: directionalParticipation\n  };\n}\n\nfunction timeframeModel(output, key) {\n  return output.timeframe_models?.[key] || {};\n}\n\nfunction callObject(row, output, key, oldDirection, newDirection, oldConviction, newConviction, oldReason, newReason) {\n  const tfModel = timeframeModel(output, key);\n\n  return {\n    direction: getDirection(row, output, oldDirection, newDirection),\n    conviction: getConviction(row, output, oldConviction, newConviction),\n    reason:\n      row[oldReason] ||\n      output[newReason] ||\n      tfModel.reason ||\n      row.reasoning_summary ||\n      output.reasoning_summary ||\n      \"\",\n    conviction_model: normaliseConvictionModel(output, key),\n    weighted_score: tfModel.weighted_score || output.weighted_score || {},\n    factor_breakdown: tfModel.factor_breakdown || output.factor_breakdown || {}\n  };\n}\n\nfunction fromRow(agent, row) {\n  if (!row) return emptyAgent(agent);\n\n  const output = outputFromRow(row);\n  const factorBreakdown = parseMaybeJson(row.factor_breakdown, output.factor_breakdown || {});\n  const warnings = parseMaybeArray(row.warnings, output.risk_flags || output.warnings || []);\n\n  const baseCalls = {\n    \"24h\": callObject(\n      row, output, \"24h\",\n      \"call_24h_direction\", \"direction_24h\",\n      \"call_24h_conviction\", \"conviction_24h\",\n      \"call_24h_reason\", \"reason_24h\"\n    ),\n    \"3d\": callObject(\n      row, output, \"3d\",\n      \"call_3d_direction\", \"direction_3_day\",\n      \"call_3d_conviction\", \"conviction_3_day\",\n      \"call_3d_reason\", \"reason_3_day\"\n    ),\n    \"current_week\": callObject(\n      row, output, \"current_week\",\n      \"call_current_week_direction\", \"direction_current_week\",\n      \"call_current_week_conviction\", \"conviction_current_week\",\n      \"call_current_week_reason\", \"reason_current_week\"\n    ),\n    \"next_week\": callObject(\n      row, output, \"next_week\",\n      \"call_next_week_direction\", \"direction_next_week\",\n      \"call_next_week_conviction\", \"conviction_next_week\",\n      \"call_next_week_reason\", \"reason_next_week\"\n    ),\n    \"current_month\": callObject(\n      row, output, \"current_month\",\n      \"call_current_month_direction\", \"direction_current_month\",\n      \"call_current_month_conviction\", \"conviction_current_month\",\n      \"call_current_month_reason\", \"reason_current_month\"\n    )\n  };\n\n  const calls = applyWeekend24hCall(agent, baseCalls);\n  const priorityTimeframe = \"24h\";\n  const priorityCall = calls[priorityTimeframe];\n\n  const convictionModel =\n    priorityCall?.status === \"market_closed\"\n      ? {\n          bullish_argument_pct: null,\n          bearish_argument_pct: null,\n          neutral_pct: null,\n          neutral_evidence_pct: null,\n          directional_participation_pct: null,\n          active_participation_pct: null,\n          net_edge_pct: null,\n          final_conviction: null,\n          verdict_strength: \"MARKET_CLOSED\",\n          winning_side: \"MARKET_CLOSED\",\n          final_conviction_logic: \"24H priority timeframe is closed by weekend rule.\",\n          bull_case_weight: null,\n          bear_case_weight: null,\n          neutral_weight: null\n        }\n      : normaliseConvictionModel(output, priorityTimeframe);\n\n  return {\n    agent,\n    status: \"live\",\n    market_status: isMarketOpen(agent) ? \"open\" : \"closed\",\n    last_run_et: row.run_time_et || row.created_at || null,\n    summary: `${agent} Layer 1 raw call generated from sealed independent workflow.`,\n\n    calls,\n    priority_timeframe: priorityTimeframe,\n    priority_call: priorityCall,\n\n    factor_breakdown: factorBreakdown,\n    key_factors: buildKeyFactors(factorBreakdown),\n    warnings,\n    reasoning_summary: row.reasoning_summary || output.reasoning_summary || \"\",\n\n    score_bullish: toNumber(row.score_bullish ?? output.score_bullish ?? null),\n    score_bearish: toNumber(row.score_bearish ?? output.score_bearish ?? null),\n    score_neutral: toNumber(row.score_neutral ?? output.score_neutral ?? null),\n    non_neutral_count: toNumber(output.non_neutral_count ?? null),\n\n    logic_document: row.logic_document || output.logic_document || null,\n    logic_document_version: row.logic_document_version || output.logic_document_version || null,\n\n    conviction_model: convictionModel,\n    timeframe_models: output.timeframe_models || {},\n\n    display_metrics: {\n      bull_case: convictionModel.bullish_argument_pct,\n      bear_case: convictionModel.bearish_argument_pct,\n      winning_side: convictionModel.winning_side,\n      conviction: convictionModel.final_conviction,\n      net_edge: convictionModel.net_edge_pct,\n      directional_participation: convictionModel.directional_participation_pct,\n      neutral: convictionModel.neutral_evidence_pct ?? convictionModel.neutral_pct,\n      verdict_strength: convictionModel.verdict_strength,\n      bull_case_weight: convictionModel.bull_case_weight ?? null,\n      bear_case_weight: convictionModel.bear_case_weight ?? null\n    },\n\n    full_output: output\n  };\n}\n\nconst dashboard = {\n  dashboard_meta: {\n    system_timezone: \"America/New_York\",\n    execution_clock: \"07:00 ET primary run\",\n    last_updated_et: new Date().toISOString(),\n    architecture: \"Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.\",\n    weekend_rule: \"BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.\",\n    london_weekday: londonWeekday\n  },\n  agents: agents.map(agent => fromRow(agent, latestFor(agent)))\n};\n\nreturn [\n  {\n    json: {\n      file_content: JSON.stringify(dashboard, null, 2),\n      dashboard\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3977db9f-962a-4380-bc0e-b1838e3d6b30",
+      "name": "Build Layer 1 JSON"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "kevincreedycars-debug",
+          "mode": "list",
+          "cachedResultName": "kevincreedycars-debug",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "trading-agent-dashboard",
+          "mode": "list",
+          "cachedResultName": "trading-agent-dashboard",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+        },
+        "filePath": "data/layer1.json",
+        "fileContent": "={{ $json.file_content }}",
+        "commitMessage": "Update layer1 dashboard data from agent outputs"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "77857e6c-da2f-4251-946e-1100e6904b2b",
+      "name": "Edit a file",
+      "webhookId": "63f6f663-41d1-4915-937c-433e1030ae7b",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "wr4dhSbWkjNonhfi",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9fcc2657-4e50-4899-a618-8fbd0f848283",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Build Layer 1 JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Layer 1 JSON": {
+      "main": [
+        [
+          {
+            "node": "Edit a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "61ece590-9c52-4314-be55-684c57d1fddd",
+  "activeVersionId": null,
+  "versionCounter": 38,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-06T17:08:37.619Z",
+      "createdAt": "2026-06-06T17:08:37.619Z",
+      "role": "workflow:owner",
+      "workflowId": "850DrjzCKKX9fDzD",
+      "projectId": "ISQG9XU7TGTT6Fcu",
+      "project": {
+        "updatedAt": "2026-04-29T19:10:21.640Z",
+        "createdAt": "2026-04-29T19:10:11.212Z",
+        "id": "ISQG9XU7TGTT6Fcu",
+        "name": "Daniel Silver <a17@live.co.uk>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,324 @@
+{
+  "updatedAt": "2026-06-18T19:40:27.514Z",
+  "createdAt": "2026-06-07T18:35:58.219Z",
+  "id": "G142Blty3sGHzuOr",
+  "name": "BTC Layer 1 Agent",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are the BTC Layer 1 Direction Agent.\n\nYou must follow the supplied BTC logic document exactly.\n\nYou analyse BTC only.\n\nYou must not produce pair calls, trade recommendations, cross-asset calls, consensus calls, or Layer 2 event-adjusted calls.\n\nYou must not use technical analysis, chart patterns, support/resistance, RSI, MACD, moving averages, or indicator logic.\n\nUse only the supplied market snapshot and supplied logic document.\n\nIf required inputs are missing, score the affected factor as NEUTRAL and clearly state the missing input.\n\nReturn valid JSON only.\n\nDo not wrap the JSON in markdown fences. Do not include ```json. Return raw JSON only."
+            },
+            {
+              "content": "={\n  \"logic_document\": \"{{ $json.logic_document }}\",\n  \"market_snapshot\": {{ JSON.stringify($json.market_snapshot) }},\n  \"output_requirement\": {\n    \"asset\": \"BTC\",\n    \"layer\": \"Layer 1 Raw\",\n    \"format\": \"valid_json_only\"\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "04d6024a-e051-42f5-932a-5ca2fbe5b8ab",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "VY1FMMlFQNwU3Ctt",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "market_snapshots",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "342bec91-472d-4406-832c-84ef2da0a860",
+      "name": "Supabase Get Many",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "agent_outputs",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "9a374798-fb19-458f-8c32-4985b19385c2",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "trM35g1QCTOgQp4K",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const logicItem = $('Get BTC Logic Document').first().json;\nconst marketItem = $('Build BTC Input Pack').first().json;\n\nlet logicDocument = logicItem.content || '';\n\nif (logicItem.encoding === 'base64') {\n  logicDocument = Buffer.from(logicDocument, 'base64').toString('utf8');\n}\n\nreturn [\n  {\n    json: {\n      logic_document: logicDocument,\n      market_snapshot: marketItem\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "e2a83bac-f598-4230-a0eb-fee1c8f75954",
+      "name": "Combine md & market snapshot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(item => item.json);\n\nconst snapshot = rows\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .sort((a, b) => new Date(b.run_time_et) - new Date(a.run_time_et))[0];\n\nif (!snapshot) {\n  throw new Error(\"No valid market snapshot found\");\n}\n\nconst availableInputs = {\n  btc_price: snapshot.btc_price,\n  btc_d1_pct: snapshot.btc_d1_pct,\n  btc_d5_pct: snapshot.btc_d5_pct,\n  btc_d20_pct: snapshot.btc_d20_pct,\n\n  dxy_level: snapshot.dxy_level,\n  dxy_d1: snapshot.dxy_d1,\n  dxy_d5: snapshot.dxy_d5,\n  dxy_d20: snapshot.dxy_d20,\n\n  us_10y_real_yield: snapshot.us_10y_real_yield,\n  us_10y_real_yield_d5_bps: snapshot.us_10y_real_yield_d5_bps,\n  us_10y_real_yield_d20_bps: snapshot.us_10y_real_yield_d20_bps,\n\n  fed_bias: snapshot.fed_bias,\n  latest_us_event: snapshot.latest_us_event,\n  upcoming_events: snapshot.upcoming_events,\n\n  vix_level: snapshot.vix_level,\n  vix_d1: snapshot.vix_d1,\n  vix_d5: snapshot.vix_d5,\n\n  nq_price: snapshot.nq_price,\n  nq_d1_pct: snapshot.nq_d1_pct,\n  nq_d5_pct: snapshot.nq_d5_pct,\n  nq_d20_pct: snapshot.nq_d20_pct,\n\n  gold_price: snapshot.gold_price,\n  gold_d1_pct: snapshot.gold_d1_pct,\n  gold_d5_pct: snapshot.gold_d5_pct,\n  gold_d20_pct: snapshot.gold_d20_pct,\n\n  btc_dominance: snapshot.btc_dominance,\n  btc_dominance_d5: snapshot.btc_dominance_d5,\n  btc_dominance_d20: snapshot.btc_dominance_d20,\n\n  crypto_fear_greed: snapshot.crypto_fear_greed,\n\n  total_crypto_market_cap: snapshot.total_crypto_market_cap,\n  total_crypto_market_cap_d5_pct: snapshot.total_crypto_market_cap_d5_pct,\n  total_crypto_market_cap_d20_pct: snapshot.total_crypto_market_cap_d20_pct,\n\n  btc_etf_net_flow_1d_usd: snapshot.btc_etf_net_flow_1d_usd,\n  btc_etf_net_flow_5d_usd: snapshot.btc_etf_net_flow_5d_usd,\n  btc_etf_net_flow_20d_usd: snapshot.btc_etf_net_flow_20d_usd,\n\n  stablecoin_supply: snapshot.stablecoin_supply,\n  stablecoin_supply_d5_pct: snapshot.stablecoin_supply_d5_pct,\n  stablecoin_supply_d20_pct: snapshot.stablecoin_supply_d20_pct,\n\n  equities_regime: snapshot.equities_regime,\n  global_growth_regime: snapshot.global_growth_regime,\n\n  source_status: snapshot.source_status,\n  collector_version: snapshot.collector_version,\n  data_quality: snapshot.data_quality\n};\n\nconst missingInputs = Object.entries(availableInputs)\n  .filter(([key, value]) => value === null || value === undefined)\n  .map(([key]) => key);\n\nconst btcInputPack = {\n  agent_name: \"BTC\",\n  layer: 1,\n  isolation_rule: \"This Layer 1 agent may only use this market snapshot. It must not read other agent outputs.\",\n  execution_question: \"Based on confirmed value-driving factors available at execution time, what is the likely direction of BTC?\",\n\n  snapshot_id: snapshot.id,\n  snapshot_date: snapshot.snapshot_date,\n  run_time_et: snapshot.run_time_et,\n\n  available_inputs: availableInputs,\n\n  missing_inputs: missingInputs,\n\n  missing_inputs_must_be_scored_neutral: [\n    \"btc_d5_pct\",\n    \"btc_d20_pct\",\n    \"dxy_d5\",\n    \"dxy_d20\",\n    \"us_10y_real_yield_d5_bps\",\n    \"us_10y_real_yield_d20_bps\",\n    \"fed_bias\",\n    \"vix_level\",\n    \"nq_d5_pct\",\n    \"nq_d20_pct\",\n    \"btc_etf_net_flow_1d_usd\",\n    \"btc_etf_net_flow_5d_usd\",\n    \"btc_etf_net_flow_20d_usd\",\n    \"btc_dominance\",\n    \"btc_dominance_d5\",\n    \"btc_dominance_d20\",\n    \"crypto_fear_greed\",\n    \"total_crypto_market_cap_d5_pct\",\n    \"total_crypto_market_cap_d20_pct\",\n    \"stablecoin_supply\",\n    \"stablecoin_supply_d5_pct\",\n    \"stablecoin_supply_d20_pct\",\n    \"latest_us_event\",\n    \"global_growth_regime\"\n  ]\n};\n\nreturn [{ json: btcInputPack }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "c370335f-03c3-4c13-b967-200abcaa0cc9",
+      "name": "Build BTC Input Pack"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "kevincreedycars-debug",
+          "mode": "list",
+          "cachedResultName": "kevincreedycars-debug",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "trading-agent-dashboard",
+          "mode": "list",
+          "cachedResultName": "trading-agent-dashboard",
+          "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+        },
+        "filePath": "logic/agent_btc_direction.md",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "e58c6666-e6f4-4311-802c-7cdc038aaf76",
+      "name": "Get BTC Logic Document",
+      "webhookId": "61801c9e-12fb-4200-b570-d4ec0e975bfd",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "wr4dhSbWkjNonhfi",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const openAiItem = $input.first().json;\n\nlet text =\n  openAiItem.output?.[0]?.content?.[0]?.text ||\n  openAiItem.text ||\n  openAiItem.message ||\n  '';\n\nif (!text) {\n  throw new Error('No OpenAI text output found');\n}\n\ntext = String(text)\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```$/i, '')\n  .trim();\n\nlet report;\ntry {\n  report = JSON.parse(text);\n} catch (error) {\n  throw new Error(`Failed to parse OpenAI JSON output: ${error.message}`);\n}\n\nconst combined = $('Combine md & market snapshot').first().json || {};\nconst marketSnapshot = combined.market_snapshot || combined || {};\n\nfunction pct(value) {\n  if (value === null || value === undefined || value === '') return null;\n  if (typeof value === 'number') return Number.isFinite(value) ? value : null;\n\n  const match = String(value).match(/-?\\d+(\\.\\d+)?/);\n  return match ? Number(match[0]) : null;\n}\n\nfunction reasonFor(tf) {\n  return (\n    report[`reason_${tf}`] ||\n    report[`${tf}_reason`] ||\n    report.reasoning_summary ||\n    ''\n  );\n}\n\nconst snapshotId =\n  marketSnapshot.snapshot_id ||\n  marketSnapshot.id ||\n  null;\n\nconst snapshotDate =\n  marketSnapshot.snapshot_date ||\n  new Date().toISOString().slice(0, 10);\n\nconst runTimeEt =\n  marketSnapshot.run_time_et ||\n  new Date().toISOString();\n\nconst availableInputs =\n  marketSnapshot.available_inputs ||\n  marketSnapshot.market_inputs ||\n  {};\n\nconst missingInputs = Array.from(new Set([\n  ...(Array.isArray(report.missing_inputs) ? report.missing_inputs : []),\n  ...(Array.isArray(marketSnapshot.missing_inputs) ? marketSnapshot.missing_inputs : []),\n  ...(Array.isArray(marketSnapshot.data_quality?.missing) ? marketSnapshot.data_quality.missing : [])\n]));\n\nconst warnings = Array.from(new Set([\n  ...(Array.isArray(report.risk_flags) ? report.risk_flags : []),\n  ...(Array.isArray(report.warnings) ? report.warnings : [])\n]));\n\nconst createdAt = new Date().toISOString();\n\nreturn [\n  {\n    json: {\n      snapshot_id: snapshotId,\n      agent_name: 'BTC',\n      layer: 1,\n      run_time_et: runTimeEt,\n      snapshot_date: snapshotDate,\n      market_inputs: availableInputs,\n\n      call_24h_direction: report.direction_24h || null,\n      call_24h_conviction: pct(report.conviction_24h),\n      call_24h_reason: reasonFor('24h'),\n\n      call_3d_direction: report.direction_3_day || null,\n      call_3d_conviction: pct(report.conviction_3_day),\n      call_3d_reason: reasonFor('3d'),\n\n      call_current_week_direction: report.direction_current_week || null,\n      call_current_week_conviction: pct(report.conviction_current_week),\n      call_current_week_reason: reasonFor('current_week'),\n\n      call_next_week_direction: report.direction_next_week || null,\n      call_next_week_conviction: pct(report.conviction_next_week),\n      call_next_week_reason: reasonFor('next_week'),\n\n      call_current_month_direction: report.direction_current_month || null,\n      call_current_month_conviction: pct(report.conviction_current_month),\n      call_current_month_reason: reasonFor('current_month'),\n\n      direction_24h: report.direction_24h || null,\n      conviction_24h: pct(report.conviction_24h),\n\n      direction_3_day: report.direction_3_day || null,\n      conviction_3_day: pct(report.conviction_3_day),\n\n      direction_current_week: report.direction_current_week || null,\n      conviction_current_week: pct(report.conviction_current_week),\n\n      direction_next_week: report.direction_next_week || null,\n      conviction_next_week: pct(report.conviction_next_week),\n\n      direction_current_month: report.direction_current_month || null,\n      conviction_current_month: pct(report.conviction_current_month),\n\n      factor_breakdown: report.factor_breakdown || {},\n      conviction_model: report.conviction_model || null,\n      weighted_score: report.weighted_score || null,\n      timeframe_models: report.timeframe_models || null,\n\n      warnings,\n      risk_flags: warnings,\n      missing_inputs: missingInputs,\n\n      full_output: {\n        ...report,\n        created_at: createdAt,\n        missing_inputs: missingInputs,\n        risk_flags: warnings\n      },\n\n      raw_agent_output: report,\n\n      logic_document: 'agent_btc_direction.md',\n      logic_document_version: report.logic_document_version || '2.0_weighted_engine',\n      reasoning_summary: report.reasoning_summary || '',\n\n      score_bullish: report.score_bullish ?? null,\n      score_bearish: report.score_bearish ?? null,\n      score_neutral: report.score_neutral ?? null,\n\n      created_at: createdAt\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "793328a1-24e6-4ce8-8775-e4bd117e1ccf",
+      "name": "Parse BTC Agent Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst inputs = item.market_inputs || {};\n\nfunction n(v) {\n  if (v === null || v === undefined || v === '') return null;\n  const x = Number(v);\n  return Number.isFinite(x) ? x : null;\n}\n\nfunction makeFactor(signal, evidence, reason) {\n  return { signal, evidence, reason };\n}\n\nfunction isWeekendRisk() {\n  const day = new Date().getUTCDay();\n  return day === 0 || day === 6 || day === 5;\n}\n\nfunction signalFromDelta(value, upThreshold, downThreshold, bullishReason, bearishReason, neutralReason, label, invert = false) {\n  const d = n(value);\n  if (d === null) return makeFactor(\"NEUTRAL\", `Missing ${label}`, \"Missing input\");\n\n  if (!invert) {\n    if (d >= upThreshold) return makeFactor(\"BULLISH\", `${label} ${d}`, bullishReason);\n    if (d <= downThreshold) return makeFactor(\"BEARISH\", `${label} ${d}`, bearishReason);\n  } else {\n    if (d >= upThreshold) return makeFactor(\"BEARISH\", `${label} ${d}`, bearishReason);\n    if (d <= downThreshold) return makeFactor(\"BULLISH\", `${label} ${d}`, bullishReason);\n  }\n\n  return makeFactor(\"NEUTRAL\", `${label} ${d}`, neutralReason);\n}\n\nconst TIMEFRAME_WEIGHTS = {\n  \"24h\": { F1: 16, F2: 14, F3: 10, F4: 10, F5: 16, F6: 14, F7: 6, F8: 8, F9: 3, F10: 3 },\n  \"3d\": { F1: 12, F2: 15, F3: 14, F4: 12, F5: 14, F6: 12, F7: 7, F8: 8, F9: 4, F10: 2 },\n  \"current_week\": { F1: 10, F2: 15, F3: 16, F4: 13, F5: 13, F6: 10, F7: 6, F8: 9, F9: 5, F10: 3 },\n  \"next_week\": { F1: 6, F2: 14, F3: 18, F4: 16, F5: 10, F6: 7, F7: 5, F8: 11, F9: 9, F10: 4 },\n  \"current_month\": { F1: 7, F2: 14, F3: 18, F4: 17, F5: 9, F6: 6, F7: 4, F8: 12, F9: 9, F10: 4 }\n};\n\nfunction selectedInputs(tf) {\n  const use20d = tf === \"next_week\" || tf === \"current_month\";\n\n  return {\n    btcDelta: tf === \"24h\" ? inputs.btc_d1_pct : use20d ? inputs.btc_d20_pct : inputs.btc_d5_pct,\n    dxyDelta: tf === \"24h\" ? inputs.dxy_d1 : use20d ? inputs.dxy_d20 : inputs.dxy_d5,\n    realYieldDelta: use20d ? inputs.us_10y_real_yield_d20_bps : inputs.us_10y_real_yield_d5_bps,\n    nqDelta: tf === \"24h\" ? inputs.nq_d1_pct : use20d ? inputs.nq_d20_pct : inputs.nq_d5_pct,\n    etfFlow: tf === \"24h\" ? inputs.btc_etf_net_flow_1d_usd : use20d ? inputs.btc_etf_net_flow_20d_usd : inputs.btc_etf_net_flow_5d_usd,\n    stablecoinDelta: use20d ? inputs.stablecoin_supply_d20_pct : inputs.stablecoin_supply_d5_pct,\n    dominanceDelta: use20d ? inputs.btc_dominance_d20 : inputs.btc_dominance_d5,\n    totalCryptoMcapDelta: use20d ? inputs.total_crypto_market_cap_d20_pct : inputs.total_crypto_market_cap_d5_pct\n  };\n}\n\nfunction factorSignals(tf) {\n  const s = selectedInputs(tf);\n  const vix = n(inputs.vix_level);\n  const vixD5 = n(inputs.vix_d5);\n  const fed = String(inputs.fed_bias || \"\").toLowerCase();\n  const fearGreed = n(inputs.crypto_fear_greed);\n\n  const signals = {};\n\n  signals.F1 = signalFromDelta(\n    s.btcDelta, 3, -3,\n    \"BTC own trend is above noise threshold and supports upside pressure\",\n    \"BTC own trend is below noise threshold and confirms downside pressure\",\n    \"BTC move is inside normal noise threshold\",\n    tf === \"24h\" ? \"BTC 1d %\" : (tf === \"next_week\" || tf === \"current_month\") ? \"BTC 20d %\" : \"BTC 5d %\"\n  );\n\n  signals.F2 = signalFromDelta(\n    s.dxyDelta, tf === \"24h\" ? 0.15 : 0.3, tf === \"24h\" ? -0.15 : -0.3,\n    \"DXY weakness supports BTC/USD\",\n    \"DXY strength pressures BTC/USD\",\n    \"DXY move below threshold\",\n    tf === \"24h\" ? \"DXY 1d %\" : (tf === \"next_week\" || tf === \"current_month\") ? \"DXY 20d %\" : \"DXY 5d %\",\n    true\n  );\n\n  signals.F3 = signalFromDelta(\n    s.realYieldDelta, 5, -5,\n    \"Falling real yields reduce BTC opportunity-cost pressure\",\n    \"Rising real yields tighten financial conditions and pressure BTC\",\n    \"Real yield move below threshold\",\n    (tf === \"next_week\" || tf === \"current_month\") ? \"Real yield 20d bps\" : \"Real yield 5d bps\",\n    true\n  );\n\n  signals.F4 = (() => {\n    if (!fed || fed === \"unknown\") return makeFactor(\"NEUTRAL\", \"Fed bias unknown\", \"Missing input\");\n    if (fed.includes(\"dovish\")) return makeFactor(\"BULLISH\", `Fed bias ${fed}`, \"Dovish Fed supports BTC through easier liquidity expectations\");\n    if (fed.includes(\"hawkish\")) return makeFactor(\"BEARISH\", `Fed bias ${fed}`, \"Hawkish Fed pressures BTC through tighter liquidity expectations\");\n    return makeFactor(\"NEUTRAL\", `Fed bias ${fed}`, \"No clear Fed liquidity impulse\");\n  })();\n\n  signals.F5 = (() => {\n    if (vix === null) return makeFactor(\"NEUTRAL\", \"Missing VIX\", \"Missing input\");\n    if (vix > 30) return makeFactor(\"BEARISH\", `VIX ${vix}`, \"VIX above 30 signals BTC liquidation-risk regime\");\n    if (vix > 22) return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-off regime pressures BTC\");\n    if (vix < 16) return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Low VIX supports risk appetite and BTC\");\n    if (vixD5 !== null && vixD5 > 2) return makeFactor(\"BEARISH\", `VIX ${vix}, VIX d5 ${vixD5}`, \"VIX rising materially increases BTC risk pressure\");\n    if (vixD5 !== null && vixD5 < -2) return makeFactor(\"BULLISH\", `VIX ${vix}, VIX d5 ${vixD5}`, \"VIX falling materially supports risk appetite\");\n    return makeFactor(\"NEUTRAL\", `VIX ${vix}`, \"Risk regime neutral\");\n  })();\n\n  signals.F6 = signalFromDelta(\n    s.nqDelta, 0.2, -0.2,\n    \"NQ strength confirms high-beta risk appetite for BTC\",\n    \"NQ weakness confirms high-beta risk pressure on BTC\",\n    \"NQ move below threshold\",\n    tf === \"24h\" ? \"NQ 1d %\" : (tf === \"next_week\" || tf === \"current_month\") ? \"NQ 20d %\" : \"NQ 5d %\"\n  );\n\n  signals.F7 = (() => {\n    const ev = inputs.latest_us_event;\n    const text = JSON.stringify(ev || {}).toLowerCase();\n\n    if (!ev) return makeFactor(\"NEUTRAL\", \"No recent US event\", \"No confirmed surprise\");\n\n    const positive = text.includes(\"bullish\") || text.includes(\"positive\") || text.includes(\"beat\");\n    const negative = text.includes(\"bearish\") || text.includes(\"negative\") || text.includes(\"miss\");\n\n    if (positive && fed.includes(\"hawkish\")) return makeFactor(\"BEARISH\", JSON.stringify(ev), \"Positive US surprise in hawkish Fed regime increases tightening pressure on BTC\");\n    if (positive) return makeFactor(\"BULLISH\", JSON.stringify(ev), \"Positive US surprise supports growth/risk appetite without clear tightening override\");\n    if (negative && fed.includes(\"hawkish\")) return makeFactor(\"BULLISH\", JSON.stringify(ev), \"Negative US surprise may reduce tightening pressure and support BTC relief\");\n    if (negative) return makeFactor(\"BEARISH\", JSON.stringify(ev), \"Negative US surprise raises growth-risk pressure on BTC\");\n\n    return makeFactor(\"NEUTRAL\", JSON.stringify(ev), \"No clear BTC surprise impulse\");\n  })();\n\n  signals.F8 = (() => {\n    const flow = n(s.etfFlow);\n    if (flow === null) return makeFactor(\"NEUTRAL\", \"Missing BTC ETF flow\", \"Missing or disabled input\");\n    if (flow > 0) return makeFactor(\"BULLISH\", `ETF flow ${flow}`, \"Confirmed BTC ETF net inflow supports BTC demand\");\n    if (flow < 0) return makeFactor(\"BEARISH\", `ETF flow ${flow}`, \"Confirmed BTC ETF net outflow pressures BTC demand\");\n    return makeFactor(\"NEUTRAL\", `ETF flow ${flow}`, \"ETF flow flat\");\n  })();\n\n  signals.F9 = (() => {\n    const stable = n(s.stablecoinDelta);\n    const mcap = n(s.totalCryptoMcapDelta);\n\n    if (stable !== null) {\n      if (stable > 0.3) return makeFactor(\"BULLISH\", `Stablecoin supply delta ${stable}%`, \"Stablecoin supply expansion supports crypto liquidity\");\n      if (stable < -0.3) return makeFactor(\"BEARISH\", `Stablecoin supply delta ${stable}%`, \"Stablecoin supply contraction pressures crypto liquidity\");\n      return makeFactor(\"NEUTRAL\", `Stablecoin supply delta ${stable}%`, \"Stablecoin liquidity flat\");\n    }\n\n    if (mcap !== null) {\n      if (mcap > 1) return makeFactor(\"BULLISH\", `Total crypto market cap delta ${mcap}%`, \"Total crypto market cap expansion supports crypto liquidity\");\n      if (mcap < -1) return makeFactor(\"BEARISH\", `Total crypto market cap delta ${mcap}%`, \"Total crypto market cap contraction pressures crypto liquidity\");\n      return makeFactor(\"NEUTRAL\", `Total crypto market cap delta ${mcap}%`, \"Crypto market cap move below threshold\");\n    }\n\n    return makeFactor(\"NEUTRAL\", \"Missing stablecoin and crypto market cap deltas\", \"Missing input\");\n  })();\n\n  signals.F10 = (() => {\n    const dom = n(inputs.btc_dominance);\n    const domDelta = n(s.dominanceDelta);\n    const btcDelta = n(s.btcDelta);\n\n    if (dom === null && fearGreed === null) return makeFactor(\"NEUTRAL\", \"Missing BTC dominance and fear/greed\", \"Missing input\");\n\n    if (domDelta !== null && btcDelta !== null) {\n      if (domDelta > 0 && btcDelta > 3) return makeFactor(\"BULLISH\", `BTC dominance delta ${domDelta}, BTC delta ${btcDelta}%`, \"BTC dominance rising with BTC price suggests BTC-led accumulation\");\n      if (domDelta < 0 && btcDelta < -3) return makeFactor(\"BEARISH\", `BTC dominance delta ${domDelta}, BTC delta ${btcDelta}%`, \"BTC dominance falling while BTC price weakens suggests BTC underperformance\");\n    }\n\n    if (fearGreed !== null) {\n      if (fearGreed <= 20 && btcDelta !== null && btcDelta > -3) return makeFactor(\"BULLISH\", `Fear/Greed ${fearGreed}, BTC delta ${btcDelta}%`, \"Extreme fear with stabilising BTC can support contrarian bullish pressure\");\n      if (fearGreed >= 80 && btcDelta !== null && btcDelta < 3) return makeFactor(\"BEARISH\", `Fear/Greed ${fearGreed}, BTC delta ${btcDelta}%`, \"Extreme greed with weakening BTC warns of exhaustion\");\n      return makeFactor(\"NEUTRAL\", `Fear/Greed ${fearGreed}`, \"Sentiment alone is not enough to drive BTC factor\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `BTC dominance ${dom}`, \"No clear BTC structure signal\");\n  })();\n\n  return signals;\n}\n\nfunction factorName(id) {\n  return {\n    F1: \"BTC Own Price Delta\",\n    F2: \"DXY / USD Pressure\",\n    F3: \"US 10Y Real Yield Delta\",\n    F4: \"Fed Bias / Policy Liquidity\",\n    F5: \"VIX Level and Risk Regime\",\n    F6: \"NQ / High-Beta Risk Confirmation\",\n    F7: \"US Economic Surprise Direction\",\n    F8: \"BTC ETF / Institutional Flow\",\n    F9: \"Stablecoin / Crypto Liquidity\",\n    F10: \"BTC Dominance / Crypto Structure\"\n  }[id] || id;\n}\n\nfunction scoreTimeframe(tf) {\n  const weights = TIMEFRAME_WEIGHTS[tf];\n  const signals = factorSignals(tf);\n\n  let bullish = 0, bearish = 0, neutral = 0;\n  let bullishCount = 0, bearishCount = 0, neutralCount = 0;\n\n  const factorBreakdown = {};\n  const bullCase = [];\n  const bearCase = [];\n  const neutralCase = [];\n  const warnings = [];\n\n  for (const [id, sig] of Object.entries(signals)) {\n    const weight = weights[id] || 0;\n    const namedId = `${id} ${factorName(id)}`;\n\n    factorBreakdown[namedId] = { ...sig, weight };\n\n    if (sig.signal === \"BULLISH\") {\n      bullish += weight;\n      bullishCount++;\n      bullCase.push(`${namedId} (${weight}): ${sig.evidence}`);\n    } else if (sig.signal === \"BEARISH\") {\n      bearish += weight;\n      bearishCount++;\n      bearCase.push(`${namedId} (${weight}): ${sig.evidence}`);\n    } else {\n      neutral += weight;\n      neutralCount++;\n      neutralCase.push(`${namedId} (${weight}): ${sig.evidence}`);\n      if (String(sig.reason).toLowerCase().includes(\"missing\")) {\n        warnings.push(`Missing/neutral input: ${namedId}`);\n      }\n    }\n  }\n\n  const active = bullish + bearish;\n  const bullishArgument = active > 0 ? Math.round((bullish / active) * 100) : 0;\n  const bearishArgument = active > 0 ? Math.round((bearish / active) * 100) : 0;\n  const neutralPct = Math.round(neutral);\n  const participationPct = Math.round(active);\n  const netEdge = bullishArgument - bearishArgument;\n\n  const baseDirection = bullish > bearish ? \"BULLISH\" : bearish > bullish ? \"BEARISH\" : \"NO_CLEAR_BIAS\";\n  const absEdge = Math.abs(netEdge);\n\n  let direction = baseDirection === \"NO_CLEAR_BIAS\"\n    ? \"NO_CLEAR_BIAS\"\n    : absEdge < 20 || active < 50\n      ? `${baseDirection}_LEAN`\n      : baseDirection;\n\n  if (baseDirection === \"BULLISH\" && n(inputs.vix_level) > 30 && bearish > 0) {\n    direction = \"BULLISH_LEAN\";\n    warnings.push(\"VIX above 30: bullish BTC verdict capped to lean unless all macro risk factors confirm\");\n  }\n\n  if (isWeekendRisk() && tf === \"24h\") {\n    warnings.push(\"WEEKEND_LIQUIDITY_RISK\");\n    if (direction === \"BULLISH\" && absEdge < 35) direction = \"BULLISH_LEAN\";\n    if (direction === \"BEARISH\" && absEdge < 35) direction = \"BEARISH_LEAN\";\n  }\n\n  const conviction = baseDirection === \"BULLISH\" ? bullishArgument : baseDirection === \"BEARISH\" ? bearishArgument : 0;\n  const strength = absEdge >= 40 ? \"VERY_STRONG\" : absEdge >= 25 ? \"STRONG\" : absEdge >= 15 ? \"MODERATE\" : \"WEAK\";\n  const winningSide = baseDirection === \"BULLISH\" ? \"BULLISH\" : baseDirection === \"BEARISH\" ? \"BEARISH\" : \"NONE\";\n\n  const reason =\n    `${tf} BTC deterministic score: bull case ${bullish} weight, bear case ${bearish} weight, neutral evidence ${neutral} weight. ` +\n    `Winning side ${winningSide}, conviction ${conviction}%, net edge ${netEdge > 0 ? \"+\" : \"\"}${netEdge}, directional participation ${participationPct}%.`;\n\n  return {\n    direction,\n    conviction,\n    reason,\n    factor_breakdown: factorBreakdown,\n    bull_case: bullCase,\n    bear_case: bearCase,\n    neutral_case: neutralCase,\n    warnings,\n    score_bullish: bullishCount,\n    score_bearish: bearishCount,\n    score_neutral: neutralCount,\n    weighted_score: {\n      bullish_weight: bullish,\n      bearish_weight: bearish,\n      neutral_weight: neutral,\n      active_weight: active,\n      weight_margin: Math.abs(bullish - bearish)\n    },\n    conviction_model: {\n      bull_case_weight: bullish,\n      bear_case_weight: bearish,\n      winning_side: winningSide,\n      bullish_argument_pct: bullishArgument,\n      bearish_argument_pct: bearishArgument,\n      neutral_evidence_pct: neutralPct,\n      directional_participation_pct: participationPct,\n      net_edge_pct: netEdge,\n      final_conviction: conviction,\n      verdict_strength: strength,\n      final_conviction_logic: reason,\n      weighted_edge: Math.abs(netEdge) / 100,\n      raw_conviction: conviction,\n      base_conviction: conviction,\n      participation: participationPct,\n      participation_cap: participationPct,\n      conflict_penalty: 0,\n      missing_input_penalty: 0,\n      agreement_boost: 0\n    }\n  };\n}\n\nconst r24h = scoreTimeframe(\"24h\");\nconst r3d = scoreTimeframe(\"3d\");\nconst rWeek = scoreTimeframe(\"current_week\");\nconst rNextWeek = scoreTimeframe(\"next_week\");\nconst rMonth = scoreTimeframe(\"current_month\");\n\nconst allWarnings = [\n  ...(Array.isArray(item.warnings) ? item.warnings : []),\n  ...(r24h.warnings || []),\n  ...(r3d.warnings || []),\n  ...(rWeek.warnings || []),\n  ...(rNextWeek.warnings || []),\n  ...(rMonth.warnings || [])\n];\n\nconst missingInputs = Array.isArray(item.missing_inputs) ? item.missing_inputs : [];\n\nconst output = {\n  ...(item.full_output || {}),\n\n  asset: \"BTC\",\n  layer: \"layer_1_raw\",\n  logic_document: \"agent_btc_direction.md\",\n  logic_document_version: \"2.0_weighted_engine\",\n  created_at: item.created_at || new Date().toISOString(),\n\n  direction_24h: r24h.direction,\n  conviction_24h: r24h.conviction,\n  reason_24h: r24h.reason,\n\n  direction_3_day: r3d.direction,\n  conviction_3_day: r3d.conviction,\n  reason_3_day: r3d.reason,\n\n  direction_current_week: rWeek.direction,\n  conviction_current_week: rWeek.conviction,\n  reason_current_week: rWeek.reason,\n\n  direction_next_week: rNextWeek.direction,\n  conviction_next_week: rNextWeek.conviction,\n  reason_next_week: rNextWeek.reason,\n\n  direction_current_month: rMonth.direction,\n  conviction_current_month: rMonth.conviction,\n  reason_current_month: rMonth.reason,\n\n  weighted_score: r24h.weighted_score,\n  conviction_model: r24h.conviction_model,\n  factor_breakdown: r24h.factor_breakdown,\n\n  timeframe_models: {\n    \"24h\": r24h,\n    \"3d\": r3d,\n    \"current_week\": rWeek,\n    \"next_week\": rNextWeek,\n    \"current_month\": rMonth\n  },\n\n  score_bullish: r24h.score_bullish,\n  score_bearish: r24h.score_bearish,\n  score_neutral: r24h.score_neutral,\n\n  missing_inputs: missingInputs,\n  risk_flags: [...new Set(allWarnings)],\n\n  reasoning_summary:\n    `BTC weighted verdicts calculated deterministically by timeframe. ` +\n    `24h ${r24h.direction} ${r24h.conviction}%, ` +\n    `3d ${r3d.direction} ${r3d.conviction}%, ` +\n    `current week ${rWeek.direction} ${rWeek.conviction}%, ` +\n    `next week ${rNextWeek.direction} ${rNextWeek.conviction}%, ` +\n    `current month ${rMonth.direction} ${rMonth.conviction}%.`\n};\n\nreturn [{\n  json: {\n    snapshot_id: item.snapshot_id || null,\n    agent_name: \"BTC\",\n    layer: 1,\n    run_time_et: item.run_time_et || new Date().toISOString(),\n    snapshot_date: item.snapshot_date || new Date().toISOString().slice(0, 10),\n\n    call_24h_direction: output.direction_24h,\n    call_24h_conviction: output.conviction_24h,\n    call_24h_reason: output.reason_24h,\n\n    call_3d_direction: output.direction_3_day,\n    call_3d_conviction: output.conviction_3_day,\n    call_3d_reason: output.reason_3_day,\n\n    call_current_week_direction: output.direction_current_week,\n    call_current_week_conviction: output.conviction_current_week,\n    call_current_week_reason: output.reason_current_week,\n\n    call_next_week_direction: output.direction_next_week,\n    call_next_week_conviction: output.conviction_next_week,\n    call_next_week_reason: output.reason_next_week,\n\n    call_current_month_direction: output.direction_current_month,\n    call_current_month_conviction: output.conviction_current_month,\n    call_current_month_reason: output.reason_current_month,\n\n    direction_24h: output.direction_24h,\n    conviction_24h: output.conviction_24h,\n    direction_3_day: output.direction_3_day,\n    conviction_3_day: output.conviction_3_day,\n    direction_current_week: output.direction_current_week,\n    conviction_current_week: output.conviction_current_week,\n    direction_next_week: output.direction_next_week,\n    conviction_next_week: output.conviction_next_week,\n    direction_current_month: output.direction_current_month,\n    conviction_current_month: output.conviction_current_month,\n\n    factor_breakdown: output.factor_breakdown,\n    conviction_model: output.conviction_model,\n    weighted_score: output.weighted_score,\n    \n    warnings: output.risk_flags,\n\n    full_output: output,\n    raw_agent_output: output,\n\n    logic_document: \"agent_btc_direction.md\",\n    logic_document_version: \"2.0_weighted_engine\",\n    reasoning_summary: output.reasoning_summary,\n\n    score_bullish: output.score_bullish,\n    score_bearish: output.score_bearish,\n    score_neutral: output.score_neutral\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        256
+      ],
+      "id": "15b866cf-53d0-4bf0-bf50-b7d7c7cf0a78",
+      "name": "Calculate BTC Conviction"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9c7bab78-c2ed-4263-beab-758b3edb7846",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Supabase Get Many": {
+      "main": [
+        [
+          {
+            "node": "Build BTC Input Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse BTC Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine md & market snapshot": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build BTC Input Pack": {
+      "main": [
+        [
+          {
+            "node": "Get BTC Logic Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get BTC Logic Document": {
+      "main": [
+        [
+          {
+            "node": "Combine md & market snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse BTC Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Calculate BTC Conviction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate BTC Conviction": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Supabase Get Many",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "3b69d9c0-7f07-4a38-bfc1-eff5e61db763",
+  "activeVersionId": null,
+  "versionCounter": 18,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-07T18:35:58.222Z",
+      "createdAt": "2026-06-07T18:35:58.222Z",
+      "role": "workflow:owner",
+      "workflowId": "G142Blty3sGHzuOr",
+      "projectId": "ISQG9XU7TGTT6Fcu",
+      "project": {
+        "updatedAt": "2026-04-29T19:10:21.640Z",
+        "createdAt": "2026-04-29T19:10:11.212Z",
+        "id": "ISQG9XU7TGTT6Fcu",
+        "name": "Daniel Silver <a17@live.co.uk>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

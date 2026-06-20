@@ -34,6 +34,11 @@ In progress.
 - `docs/N8N_INTEGRATION.md` created
 - `workflows/WORKFLOW_INVENTORY.md` created
 - Initial workflow documents added for Master Orchestrator, EUR Layer 1 Agent, and Eco Events Collector
+- Live n8n workflow JSON snapshots exported into `exports/`
+- Dashboard Master Orchestrator control panel added
+- Dashboard workflow status and error report rendering added
+- `data/workflow-control.json` added for non-secret webhook configuration
+- `data/workflow-status.json` added for run status published by n8n
 
 ## n8n Workspace
 
@@ -51,17 +56,16 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Connect to n8n API from a secure runtime/tooling environment.
-2. List all workflows in the workspace.
-3. Match live workflow names against `workflows/WORKFLOW_INVENTORY.md`.
-4. Export all active workflow JSON into `exports/`.
-5. Fix EUR parser.
-6. Fix Eco Events duplicate insert.
-7. Add Master Orchestrator final execution summary.
+1. Add a Webhook Trigger to the live Master Orchestrator.
+2. Configure `data/workflow-control.json` with the production webhook URL.
+3. Add Master Orchestrator final success/failure status writing to `data/workflow-status.json`.
+4. Fix EUR parser.
+5. Fix Eco Events duplicate insert.
+6. Run the Master Orchestrator from the dashboard and verify the error report.
 
 ## Current Blocker
 
-Direct n8n API execution is not yet available inside this ChatGPT tool session.
+The dashboard trigger UI is built, but the live Master Orchestrator still needs a production Webhook Trigger and status writer.
 
 The n8n API key was supplied in chat and must not be committed to GitHub.
 

@@ -27,3 +27,19 @@
 - Eco Events Collector duplicate insert failure.
 - EUR Agent parser must support OpenAI JSON Object output.
 - Master Orchestrator needs final execution summary.
+
+## 2026-06-20
+
+### Added
+
+- Exported live n8n workflow JSON snapshots into `exports/`.
+- Added dashboard Master Orchestrator control panel.
+- Added `data/workflow-control.json` for non-secret dashboard trigger configuration.
+- Added `data/workflow-status.json` for published run status and error reporting.
+- Added dashboard rendering for workflow status, step reports, and error reports.
+
+### Pending
+
+- Add a Webhook Trigger to the live Master Orchestrator.
+- Configure `data/workflow-control.json` with the production webhook URL.
+- Update Master Orchestrator to publish final success/failure status to `data/workflow-status.json`.

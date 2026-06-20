@@ -31,11 +31,45 @@ Dashboard Writer
 
 Sequential orchestration is believed to be working.
 
+Dashboard-side trigger and status rendering have been added in GitHub.
+
+The live n8n workflow still needs:
+
+- a production Webhook Trigger for dashboard runs
+- final success/failure status writing to `data/workflow-status.json`
+
 ## Known Issues
 
 - Eco Events duplicate insert can break execution.
 - EUR Agent parser can fail if OpenAI output is an object rather than a string.
 - Final execution summary is not yet implemented.
+
+## Dashboard Status Contract
+
+The dashboard polls:
+
+```text
+data/workflow-status.json
+```
+
+Expected shape:
+
+```json
+{
+  "status": "success",
+  "last_run_started_at": "2026-06-20T10:00:00Z",
+  "last_run_finished_at": "2026-06-20T10:03:00Z",
+  "triggered_by": "dashboard",
+  "message": "Manual Refresh Complete",
+  "steps": [
+    { "name": "Eco Events Collector", "status": "success" },
+    { "name": "EUR Layer 1 Agent", "status": "failed", "error": "OpenAI invalid JSON" }
+  ],
+  "error": null
+}
+```
+
+For failed runs, set `status` to `failed` and populate `error` with a string or object containing `step` and `reason`.
 
 ## Desired Final Output
 

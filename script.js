@@ -1,5 +1,6 @@
 const layer1Url = "./data/layer1.json";
 const layer2Url = "./data/layer2.json";
+const workflowControlUrl = "./data/workflow-control.json";
 
 const labels = {
   "24h": "24H",
@@ -12,6 +13,10 @@ const labels = {
 const orderedAgents = ["USD", "EUR", "GOLD", "NQ", "BTC"];
 let layer1Data = null;
 let layer2Data = null;
+let workflowControl = null;
+let workflowStatus = null;
+let workflowPollTimer = null;
+let workflowTriggerInFlight = false;
 let activeTab = "overview";
 
 function updateClock() {
@@ -59,6 +64,20 @@ function formatRelativeAge(value) {
 
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays}d ago`;
+}
+
+function workflowStatusClass(status = "") {
+  const value = String(status || "pending").toLowerCase();
+  if (["success", "complete", "completed"].includes(value)) return "success";
+  if (["failed", "failure", "error"].includes(value)) return "failed";
+  if (["running", "started", "starting", "queued", "triggered"].includes(value)) return "running";
+  if (["not_configured", "disabled", "missing_config"].includes(value)) return "not-configured";
+  return "pending";
+}
+
+function workflowStatusLabel(status = "") {
+  const value = String(status || "pending").replaceAll("_", " ");
+  return value ? value.toUpperCase() : "PENDING";
 }
 
 function normaliseDirection(direction = "") {
@@ -855,6 +874,232 @@ function renderLayer2(data = {}) {
   `;
 }
 
+function workflowErrorText(error) {
+  if (!error) return "";
+  if (typeof error === "string") return error;
+
+  const step = error.step || error.workflow || error.node || "";
+  const reason = error.reason || error.message || error.error || "";
+
+  return [step, reason].filter(Boolean).join(": ");
+}
+
+function renderWorkflowSteps(steps = []) {
+  const container = document.getElementById("workflowStepReport");
+  if (!container) return;
+
+  if (!Array.isArray(steps) || !steps.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="workflow-step-grid">
+      ${steps.map(step => {
+        const status = workflowStatusClass(step.status);
+        const error = workflowErrorText(step.error || step.reason || step.message);
+        return `
+          <div class="workflow-step ${status}">
+            <span>${escapeHtml(step.name || step.workflow || "Workflow step")}</span>
+            <strong>${escapeHtml(workflowStatusLabel(step.status))}</strong>
+            ${error && status === "failed" ? `<small>${escapeHtml(error)}</small>` : ""}
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderWorkflowStatus(status = workflowStatus) {
+  const summary = document.getElementById("workflowStatusSummary");
+  const badge = document.getElementById("workflowStatusBadge");
+  const button = document.getElementById("runWorkflowButton");
+  const errorReport = document.getElementById("workflowErrorReport");
+
+  const configured = Boolean(workflowControl?.enabled && workflowControl?.webhook_url);
+  const currentStatus = status?.status || (configured ? "pending" : "not_configured");
+  const statusClass = workflowStatusClass(currentStatus);
+  const started = status?.last_run_started_at ? formatDashboardTime(status.last_run_started_at) : null;
+  const finished = status?.last_run_finished_at ? formatDashboardTime(status.last_run_finished_at) : null;
+  const age = status?.last_run_finished_at ? formatRelativeAge(status.last_run_finished_at) : "";
+  const message = status?.message || "";
+
+  if (badge) {
+    badge.className = `workflow-status-badge ${statusClass}`;
+    badge.textContent = workflowStatusLabel(currentStatus);
+  }
+
+  if (button) {
+    button.disabled = workflowTriggerInFlight || !configured;
+    button.textContent = workflowTriggerInFlight ? "Starting..." : "Run Full Refresh";
+    button.title = configured
+      ? "Trigger the n8n Master Orchestrator"
+      : "Add the n8n webhook URL to data/workflow-control.json";
+  }
+
+  if (summary) {
+    if (!configured) {
+      summary.textContent = "Dashboard trigger is waiting for the Master Orchestrator webhook URL.";
+    } else if (statusClass === "running") {
+      summary.textContent = `Workflow run is in progress${started ? `, started ${started}` : ""}.`;
+    } else if (statusClass === "success") {
+      summary.textContent = `Last run completed${finished ? ` ${finished}` : ""}${age ? ` (${age})` : ""}.`;
+    } else if (statusClass === "failed") {
+      summary.textContent = `Last run failed${finished ? ` ${finished}` : ""}.`;
+    } else {
+      summary.textContent = message || "Ready to run the Master Orchestrator.";
+    }
+  }
+
+  const errorText = workflowErrorText(status?.error);
+  if (errorReport) {
+    if (statusClass === "failed" || errorText) {
+      errorReport.hidden = false;
+      errorReport.innerHTML = `
+        <p class="eyebrow">Error Report</p>
+        <h3>${escapeHtml(status?.failed_step || status?.error?.step || "Workflow run failed")}</h3>
+        <p>${escapeHtml(errorText || message || "No error reason was supplied by n8n.")}</p>
+      `;
+    } else {
+      errorReport.hidden = true;
+      errorReport.innerHTML = "";
+    }
+  }
+
+  renderWorkflowSteps(status?.steps || []);
+}
+
+async function loadWorkflowControl() {
+  try {
+    const response = await fetch(workflowControlUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error(`workflow-control ${response.status}`);
+    workflowControl = await response.json();
+  } catch (err) {
+    console.warn("Could not load workflow control config", err);
+    workflowControl = {
+      enabled: false,
+      webhook_url: "",
+      status_url: "./data/workflow-status.json",
+      poll_interval_ms: 10000,
+      poll_after_trigger_ms: 180000
+    };
+  }
+
+  renderWorkflowStatus();
+}
+
+async function loadWorkflowStatus() {
+  const statusUrl = workflowControl?.status_url || "./data/workflow-status.json";
+
+  try {
+    const response = await fetch(statusUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error(`workflow-status ${response.status}`);
+    workflowStatus = await response.json();
+  } catch (err) {
+    console.warn("Could not load workflow status", err);
+    workflowStatus = {
+      status: workflowControl?.enabled ? "pending" : "not_configured",
+      message: "Workflow status has not been published yet.",
+      steps: [],
+      error: null
+    };
+  }
+
+  renderWorkflowStatus(workflowStatus);
+}
+
+function startWorkflowStatusPolling(durationMs) {
+  if (workflowPollTimer) {
+    clearInterval(workflowPollTimer);
+    workflowPollTimer = null;
+  }
+
+  const intervalMs = Number(workflowControl?.poll_interval_ms || 10000);
+  workflowPollTimer = setInterval(loadWorkflowStatus, intervalMs);
+
+  if (durationMs) {
+    setTimeout(() => {
+      if (workflowPollTimer) {
+        clearInterval(workflowPollTimer);
+        workflowPollTimer = null;
+      }
+    }, durationMs);
+  }
+}
+
+async function triggerWorkflowRun() {
+  if (workflowTriggerInFlight) return;
+
+  if (!workflowControl?.enabled || !workflowControl?.webhook_url) {
+    renderWorkflowStatus({
+      status: "not_configured",
+      message: "Add the Master Orchestrator webhook URL before running from the dashboard.",
+      steps: [],
+      error: null
+    });
+    return;
+  }
+
+  workflowTriggerInFlight = true;
+  renderWorkflowStatus({
+    status: "starting",
+    last_run_started_at: new Date().toISOString(),
+    message: "Dashboard requested a Master Orchestrator run.",
+    steps: [],
+    error: null
+  });
+
+  try {
+    const method = workflowControl.method || "POST";
+    const requestMode = workflowControl.request_mode || "cors";
+    const payload = {
+      source: "dashboard",
+      requested_at: new Date().toISOString()
+    };
+
+    await fetch(workflowControl.webhook_url, {
+      method,
+      mode: requestMode,
+      headers: requestMode === "no-cors" ? undefined : { "content-type": "application/json" },
+      body: method.toUpperCase() === "GET" ? undefined : JSON.stringify(payload)
+    });
+
+    workflowStatus = {
+      status: "running",
+      last_run_started_at: payload.requested_at,
+      message: "Master Orchestrator trigger sent. Waiting for n8n to publish status.",
+      steps: [],
+      error: null
+    };
+    renderWorkflowStatus(workflowStatus);
+    startWorkflowStatusPolling(Number(workflowControl.poll_after_trigger_ms || 180000));
+  } catch (err) {
+    workflowStatus = {
+      status: "failed",
+      last_run_started_at: new Date().toISOString(),
+      last_run_finished_at: new Date().toISOString(),
+      failed_step: "Dashboard trigger",
+      message: "The dashboard could not call the n8n webhook.",
+      steps: [],
+      error: {
+        step: "Dashboard trigger",
+        reason: err.message || String(err)
+      }
+    };
+    renderWorkflowStatus(workflowStatus);
+  } finally {
+    workflowTriggerInFlight = false;
+    renderWorkflowStatus(workflowStatus);
+  }
+}
+
+function setupWorkflowControls() {
+  const button = document.getElementById("runWorkflowButton");
+  if (button) {
+    button.addEventListener("click", triggerWorkflowRun);
+  }
+}
+
 function setTab(tab) {
   activeTab = tab;
 
@@ -906,8 +1151,11 @@ async function loadDashboard() {
 }
 
 setupTabs();
+setupWorkflowControls();
 updateClock();
 setInterval(updateClock, 1000);
 
+loadWorkflowControl().then(loadWorkflowStatus);
 loadDashboard();
 setInterval(loadDashboard, 60000);
+setInterval(loadWorkflowStatus, 60000);

@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "webhook_url": "",
+  "method": "POST",
+  "status_url": "./data/workflow-status.json",
+  "poll_interval_ms": 10000,
+  "poll_after_trigger_ms": 180000
+}

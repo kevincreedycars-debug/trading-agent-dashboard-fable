@@ -23,3 +23,9 @@ Reason: The API is the cleaner production interface. MCP may be valuable for AI-
 Decision: Layer 1 agents must remain independent raw directional agents.
 
 Reason: Layer 1 must provide uncontaminated raw calls before Layer 2 economic-event adjustment or cross-asset synthesis.
+
+## 2026-06-20 — Dashboard Trigger Uses Webhook And Status File
+
+Decision: The public dashboard triggers the Master Orchestrator through an n8n webhook and reads run state from `data/workflow-status.json`.
+
+Reason: The static dashboard must never expose the n8n API key. A webhook plus GitHub-published status file keeps credentials out of browser code while still allowing the dashboard to show success and failure reports.

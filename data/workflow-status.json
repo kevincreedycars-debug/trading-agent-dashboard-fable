@@ -1,0 +1,9 @@
+{
+  "status": "not_configured",
+  "last_run_started_at": null,
+  "last_run_finished_at": null,
+  "triggered_by": null,
+  "message": "Dashboard trigger is not connected to the Master Orchestrator webhook yet.",
+  "steps": [],
+  "error": null
+}

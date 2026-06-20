@@ -1,0 +1,561 @@
+{
+  "updatedAt": "2026-06-19T18:21:06.208Z",
+  "createdAt": "2026-06-18T19:36:15.843Z",
+  "id": "X75RKU34ikiM5RMU",
+  "name": "Master Orchestrator",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "4a2f2d90-0c61-469a-9a1e-3ed1e0d381cc",
+      "name": "Manual Start - Run All Agents"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "UaSliyR8qlSVIfmk",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/UaSliyR8qlSVIfmk",
+          "cachedResultName": "1. Economic Events Collector"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        0
+      ],
+      "id": "43b4dc12-6b34-4700-9db7-f77d8137bb33",
+      "name": "Call '1. Economic Events Collector'",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "P1E4ZWtbDetYz1P5",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/P1E4ZWtbDetYz1P5",
+          "cachedResultName": "Data Collector - USD"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        0
+      ],
+      "id": "cde730a2-d255-42f6-9c82-7dfb0bdaa9a3",
+      "name": "USD Collector"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Z3v9kQNIM22THi2O",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Z3v9kQNIM22THi2O",
+          "cachedResultName": "Data Collector - EUR"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "de7a8087-993a-47fb-a76d-2e0a9f6696f7",
+      "name": "EUR Collector"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "0z71FpOfKdL72hgW",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/0z71FpOfKdL72hgW",
+          "cachedResultName": "Data Collector - GOLD"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        0
+      ],
+      "id": "258e4649-1dc4-4f71-a247-ac1c4ec0da38",
+      "name": "Gold Collector"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "nYMDUSVQwEFNaH0U",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/nYMDUSVQwEFNaH0U",
+          "cachedResultName": "Data Collector - NQ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "a2ced20f-6cf3-452e-a582-227674645d9a",
+      "name": "NQ Collector"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "AE3Vv7ILPPiZwZHN",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/AE3Vv7ILPPiZwZHN",
+          "cachedResultName": "Data Collector - BTC"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "64c3310c-e329-494d-bbbe-655c7549be22",
+      "name": "BTC Collector"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "OCt1tB9yVMUgFTha",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/OCt1tB9yVMUgFTha",
+          "cachedResultName": "USD Layer 1 Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        224
+      ],
+      "id": "01ecce65-3dfc-4923-99e1-be528b7c7dda",
+      "name": "USD Layer 1 Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Px0bsH7chlRWH9ZD",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Px0bsH7chlRWH9ZD",
+          "cachedResultName": "EUR Layer 1 Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        224
+      ],
+      "id": "6985f2aa-2dd3-4411-b710-d0289e401aa3",
+      "name": "EUR Layer 1 Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "wwBVT0EQcKu5517I",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/wwBVT0EQcKu5517I",
+          "cachedResultName": "GOLD Layer 1 Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        224
+      ],
+      "id": "76b34aa9-eff7-4351-90b5-2a92f57a8eee",
+      "name": "Gold Layer 1 Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FOpFp3AzTJVYdLXe",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FOpFp3AzTJVYdLXe",
+          "cachedResultName": "NQ Layer 1 Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        224
+      ],
+      "id": "74fcc105-4fdf-4b83-98f9-7ecd2c10c3fd",
+      "name": "NQ Layer 1 Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "G142Blty3sGHzuOr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/G142Blty3sGHzuOr",
+          "cachedResultName": "BTC Layer 1 Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        224
+      ],
+      "id": "39640dbd-f72e-4858-8299-c207c93bef3c",
+      "name": "BTC Layer 1 Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "850DrjzCKKX9fDzD",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/850DrjzCKKX9fDzD",
+          "cachedResultName": "Dashboard Writer - Layer 1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        464
+      ],
+      "id": "e62d7ed8-33ac-434d-8987-3b2b8edbddb7",
+      "name": "Dashboard Writer"
+    },
+    {
+      "id": "layer2-trade-selection-agent",
+      "name": "Layer 2 Trade Selection Agent",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "position": [
+        1456,
+        224
+      ],
+      "parameters": {
+        "workflowId": {
+          "mode": "list",
+          "__rl": true,
+          "cachedResultUrl": "/workflow/ZKGSuYcWb6EfgXBE",
+          "value": "ZKGSuYcWb6EfgXBE",
+          "cachedResultName": "Layer 2 Trade Selection Agent"
+        }
+      },
+      "typeVersion": 1.3
+    }
+  ],
+  "connections": {
+    "Manual Start - Run All Agents": {
+      "main": [
+        [
+          {
+            "node": "Call '1. Economic Events Collector'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '1. Economic Events Collector'": {
+      "main": [
+        [
+          {
+            "node": "USD Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "USD Collector": {
+      "main": [
+        [
+          {
+            "node": "EUR Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EUR Collector": {
+      "main": [
+        [
+          {
+            "node": "Gold Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gold Collector": {
+      "main": [
+        [
+          {
+            "node": "NQ Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NQ Collector": {
+      "main": [
+        [
+          {
+            "node": "BTC Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BTC Collector": {
+      "main": [
+        [
+          {
+            "node": "USD Layer 1 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "USD Layer 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "EUR Layer 1 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EUR Layer 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "Gold Layer 1 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gold Layer 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "NQ Layer 1 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NQ Layer 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "BTC Layer 1 Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BTC Layer 1 Agent": {
+      "main": [
+        [
+          {
+            "node": "Layer 2 Trade Selection Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Layer 2 Trade Selection Agent": {
+      "main": [
+        [
+          {
+            "node": "Dashboard Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "046474e2-c904-40fb-a3fe-b2acb9e36e0c",
+  "activeVersionId": null,
+  "versionCounter": 53,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-18T19:36:15.847Z",
+      "createdAt": "2026-06-18T19:36:15.847Z",
+      "role": "workflow:owner",
+      "workflowId": "X75RKU34ikiM5RMU",
+      "projectId": "ISQG9XU7TGTT6Fcu",
+      "project": {
+        "updatedAt": "2026-04-29T19:10:21.640Z",
+        "createdAt": "2026-04-29T19:10:11.212Z",
+        "id": "ISQG9XU7TGTT6Fcu",
+        "name": "Daniel Silver <a17@live.co.uk>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

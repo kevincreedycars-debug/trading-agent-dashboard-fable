@@ -40,6 +40,20 @@
       <div><strong>Primary run:</strong> 07:00 ET</div>
     </section>
 
+    <section class="workflow-control-panel" aria-labelledby="workflowControlTitle">
+      <div class="workflow-control-copy">
+        <p class="eyebrow">Master Orchestrator</p>
+        <h2 id="workflowControlTitle">Run Full Platform Refresh</h2>
+        <p id="workflowStatusSummary">Checking workflow status...</p>
+      </div>
+      <div class="workflow-control-actions">
+        <button id="runWorkflowButton" class="run-workflow-button" type="button">Run Full Refresh</button>
+        <span id="workflowStatusBadge" class="workflow-status-badge pending">Pending</span>
+      </div>
+      <div id="workflowErrorReport" class="workflow-error-report" hidden></div>
+      <div id="workflowStepReport" class="workflow-step-report"></div>
+    </section>
+
     <section id="overviewView" class="view active-view">
       <section class="section-header">
         <div>
