@@ -3,24 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agentic Macro Direction Dashboard</title>
+  <title>Asset Directional Movement Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="topbar">
+    <div class="topbar-brand">Asset Directional Movement Dashboard</div>
+    <div class="topbar-center" aria-label="Platform status">
+      <span class="topbar-pill topbar-pill-gold">Layer 1 Raw Calls</span>
+      <span class="topbar-pill">Layer 2 Trade Selection</span>
+    </div>
+    <div class="topbar-meta">
+      <span id="currentDate">Loading date...</span>
+      <span id="topbarClock">ET pending</span>
+    </div>
+  </header>
+
   <main class="shell">
     <section class="hero">
-      <div>
+      <div class="globe-column" aria-hidden="true">
+        <canvas id="marketGlobeCanvas" width="290" height="290"></canvas>
+      </div>
+      <div class="hero-content">
         <p class="eyebrow">Independent Agentic Trading Intelligence</p>
-        <h1>Layered Directional Command Dashboard</h1>
+        <h1>Asset Directional Movement Dashboard</h1>
         <p class="subcopy">
-          Layer 1 agents publish sealed raw directional calls. Click into each agent to inspect the factor engine, conviction logic, warnings and interpretation.
+          A premium macro command centre for sealed Layer 1 directional calls, Layer 2 trade selection, workflow health, and Backtest / Accuracy scaffolding.
         </p>
+        <div class="hero-stats" aria-label="Live dashboard summary">
+          <div class="hero-stat">
+            <span>Live Agents</span>
+            <strong id="heroLiveAgents">-- / 5</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Strongest 24H Signal</span>
+            <strong id="heroStrongestSignal">Pending</strong>
+          </div>
+          <div class="hero-stat">
+            <span>Last n8n Ingest</span>
+            <strong id="heroLastRun">Pending</strong>
+          </div>
+        </div>
+        <div class="market-cities" aria-label="Global market centres">
+          <span>London</span>
+          <span>New York</span>
+          <span>Tokyo</span>
+          <span>Singapore</span>
+          <span>Dubai</span>
+        </div>
       </div>
-      <div class="clock-card">
-        <span>System Clock</span>
-        <strong>New York / ET</strong>
-        <small id="currentTime">Loading...</small>
-      </div>
+    </section>
+
+    <section class="section-label">
+      <span class="section-label-text">Navigation</span>
+      <span class="section-label-rule"></span>
     </section>
 
     <nav id="agentTabs" class="tab-bar" aria-label="Dashboard tabs">
@@ -41,6 +80,11 @@
       <div><strong>Primary run:</strong> 07:00 ET</div>
     </section>
 
+    <section class="section-label">
+      <span class="section-label-text">Platform Control</span>
+      <span class="section-label-rule"></span>
+    </section>
+
     <section class="workflow-control-panel" aria-labelledby="workflowControlTitle">
       <div class="workflow-control-copy">
         <p class="eyebrow">Master Orchestrator</p>
@@ -53,6 +97,11 @@
       </div>
       <div id="workflowErrorReport" class="workflow-error-report" hidden></div>
       <div id="workflowStepReport" class="workflow-step-report"></div>
+    </section>
+
+    <section class="section-label">
+      <span class="section-label-text">Market Intelligence</span>
+      <span class="section-label-rule"></span>
     </section>
 
     <section id="overviewView" class="view active-view">

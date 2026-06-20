@@ -24,10 +24,10 @@ let activeBacktestTab = "accuracy";
 
 function updateClock() {
   const el = document.getElementById("currentTime");
-  if (!el) return;
-
+  const topbarClock = document.getElementById("topbarClock");
+  const currentDate = document.getElementById("currentDate");
   const now = new Date();
-  el.textContent = new Intl.DateTimeFormat("en-GB", {
+  const etTime = new Intl.DateTimeFormat("en-GB", {
     timeZone: "America/New_York",
     weekday: "short",
     hour: "2-digit",
@@ -35,6 +35,243 @@ function updateClock() {
     second: "2-digit",
     timeZoneName: "short"
   }).format(now);
+
+  if (el) el.textContent = etTime;
+  if (topbarClock) topbarClock.textContent = etTime;
+  if (currentDate) {
+    currentDate.textContent = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/London",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(now);
+  }
+}
+
+function initMarketGlobe() {
+  const canvas = document.getElementById("marketGlobeCanvas");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = 118;
+  let rotation = 0;
+  let tick = 0;
+
+  const cities = [
+    { lat: 51.5, lng: -0.1 },
+    { lat: 40.7, lng: -74 },
+    { lat: 35.7, lng: 139.7 },
+    { lat: 1.3, lng: 103.8 },
+    { lat: 25.2, lng: 55.3 },
+    { lat: 22.3, lng: 114.2 },
+    { lat: -33.9, lng: 151.2 }
+  ];
+  const routes = [[0, 1], [0, 2], [0, 3], [1, 2], [2, 3], [0, 4], [4, 3], [2, 5], [3, 6]];
+  const travelers = routes.map((route, index) => ({
+    route: index,
+    progress: index / routes.length,
+    speed: 0.0013 + (index % 4) * 0.00022
+  }));
+
+  function toPoint(lat, lng, r = radius) {
+    const phi = (90 - lat) * Math.PI / 180;
+    const theta = (lng + rotation * 180 / Math.PI) * Math.PI / 180;
+    return {
+      x: r * Math.sin(phi) * Math.cos(theta),
+      y: r * Math.cos(phi),
+      z: r * Math.sin(phi) * Math.sin(theta)
+    };
+  }
+
+  function normalise(point) {
+    const size = Math.sqrt(point.x ** 2 + point.y ** 2 + point.z ** 2);
+    return { x: point.x / size, y: point.y / size, z: point.z / size };
+  }
+
+  function slerp(a, b, amount) {
+    const dot = Math.max(-1, Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z));
+    const omega = Math.acos(dot);
+    if (Math.abs(omega) < 0.001) {
+      return {
+        x: a.x + (b.x - a.x) * amount,
+        y: a.y + (b.y - a.y) * amount,
+        z: a.z + (b.z - a.z) * amount
+      };
+    }
+
+    const sin = Math.sin(omega);
+    return {
+      x: (Math.sin((1 - amount) * omega) / sin) * a.x + (Math.sin(amount * omega) / sin) * b.x,
+      y: (Math.sin((1 - amount) * omega) / sin) * a.y + (Math.sin(amount * omega) / sin) * b.y,
+      z: (Math.sin((1 - amount) * omega) / sin) * a.z + (Math.sin(amount * omega) / sin) * b.z
+    };
+  }
+
+  function drawRoute(route) {
+    const start = normalise(toPoint(cities[route[0]].lat, cities[route[0]].lng, 1));
+    const end = normalise(toPoint(cities[route[1]].lat, cities[route[1]].lng, 1));
+    let drawing = false;
+
+    ctx.beginPath();
+    for (let step = 0; step <= 44; step += 1) {
+      const arc = slerp(start, end, step / 44);
+      const x = cx + arc.x * radius * 1.03;
+      const y = cy - arc.y * radius * 1.03;
+      const visible = arc.z * radius > -radius * 0.04;
+      if (!visible) {
+        drawing = false;
+      } else if (!drawing) {
+        ctx.moveTo(x, y);
+        drawing = true;
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.strokeStyle = "rgba(67, 200, 176, 0.18)";
+    ctx.lineWidth = 0.9;
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < 58; i += 1) {
+      const sx = (Math.sin(i * 137.5) * 0.5 + 0.5) * width;
+      const sy = (Math.cos(i * 97.3) * 0.5 + 0.5) * height;
+      if (Math.hypot(sx - cx, sy - cy) > radius + 8) {
+        const opacity = 0.08 + 0.32 * (Math.sin(tick * 0.4 + i) * 0.5 + 0.5);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 220, 255, ${opacity})`;
+        ctx.fill();
+      }
+    }
+
+    const atmosphere = ctx.createRadialGradient(cx, cy, radius - 4, cx, cy, radius + 20);
+    atmosphere.addColorStop(0, "rgba(67, 200, 176, 0.16)");
+    atmosphere.addColorStop(0.55, "rgba(209, 165, 58, 0.07)");
+    atmosphere.addColorStop(1, "rgba(67, 200, 176, 0)");
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 20, 0, Math.PI * 2);
+    ctx.fillStyle = atmosphere;
+    ctx.fill();
+
+    const ocean = ctx.createRadialGradient(cx - 24, cy - 26, 8, cx, cy, radius);
+    ocean.addColorStop(0, "#244777");
+    ocean.addColorStop(0.55, "#142951");
+    ocean.addColorStop(1, "#07101f");
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fillStyle = ocean;
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
+
+    for (let lat = -60; lat <= 60; lat += 30) {
+      const phi = (90 - lat) * Math.PI / 180;
+      const rx = radius * Math.sin(phi);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, rx * 0.15, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(237, 243, 250, 0.09)";
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    for (let line = 0; line < 12; line += 1) {
+      const lng = rotation + line * Math.PI / 6;
+      ctx.beginPath();
+      let first = true;
+      for (let step = 0; step <= 36; step += 1) {
+        const lat = (step / 36) * Math.PI - Math.PI / 2;
+        const x = cx + radius * Math.cos(lat) * Math.cos(lng);
+        const y = cy - radius * Math.sin(lat);
+        const visible = Math.cos(lat) * Math.cos(lng);
+        ctx.globalAlpha = visible > 0 ? 0.12 : 0.03;
+        if (first) {
+          ctx.moveTo(x, y);
+          first = false;
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.strokeStyle = "#edf3fa";
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+
+    routes.forEach(drawRoute);
+
+    travelers.forEach(traveler => {
+      const route = routes[traveler.route];
+      const start = normalise(toPoint(cities[route[0]].lat, cities[route[0]].lng, 1));
+      const end = normalise(toPoint(cities[route[1]].lat, cities[route[1]].lng, 1));
+      const arc = slerp(start, end, traveler.progress);
+      const x = cx + arc.x * radius * 1.03;
+      const y = cy - arc.y * radius * 1.03;
+
+      if (arc.z * radius > -radius * 0.04) {
+        const trail = slerp(start, end, Math.max(0, traveler.progress - 0.08));
+        const tx = cx + trail.x * radius * 1.03;
+        const ty = cy - trail.y * radius * 1.03;
+        const gradient = ctx.createLinearGradient(tx, ty, x, y);
+        gradient.addColorStop(0, "rgba(67, 200, 176, 0)");
+        gradient.addColorStop(1, "rgba(67, 200, 176, 0.75)");
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#43c8b0";
+        ctx.fill();
+      }
+
+      traveler.progress += traveler.speed;
+      if (traveler.progress > 1) traveler.progress = 0;
+    });
+
+    cities.forEach((city, index) => {
+      const point = toPoint(city.lat, city.lng);
+      if (point.z < -radius * 0.04) return;
+
+      const pulse = Math.sin(tick * 2 + index * 1.4) * 0.5 + 0.5;
+      const x = cx + point.x;
+      const y = cy - point.y;
+      ctx.beginPath();
+      ctx.arc(x, y, 4 + pulse * 3.5, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(67, 200, 176, ${0.12 + pulse * 0.14})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 2.4, 0, Math.PI * 2);
+      ctx.fillStyle = "#43c8b0";
+      ctx.fill();
+    });
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(237, 243, 250, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    rotation += 0.006;
+    tick += 0.028;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
 }
 
 function formatDashboardTime(value) {
@@ -184,10 +421,21 @@ function renderOverviewStats() {
 
   const strongest = bestLiveAgent();
   const liveCount = (layer1Data?.agents || []).filter(agent => agent.status === "live").length;
+  const heroLiveAgents = document.getElementById("heroLiveAgents");
+  const heroStrongestSignal = document.getElementById("heroStrongestSignal");
+  const heroLastRun = document.getElementById("heroLastRun");
 
   const dashboardUpdated = getDashboardUpdatedAt();
   const formattedDashboardUpdated = formatDashboardTime(dashboardUpdated);
   const dashboardAge = formatRelativeAge(dashboardUpdated);
+
+  if (heroLiveAgents) heroLiveAgents.textContent = `${liveCount} / ${orderedAgents.length}`;
+  if (heroStrongestSignal) {
+    heroStrongestSignal.textContent = strongest
+      ? `${strongest.agent} ${formatConviction(getCall(strongest, "24h").conviction)}`
+      : "Pending";
+  }
+  if (heroLastRun) heroLastRun.textContent = dashboardAge || (dashboardUpdated ? "Live" : "Pending");
 
   container.innerHTML = `
     <article class="metric-card hero-metric">
@@ -1479,6 +1727,7 @@ async function loadDashboard() {
 
 setupTabs();
 setupWorkflowControls();
+initMarketGlobe();
 updateClock();
 setInterval(updateClock, 1000);
 
