@@ -474,9 +474,13 @@ const FACTOR_ROLE_BY_ASSET = {
   }
 };
 
+const MISSING_NEUTRAL_WARNING_PREFIX = `Missing/neutral${" "}input:`;
+
 function factorLabelFromWarning(value = "") {
-  const match = String(value || "").match(/Missing\/neutral input:\s*(.+)$/i);
-  return match ? match[1].trim() : "";
+  const text = String(value || "");
+  const index = text.toLowerCase().indexOf(MISSING_NEUTRAL_WARNING_PREFIX.toLowerCase());
+  if (index === -1) return "";
+  return text.slice(index + MISSING_NEUTRAL_WARNING_PREFIX.length).trim();
 }
 
 function factorLabelFromKey(key = "") {
@@ -1248,9 +1252,11 @@ function factorEntriesFrom(value) {
     .sort((a, b) => Number(b.weight || 0) - Number(a.weight || 0));
 }
 
-function getTodayFactors(agent) {
+function getTodayFactors(agent, options = {}) {
+  const includeMissing = options.includeMissing === true;
   const today = getCall(agent, "24h");
-  return factorEntriesFrom(today.factor_breakdown || agent.factor_breakdown || {});
+  const entries = factorEntriesFrom(today.factor_breakdown || agent.factor_breakdown || {});
+  return includeMissing ? entries : entries.filter(entry => !factorHasMissingInputSignal(entry));
 }
 
 function splitTodayDrivers(agent) {
@@ -1410,12 +1416,16 @@ function renderTodayDrivers(agent) {
 }
 
 function renderInvalidationPanel(agent) {
-  const today = getCall(agent, "24h");
+  return renderStructuredDiagnostics(agent, "24h");
+}
+
+function renderStructuredDiagnostics(agent, timeframe = "24h") {
+  const call = getCall(agent, timeframe);
   const output = asObject(agent.full_output || agent.raw_agent_output, {});
   const marketInputs = asObject(agent.market_inputs || output.market_inputs_seen_by_workflow, {});
-  const diagnostics = classifyDiagnostics(today, agent, "24h");
+  const diagnostics = classifyDiagnostics(call, agent, timeframe);
 
-  const participation = participationValue(today);
+  const participation = participationValue(call);
   const latestEvent = marketInputs.latest_us_event || marketInputs.latest_ez_event || null;
   const eventText = describeEventRisk(latestEvent);
   const statusLines = [
@@ -1426,7 +1436,7 @@ function renderInvalidationPanel(agent) {
   ];
 
   if (Number.isFinite(participation) && participation < 35) {
-    statusLines.push(`Low 24H participation: only ${participation}% of weighted evidence is directional.`);
+    statusLines.push(`Low ${String(timeframe).replaceAll("_", " ").toUpperCase()} participation: only ${participation}% of weighted evidence is directional.`);
   }
 
   const sectionHtml = (title, items, emptyText, variant = "") => `
@@ -1442,7 +1452,7 @@ function renderInvalidationPanel(agent) {
     <article class="detail-panel wide-panel invalidation-panel">
       <div class="panel-head">
         <p class="eyebrow">Analysis Diagnostics</p>
-        <h3>What Today's 24H Call Used</h3>
+        <h3>What This Call Used</h3>
       </div>
       <div class="diagnostic-sections">
         ${sectionHtml("Analysis Status", statusLines, "No analysis status available.", "diagnostic-status")}
