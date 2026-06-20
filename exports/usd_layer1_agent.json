@@ -4,7 +4,7 @@
   "id": "OCt1tB9yVMUgFTha",
   "name": "USD Layer 1 Agent",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -294,7 +294,7 @@
   "nodeGroups": [],
   "pinData": {},
   "versionId": "aa275379-ea06-452c-97c9-238b41aed7bc",
-  "activeVersionId": null,
+  "activeVersionId": "aa275379-ea06-452c-97c9-238b41aed7bc",
   "versionCounter": 154,
   "triggerCount": 0,
   "sourceWorkflowId": null,
@@ -319,5 +319,302 @@
     }
   ],
   "tags": [],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-06-18T19:46:03.783Z",
+    "createdAt": "2026-06-18T19:46:03.783Z",
+    "versionId": "aa275379-ea06-452c-97c9-238b41aed7bc",
+    "workflowId": "OCt1tB9yVMUgFTha",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "const rows = $input.all().map(item => item.json);\n\nfunction hasValue(v) {\n  return v !== null && v !== undefined && v !== '';\n}\n\nfunction parseQuality(row) {\n  if (!row.data_quality) return {};\n  if (typeof row.data_quality === 'object') return row.data_quality;\n  try {\n    return JSON.parse(row.data_quality);\n  } catch {\n    return {};\n  }\n}\n\nfunction isUsableUsdSnapshot(row) {\n  if (!row.snapshot_date || !row.run_time_et) return false;\n\n  const required = [\n    'vix_level',\n    'dxy_level',\n    'dxy_d1',\n    'dxy_d5',\n    'us_2y_yield',\n    'us_2y_d5_bps',\n    'de_2y_yield',\n    'us_de_2y_spread',\n    'us_de_2y_spread_d5_bps',\n    'us_10y_real_yield',\n    'us_10y_real_yield_d5_bps',\n    'gold_d1_pct',\n    'nq_d1_pct',\n    'fed_bias'\n  ];\n\n  return required.every(key => hasValue(row[key]));\n}\n\nconst sortedRows = rows\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .sort((a, b) => {\n    const bTime = new Date(b.run_time_et || b.created_at || 0).getTime();\n    const aTime = new Date(a.run_time_et || a.created_at || 0).getTime();\n    return bTime - aTime;\n  });\n\nconst snapshot =\n  sortedRows.find(isUsableUsdSnapshot) ||\n  sortedRows[0];\n\nif (!snapshot) {\n  throw new Error(\"No valid market snapshot found\");\n}\n\nconst quality = parseQuality(snapshot);\n\nconst missingInputs = [];\nconst selectedInputWarnings = [];\n\nfunction requireInput(key, label = key) {\n  const value = snapshot[key];\n  if (!hasValue(value)) {\n    missingInputs.push(label);\n    return null;\n  }\n  return value;\n}\n\nconst goldD5 = hasValue(snapshot.gold_d5_pct)\n  ? snapshot.gold_d5_pct\n  : snapshot.gold_d1_pct;\n\nif (!hasValue(snapshot.gold_d5_pct) && hasValue(snapshot.gold_d1_pct)) {\n  selectedInputWarnings.push(\"gold_d5_pct missing; using gold_d1_pct fallback\");\n}\n\nconst nqD5 = hasValue(snapshot.nq_d5_pct)\n  ? snapshot.nq_d5_pct\n  : snapshot.nq_d1_pct;\n\nif (!hasValue(snapshot.nq_d5_pct) && hasValue(snapshot.nq_d1_pct)) {\n  selectedInputWarnings.push(\"nq_d5_pct missing; using nq_d1_pct fallback\");\n}\n\nconst selectedBy = isUsableUsdSnapshot(snapshot)\n  ? \"latest_usd_usable_snapshot\"\n  : \"latest_available_snapshot_fallback\";\n\nconst debugTopRows = sortedRows.slice(0, 5).map((r, index) => ({\n  rank: index + 1,\n  id: r.id,\n  created_at: r.created_at,\n  run_time_et: r.run_time_et,\n  snapshot_date: r.snapshot_date,\n  source_status: r.source_status,\n  collector_version: r.collector_version,\n  vix_level: r.vix_level,\n  dxy_level: r.dxy_level,\n  de_2y_yield: r.de_2y_yield,\n  us_de_2y_spread: r.us_de_2y_spread,\n  us_de_2y_spread_d5_bps: r.us_de_2y_spread_d5_bps,\n  fed_bias: r.fed_bias,\n  usd_usable: isUsableUsdSnapshot(r)\n}));\n\nconst usdInputPack = {\n  agent_name: \"USD\",\n  layer: 1,\n  isolation_rule: \"This Layer 1 agent may only use this market snapshot. It must not read other agent outputs.\",\n  execution_question: \"Based on confirmed value-driving factors available at execution time, what is the likely direction of USD?\",\n\n  snapshot_id: snapshot.id,\n  snapshot_date: snapshot.snapshot_date,\n  run_time_et: snapshot.run_time_et,\n  created_at: snapshot.created_at || null,\n  collector_version: snapshot.collector_version || null,\n  source_status: snapshot.source_status || null,\n  data_quality: quality,\n\n  snapshot_selection: {\n    selected_snapshot_id: snapshot.id,\n    selected_run_time_et: snapshot.run_time_et,\n    selected_created_at: snapshot.created_at || null,\n    selected_snapshot_date: snapshot.snapshot_date,\n    selected_from_rows: rows.length,\n    selected_by: selectedBy,\n    missing_required_inputs_for_usd: missingInputs,\n    warnings: selectedInputWarnings,\n    top_5_rows_seen_by_workflow: debugTopRows\n  },\n\n  available_inputs: {\n    vix_level: requireInput(\"vix_level\"),\n    vix_d1: snapshot.vix_d1 ?? null,\n    vix_d5: snapshot.vix_d5 ?? null,\n\n    dxy_level: requireInput(\"dxy_level\"),\n    dxy_d1: requireInput(\"dxy_d1\"),\n    dxy_d5: requireInput(\"dxy_d5\"),\n    dxy_d20: snapshot.dxy_d20 ?? null,\n\n    us_2y_yield: requireInput(\"us_2y_yield\"),\n    us_2y_d5_bps: requireInput(\"us_2y_d5_bps\"),\n    us_2y_d20_bps: snapshot.us_2y_d20_bps ?? null,\n\n    de_2y_yield: requireInput(\"de_2y_yield\"),\n    de_2y_d5_bps: snapshot.de_2y_d5_bps ?? null,\n    de_2y_d20_bps: snapshot.de_2y_d20_bps ?? null,\n\n    us_de_2y_spread: requireInput(\"us_de_2y_spread\"),\n    us_de_2y_spread_d1_bps: snapshot.us_de_2y_spread_d1_bps ?? null,\n    us_de_2y_spread_d5_bps: requireInput(\"us_de_2y_spread_d5_bps\"),\n    us_de_2y_spread_d20_bps: snapshot.us_de_2y_spread_d20_bps ?? null,\n\n    us_10y_yield: snapshot.us_10y_yield ?? null,\n    us_10y_d5_bps: snapshot.us_10y_d5_bps ?? null,\n    us_10y_d20_bps: snapshot.us_10y_d20_bps ?? null,\n\n    us_10y_real_yield: requireInput(\"us_10y_real_yield\"),\n    us_10y_real_yield_d5_bps: requireInput(\"us_10y_real_yield_d5_bps\"),\n    us_10y_real_yield_d20_bps: snapshot.us_10y_real_yield_d20_bps ?? null,\n\n    gold_price: snapshot.gold_price ?? null,\n    gold_d1_pct: requireInput(\"gold_d1_pct\"),\n    gold_d5_pct: goldD5,\n    gold_d20_pct: snapshot.gold_d20_pct ?? null,\n\n    nq_price: snapshot.nq_price ?? null,\n    nq_d1_pct: requireInput(\"nq_d1_pct\"),\n    nq_d5_pct: nqD5,\n    nq_d20_pct: snapshot.nq_d20_pct ?? null,\n\n    btc_price: snapshot.btc_price ?? null,\n    btc_d1_pct: snapshot.btc_d1_pct ?? null,\n    btc_d5_pct: snapshot.btc_d5_pct ?? null,\n    btc_d20_pct: snapshot.btc_d20_pct ?? null,\n\n    latest_us_event: snapshot.latest_us_event ?? null,\n    upcoming_events: snapshot.upcoming_events ?? null,\n    fed_bias: requireInput(\"fed_bias\"),\n    equities_regime: snapshot.equities_regime ?? null\n  },\n\n  missing_inputs_must_be_scored_neutral: [\n    \"de_2y_yield if unavailable\",\n    \"us_de_2y_spread if unavailable\",\n    \"us_de_2y_spread_d5_bps if unavailable\",\n    \"latest_us_event if unavailable\",\n    \"fed_bias if unavailable\",\n    \"gold_d5_pct if unavailable\",\n    \"nq_d1_pct if unavailable\",\n    \"equities_regime if unavailable\"\n  ]\n};\n\nreturn [{ json: usdInputPack }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          368,
+          0
+        ],
+        "id": "f80bde17-af43-466c-8fa9-c45ef676e014",
+        "name": "Build USD Input Pack"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4.1-MINI"
+          },
+          "responses": {
+            "values": [
+              {
+                "role": "system",
+                "content": "You are the USD Layer 1 Direction Agent.\n\nYou must follow the supplied USD logic document exactly.\n\nYou analyse USD only.\n\nYou must not produce pair calls, trade recommendations, cross-asset calls, consensus calls, or Layer 2 event-adjusted calls.\n\nUse only the supplied market snapshot and supplied logic document.\n\nIf required inputs are missing, score the affected factor as NEUTRAL and clearly state the missing input.\n\nReturn valid JSON only.\n\n```text\nDo not wrap the JSON in markdown fences. Do not include ```json. Return raw JSON only."
+              },
+              {
+                "content": "={\n  \"logic_document\": \"{{ $json.logic_document }}\",\n  \"market_snapshot\": {{ JSON.stringify($json.market_snapshot) }},\n  \"output_requirement\": {\n    \"asset\": \"USD\",\n    \"layer\": \"Layer 1 Raw\",\n    \"format\": \"valid_json_only\"\n  }\n}"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.3,
+        "position": [
+          896,
+          0
+        ],
+        "id": "fb21bdeb-296f-4ab6-b355-f055d14e00f2",
+        "name": "Message a model",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "openAiApi": {
+            "id": "VY1FMMlFQNwU3Ctt",
+            "name": "OpenAI account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "market_snapshots",
+          "returnAll": true,
+          "filterType": "none"
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          176,
+          0
+        ],
+        "id": "f4523568-0afd-488d-b1f0-e5c322f2cb98",
+        "name": "Supabase Get Many",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "agent_outputs",
+          "dataToSend": "autoMapInputData"
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1056,
+          256
+        ],
+        "id": "a37d7474-9c5e-4b6b-a872-fe9d29960dba",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const logicItem = $('Get USD Logic Document').first().json;\nconst marketItem = $('Build USD Input Pack').first().json;\n\nlet logicDocument = logicItem.content || '';\n\nif (logicItem.encoding === 'base64') {\n  logicDocument = Buffer.from(logicDocument, 'base64').toString('utf8');\n}\n\nreturn [\n  {\n    json: {\n      logic_document: logicDocument,\n      market_snapshot: marketItem\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          720,
+          0
+        ],
+        "id": "6db219f8-fe1e-486a-b3d9-a18a664b0951",
+        "name": "Combine md & market snapshot"
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "resource": "file",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "value": "kevincreedycars-debug",
+            "mode": "list",
+            "cachedResultName": "kevincreedycars-debug",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "trading-agent-dashboard",
+            "mode": "list",
+            "cachedResultName": "trading-agent-dashboard",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+          },
+          "filePath": "logic/agent_usd_direction.md",
+          "asBinaryProperty": false,
+          "additionalParameters": {}
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          544,
+          0
+        ],
+        "id": "020bc927-93f7-4233-9eba-3a5843a044d5",
+        "name": "Get USD Logic Document",
+        "webhookId": "24555ff2-0049-4bf3-bdc5-593a2a172407",
+        "credentials": {
+          "githubOAuth2Api": {
+            "id": "wr4dhSbWkjNonhfi",
+            "name": "GitHub account 3"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const openAiItem = $input.first().json;\n\nlet text =\n  openAiItem.output?.[0]?.content?.[0]?.text ||\n  openAiItem.text ||\n  openAiItem.message ||\n  '';\n\nif (!text) {\n  throw new Error('No OpenAI text output found');\n}\n\nlet report;\ntry {\n  report = JSON.parse(text);\n} catch (error) {\n  throw new Error(`OpenAI returned invalid JSON: ${error.message}. Raw text: ${text.slice(0, 1000)}`);\n}\n\nconst marketSnapshot = $('Combine md & market snapshot').first().json.market_snapshot || {};\nconst marketInputs = marketSnapshot.available_inputs || {};\n\nfunction pct(value) {\n  if (value === null || value === undefined || value === '') return null;\n  const match = String(value).match(/(\\d+(\\.\\d+)?)/);\n  return match ? Number(match[1]) : null;\n}\n\nfunction reasonFor(tf) {\n  return (\n    report[`${tf}_reason`] ||\n    report.reasoning_summary ||\n    ''\n  );\n}\n\nfunction hasValue(v) {\n  return v !== null && v !== undefined && v !== '';\n}\n\nfunction inputWarning(key, label) {\n  return hasValue(marketInputs[key]) ? null : `Missing ${label}`;\n}\n\nconst deterministicInputWarnings = [\n  inputWarning('de_2y_yield', 'Germany 2Y yield'),\n  inputWarning('us_de_2y_spread', 'US-DE 2Y spread'),\n  inputWarning('us_de_2y_spread_d5_bps', 'US-DE 2Y spread 5d bps'),\n  inputWarning('fed_bias', 'Fed bias'),\n  inputWarning('latest_us_event', 'latest US event')\n].filter(Boolean);\n\nreturn [\n  {\n    json: {\n      snapshot_id: marketSnapshot.snapshot_id || null,\n      agent_name: 'USD',\n      layer: 1,\n      run_time_et: marketSnapshot.run_time_et || new Date().toISOString(),\n      snapshot_date: marketSnapshot.snapshot_date || new Date().toISOString().slice(0, 10),\n\n      market_inputs: marketInputs,\n      snapshot_selection: marketSnapshot.snapshot_selection || null,\n\n      model_reported_warnings: report.risk_flags || report.warnings || [],\n      input_validation_warnings: deterministicInputWarnings,\n\n      call_24h_direction: report.direction_24h || null,\n      call_24h_conviction: pct(report.conviction_24h),\n      call_24h_reason: reasonFor('24h'),\n\n      call_3d_direction: report.direction_3_day || null,\n      call_3d_conviction: pct(report.conviction_3_day),\n      call_3d_reason: reasonFor('3d'),\n\n      call_current_week_direction: report.direction_current_week || null,\n      call_current_week_conviction: pct(report.conviction_current_week),\n      call_current_week_reason: reasonFor('current_week'),\n\n      call_next_week_direction: report.direction_next_week || null,\n      call_next_week_conviction: pct(report.conviction_next_week),\n      call_next_week_reason: reasonFor('next_week'),\n\n      call_current_month_direction: report.direction_current_month || null,\n      call_current_month_conviction: pct(report.conviction_current_month),\n      call_current_month_reason: reasonFor('current_month'),\n\n      direction_24h: report.direction_24h || null,\n      conviction_24h: pct(report.conviction_24h),\n      direction_3_day: report.direction_3_day || null,\n      conviction_3_day: pct(report.conviction_3_day),\n      direction_current_week: report.direction_current_week || null,\n      conviction_current_week: pct(report.conviction_current_week),\n      direction_next_week: report.direction_next_week || null,\n      conviction_next_week: pct(report.conviction_next_week),\n      direction_current_month: report.direction_current_month || null,\n      conviction_current_month: pct(report.conviction_current_month),\n\n      factor_breakdown: report.factor_breakdown || {},\n\n      // Keep the old dashboard field, but make it deterministic, not model hallucination\n      warnings: deterministicInputWarnings,\n\n      full_output: {\n        ...report,\n        model_reported_warnings: report.risk_flags || report.warnings || [],\n        input_validation_warnings: deterministicInputWarnings,\n        market_inputs_seen_by_workflow: marketInputs,\n        snapshot_selection: marketSnapshot.snapshot_selection || null\n      },\n\n      raw_agent_output: report,\n\n      logic_document: 'agent_usd_direction.md',\n      logic_document_version: report.logic_document_version || 'v2_basic_engine',\n      reasoning_summary: report.reasoning_summary || '',\n\n      score_bullish: report.score_bullish ?? null,\n      score_bearish: report.score_bearish ?? null,\n      score_neutral: report.score_neutral ?? null\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1200,
+          0
+        ],
+        "id": "9c8aa188-3a7b-4dd4-a978-7307372123f7",
+        "name": "Parse USD Agent Output"
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.first().json;\nconst inputs = item.market_inputs || {};\n\nfunction n(v) {\n  const x = Number(v);\n  return Number.isFinite(x) ? x : null;\n}\n\nfunction makeFactor(signal, evidence, reason) {\n  return { signal, evidence, reason };\n}\n\nfunction signalFromDelta(value, upThreshold, downThreshold, bullishReason, bearishReason, neutralReason, label) {\n  const d = n(value);\n  if (d === null) return makeFactor(\"NEUTRAL\", `Missing ${label}`, \"Missing input\");\n  if (d >= upThreshold) return makeFactor(\"BULLISH\", `${label} ${d}`, bullishReason);\n  if (d <= downThreshold) return makeFactor(\"BEARISH\", `${label} ${d}`, bearishReason);\n  return makeFactor(\"NEUTRAL\", `${label} ${d}`, neutralReason);\n}\n\nconst TIMEFRAME_WEIGHTS = {\n  \"24h\": {\n  F1: 10, F2: 14, F3: 10, F4: 10, F5: 14,\n  F6: 4, F7: 24, F8: 12, F9: 1, F10: 1\n},\n  \"3d\": {\n    F1: 8, F2: 16, F3: 16, F4: 16, F5: 14,\n    F6: 8, F7: 8, F8: 10, F9: 3, F10: 1\n  },\n  \"current_week\": {\n    F1: 5, F2: 14, F3: 18, F4: 18, F5: 15,\n    F6: 7, F7: 5, F8: 12, F9: 5, F10: 1\n  },\n  \"next_week\": {\n    F1: 4, F2: 12, F3: 20, F4: 18, F5: 6,\n    F6: 5, F7: 6, F8: 18, F9: 10, F10: 1\n  },\n  \"current_month\": {\n    F1: 3, F2: 12, F3: 18, F4: 20, F5: 8,\n    F6: 5, F7: 5, F8: 18, F9: 10, F10: 1\n  }\n};\n\nfunction factorSignals(tf) {\n  const vix = n(inputs.vix_level);\n  const fed = String(inputs.fed_bias || \"\").toLowerCase();\n\n  const use20d = tf === \"current_month\" || tf === \"next_week\";\n  const useWeek = tf === \"current_week\";\n\n  const us2yDelta = use20d && n(inputs.us_2y_d20_bps) !== null\n    ? inputs.us_2y_d20_bps\n    : inputs.us_2y_d5_bps;\n\n  const realYieldDelta = use20d && n(inputs.us_10y_real_yield_d20_bps) !== null\n    ? inputs.us_10y_real_yield_d20_bps\n    : inputs.us_10y_real_yield_d5_bps;\n\n  const dxyDelta = use20d && n(inputs.dxy_d20) !== null\n    ? inputs.dxy_d20\n    : tf === \"24h\" && n(inputs.dxy_d1) !== null\n      ? inputs.dxy_d1\n      : inputs.dxy_d5;\n\n  const goldDelta = use20d && n(inputs.gold_d20_pct) !== null\n    ? inputs.gold_d20_pct\n    : inputs.gold_d5_pct;\n\n  const nqDelta = tf === \"24h\" && n(inputs.nq_d1_pct) !== null\n    ? inputs.nq_d1_pct\n    : inputs.nq_d5_pct;\n\n  const signals = {};\n\n  signals.F1 = (() => {\n    if (vix === null) return makeFactor(\"NEUTRAL\", \"Missing VIX\", \"Missing input\");\n    if (vix > 25) return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Safe-haven USD demand active\");\n    if (vix < 16) return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-on rotation away from USD\");\n    return makeFactor(\"NEUTRAL\", `VIX ${vix}`, \"Domestic drivers dominate\");\n  })();\n\n  signals.F2 = signalFromDelta(\n    us2yDelta,\n    5,\n    -5,\n    \"US front-end yields support USD\",\n    \"US front-end yields pressure USD\",\n    \"Move below threshold\",\n    use20d ? \"US 2Y 20d bps\" : \"US 2Y 5d bps\"\n  );\n\n  signals.F3 = signalFromDelta(\n    inputs.us_de_2y_spread_d5_bps,\n    5,\n    -5,\n    \"Relative rates support USD\",\n    \"Relative rates weaken USD\",\n    \"Move below threshold\",\n    \"US-DE 2Y spread 5d bps\"\n  );\n\n  signals.F4 = signalFromDelta(\n    realYieldDelta,\n    5,\n    -5,\n    \"Rising real yields support USD\",\n    \"Falling real yields pressure USD\",\n    \"Move below threshold\",\n    use20d ? \"Real yield 20d bps\" : \"Real yield 5d bps\"\n  );\n\n  signals.F5 = signalFromDelta(\n    dxyDelta,\n    tf === \"24h\" ? 0.15 : 0.3,\n    tf === \"24h\" ? -0.15 : -0.3,\n    \"DXY confirms USD strength\",\n    \"DXY confirms USD weakness\",\n    \"Move below threshold\",\n    use20d ? \"DXY 20d %\" : tf === \"24h\" ? \"DXY 1d %\" : \"DXY 5d %\"\n  );\n\n  signals.F6 = (() => {\n    const d = n(goldDelta);\n    if (d === null) return makeFactor(\"NEUTRAL\", \"Missing gold delta\", \"Missing input\");\n    if (d < -0.1) return makeFactor(\"BULLISH\", `Gold ${d}%`, \"Gold weakness supports USD\");\n    if (d > 0.1) return makeFactor(\"BEARISH\", `Gold ${d}%`, \"Gold strength pressures USD\");\n    return makeFactor(\"NEUTRAL\", `Gold ${d}%`, \"Gold flat\");\n  })();\n\n  signals.F7 = (() => {\n  const ev = inputs.latest_us_event;\n\n  if (!ev) {\n    return makeFactor(\"NEUTRAL\", \"No recent US event\", \"No confirmed surprise\");\n  }\n\n  if (ev.usd_signal === \"BULLISH\") {\n    return makeFactor(\"BULLISH\", ev.event || JSON.stringify(ev), \"Positive US surprise supports USD\");\n  }\n\n  if (ev.usd_signal === \"BEARISH\") {\n    return makeFactor(\"BEARISH\", ev.event || JSON.stringify(ev), \"Negative US surprise pressures USD\");\n  }\n\n  return makeFactor(\"NEUTRAL\", ev.event || JSON.stringify(ev), \"No clear USD surprise\");\n})();\n\n  signals.F8 = (() => {\n    if (!fed || fed === \"unknown\") return makeFactor(\"NEUTRAL\", \"Fed bias unknown\", \"Missing input\");\n    if (fed.includes(\"hawkish\")) return makeFactor(\"BULLISH\", `Fed bias ${fed}`, \"Hawkish Fed supports USD\");\n    if (fed.includes(\"dovish\")) return makeFactor(\"BEARISH\", `Fed bias ${fed}`, \"Dovish Fed pressures USD\");\n    return makeFactor(\"NEUTRAL\", `Fed bias ${fed}`, \"No clear Fed impulse\");\n  })();\n\n  signals.F9 = (() => {\n    if (vix !== null && vix > 25) return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Dollar Smile right-side safe-haven bid\");\n    if (vix !== null && vix < 16 && !fed.includes(\"hawkish\")) {\n      return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-on Dollar Smile bottom weakens USD\");\n    }\n    return makeFactor(\"NEUTRAL\", \"No clear Dollar Smile edge\", \"Insufficient regime evidence\");\n  })();\n\n  signals.F10 = (() => {\n    const nq = n(nqDelta);\n    if (nq === null || vix === null) return makeFactor(\"NEUTRAL\", \"Missing NQ/VIX\", \"Missing input\");\n    if (vix < 16 && nq > 0) return makeFactor(\"BEARISH\", `NQ ${nq}% risk-on`, \"Risk appetite reduces USD demand\");\n    if (vix < 16 && nq < 0) return makeFactor(\"BULLISH\", `NQ ${nq}% risk-on`, \"Equity weakness supports USD\");\n    if (vix > 25 && nq < 0) return makeFactor(\"BULLISH\", `NQ ${nq}% risk-off`, \"Risk-off supports USD\");\n    return makeFactor(\"NEUTRAL\", `NQ ${nq}%, VIX ${vix}`, \"No clear equity/USD signal\");\n  })();\n\n  return signals;\n}\n\nfunction scoreTimeframe(tf) {\n  const weights = TIMEFRAME_WEIGHTS[tf];\n  const signals = factorSignals(tf);\n\n  let bullish = 0;\n  let bearish = 0;\n  let neutral = 0;\n\n  let bullishCount = 0;\n  let bearishCount = 0;\n  let neutralCount = 0;\n\n  const factorBreakdown = {};\n\n  for (const [id, sig] of Object.entries(signals)) {\n    const weight = weights[id] || 0;\n\n    factorBreakdown[id] = {\n      ...sig,\n      weight\n    };\n\n    if (sig.signal === \"BULLISH\") {\n      bullish += weight;\n      bullishCount++;\n    } else if (sig.signal === \"BEARISH\") {\n      bearish += weight;\n      bearishCount++;\n    } else {\n      neutral += weight;\n      neutralCount++;\n    }\n  }\n\n  const active = bullish + bearish;\n  const bullishArgument = active > 0 ? Math.round((bullish / active) * 100) : 0;\n  const bearishArgument = active > 0 ? Math.round((bearish / active) * 100) : 0;\n  const neutralPct = Math.round(neutral);\n\n  const netEdge = bullishArgument - bearishArgument;\n\n  const baseDirection =\n    bullish > bearish\n      ? \"BULLISH\"\n      : bearish > bullish\n        ? \"BEARISH\"\n        : \"NO_CLEAR_BIAS\";\n\n  const absEdge = Math.abs(netEdge);\n\n  const direction =\n    baseDirection === \"NO_CLEAR_BIAS\"\n      ? \"NO_CLEAR_BIAS\"\n      : absEdge < 20\n        ? `${baseDirection}_LEAN`\n        : baseDirection;\n\n  const conviction =\n    baseDirection === \"BULLISH\"\n      ? bullishArgument\n      : baseDirection === \"BEARISH\"\n        ? bearishArgument\n        : 0;\n\n  const strength =\n    absEdge >= 40 ? \"VERY_STRONG\" :\n    absEdge >= 25 ? \"STRONG\" :\n    absEdge >= 15 ? \"MODERATE\" :\n    \"WEAK\";\n\n  const reason = `${tf} deterministic score: bullish argument ${bullishArgument}%, bearish argument ${bearishArgument}%, neutral/inactive ${neutralPct}%, net edge ${netEdge > 0 ? \"+\" : \"\"}${netEdge} ${baseDirection.toLowerCase().replace(\"_\", \" \")}.`;\n\n  return {\n    direction,\n    conviction,\n    reason,\n    factor_breakdown: factorBreakdown,\n    score_bullish: bullishCount,\n    score_bearish: bearishCount,\n    score_neutral: neutralCount,\n    weighted_score: {\n      bullish_weight: bullish,\n      bearish_weight: bearish,\n      neutral_weight: neutral,\n      active_weight: active,\n      weight_margin: Math.abs(bullish - bearish)\n    },\n    conviction_model: {\n      bullish_argument_pct: bullishArgument,\n      bearish_argument_pct: bearishArgument,\n      neutral_pct: neutralPct,\n      active_participation_pct: active,\n      net_edge_pct: netEdge,\n      final_conviction: conviction,\n      verdict_strength: strength,\n      final_conviction_logic: reason,\n\n      // legacy aliases for current dashboard\n      weighted_edge: Math.abs(netEdge) / 100,\n      raw_conviction: conviction,\n      base_conviction: conviction,\n      participation: active,\n      participation_cap: active,\n      conflict_penalty: 0,\n      missing_input_penalty: 0,\n      agreement_boost: 0\n    }\n  };\n}\n\nconst r24h = scoreTimeframe(\"24h\");\nconst r3d = scoreTimeframe(\"3d\");\nconst rWeek = scoreTimeframe(\"current_week\");\nconst rNextWeek = scoreTimeframe(\"next_week\");\nconst rMonth = scoreTimeframe(\"current_month\");\n\nconst output = {\n  ...(item.full_output || {}),\n\n  direction_24h: r24h.direction,\n  conviction_24h: r24h.conviction,\n  reason_24h: r24h.reason,\n\n  direction_3_day: r3d.direction,\n  conviction_3_day: r3d.conviction,\n  reason_3_day: r3d.reason,\n\n  direction_current_week: rWeek.direction,\n  conviction_current_week: rWeek.conviction,\n  reason_current_week: rWeek.reason,\n\n  direction_next_week: rNextWeek.direction,\n  conviction_next_week: rNextWeek.conviction,\n  reason_next_week: rNextWeek.reason,\n\n  direction_current_month: rMonth.direction,\n  conviction_current_month: rMonth.conviction,\n  reason_current_month: rMonth.reason,\n\n  weighted_score: r24h.weighted_score,\n  conviction_model: r24h.conviction_model,\n  factor_breakdown: r24h.factor_breakdown,\n\n  timeframe_models: {\n    \"24h\": r24h,\n    \"3d\": r3d,\n    \"current_week\": rWeek,\n    \"next_week\": rNextWeek,\n    \"current_month\": rMonth\n  },\n\n  score_bullish: r24h.score_bullish,\n  score_bearish: r24h.score_bearish,\n  score_neutral: r24h.score_neutral,\n\n  reasoning_summary: `USD weighted verdicts calculated deterministically by timeframe. 24h ${r24h.direction} ${r24h.conviction}%, 3d ${r3d.direction} ${r3d.conviction}%, current week ${rWeek.direction} ${rWeek.conviction}%, next week ${rNextWeek.direction} ${rNextWeek.conviction}%, current month ${rMonth.direction} ${rMonth.conviction}%.`\n};\n\nconst {\n  market_inputs,\n  input_validation_warnings,\n  model_reported_warnings,\n  snapshot_selection,\n  ...safeItem\n} = item;\n\nreturn [{\n  json: {\n    ...safeItem,\n\n    call_24h_direction: output.direction_24h,\n    call_24h_conviction: output.conviction_24h,\n    call_24h_reason: output.reason_24h,\n\n    call_3d_direction: output.direction_3_day,\n    call_3d_conviction: output.conviction_3_day,\n    call_3d_reason: output.reason_3_day,\n\n    call_current_week_direction: output.direction_current_week,\n    call_current_week_conviction: output.conviction_current_week,\n    call_current_week_reason: output.reason_current_week,\n\n    call_next_week_direction: output.direction_next_week,\n    call_next_week_conviction: output.conviction_next_week,\n    call_next_week_reason: output.reason_next_week,\n\n    call_current_month_direction: output.direction_current_month,\n    call_current_month_conviction: output.conviction_current_month,\n    call_current_month_reason: output.reason_current_month,\n\n    direction_24h: output.direction_24h,\n    conviction_24h: output.conviction_24h,\n\n    direction_3_day: output.direction_3_day,\n    conviction_3_day: output.conviction_3_day,\n\n    direction_current_week: output.direction_current_week,\n    conviction_current_week: output.conviction_current_week,\n\n    direction_next_week: output.direction_next_week,\n    conviction_next_week: output.conviction_next_week,\n\n    direction_current_month: output.direction_current_month,\n    conviction_current_month: output.conviction_current_month,\n\n    factor_breakdown: output.factor_breakdown,\n    full_output: output,\n    raw_agent_output: output,\n\n    reasoning_summary: output.reasoning_summary,\n    score_bullish: output.score_bullish,\n    score_bearish: output.score_bearish,\n    score_neutral: output.score_neutral\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          832,
+          256
+        ],
+        "id": "e23175ee-9333-479d-a40e-4619c1a74fa3",
+        "name": "Calculate USD Conviction"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "9532b00f-4ecb-49c4-a8f8-5125be04f259",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Build USD Input Pack": {
+        "main": [
+          [
+            {
+              "node": "Get USD Logic Document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase Get Many": {
+        "main": [
+          [
+            {
+              "node": "Build USD Input Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "Parse USD Agent Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Combine md & market snapshot": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get USD Logic Document": {
+        "main": [
+          [
+            {
+              "node": "Combine md & market snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse USD Agent Output": {
+        "main": [
+          [
+            {
+              "node": "Calculate USD Conviction",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculate USD Conviction": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Supabase Get Many",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Daniel Silver",
+    "name": null,
+    "description": null,
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-20T12:24:24.574Z",
+        "id": 13,
+        "workflowId": "OCt1tB9yVMUgFTha",
+        "versionId": "aa275379-ea06-452c-97c9-238b41aed7bc",
+        "event": "activated",
+        "userId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    ]
+  }
 }

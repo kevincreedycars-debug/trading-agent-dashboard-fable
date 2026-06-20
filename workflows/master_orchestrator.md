@@ -33,10 +33,11 @@ Sequential orchestration is believed to be working.
 
 Dashboard-side trigger and status rendering have been added in GitHub.
 
-The live n8n workflow still needs:
+The live n8n workflow now has:
 
 - a production Webhook Trigger for dashboard runs
 - final success/failure status writing to `data/workflow-status.json`
+- child workflow calls configured to continue far enough to publish a dashboard-readable status file
 
 ## Known Issues
 

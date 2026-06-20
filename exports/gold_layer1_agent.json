@@ -4,7 +4,7 @@
   "id": "wwBVT0EQcKu5517I",
   "name": "GOLD Layer 1 Agent",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -295,7 +295,7 @@
   "nodeGroups": [],
   "pinData": {},
   "versionId": "4a2281df-5097-46dd-837a-aa9e4473ad00",
-  "activeVersionId": null,
+  "activeVersionId": "4a2281df-5097-46dd-837a-aa9e4473ad00",
   "versionCounter": 27,
   "triggerCount": 0,
   "sourceWorkflowId": null,
@@ -320,5 +320,302 @@
     }
   ],
   "tags": [],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-06-18T19:45:32.883Z",
+    "createdAt": "2026-06-18T19:45:32.883Z",
+    "versionId": "4a2281df-5097-46dd-837a-aa9e4473ad00",
+    "workflowId": "wwBVT0EQcKu5517I",
+    "nodes": [
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4.1-MINI"
+          },
+          "responses": {
+            "values": [
+              {
+                "role": "system",
+                "content": "You are the GOLD Layer 1 Direction Agent.\n\nYou must follow the supplied GOLD logic document exactly.\n\nYou analyse Gold (XAU) only.\n\nYour task is to determine the likely direction of Gold using only the supplied market snapshot and the supplied GOLD logic document.\n\nYou must not:\n\n* Produce USD calls\n* Produce EUR calls\n* Produce BTC calls\n* Produce NQ calls\n* Produce pair calls\n* Produce trade recommendations\n* Produce entry or exit signals\n* Produce cross-asset directional calls\n* Produce consensus calls\n* Produce Layer 2 event-adjusted calls\n* Read or infer the output of any other agent\n\nLayer 1 isolation is mandatory.\n\nYou may only use:\n\n* Gold price data\n* DXY data\n* US Treasury yield data\n* US real yield data\n* Fed bias\n* Economic event data\n* Risk regime data\n* Inputs explicitly provided in the market snapshot\n\nIf a required input is unavailable or missing:\n\n* Score the affected factor as NEUTRAL\n* Add the missing field to missing_inputs\n* Do not estimate or infer missing values\n\nThe supplied logic document is the sole source of truth.\n\nReturn valid JSON only.\n\nDo not return explanations outside the JSON structure.\n\nDo not wrap JSON in markdown.\n\nDo not use code fences.\n\nDo not return ```json.\n\nReturn raw JSON only.\n"
+              },
+              {
+                "content": "={\n  \"logic_document\": \"{{ $json.logic_document }}\",\n  \"market_snapshot\": {{ JSON.stringify($json.market_snapshot) }},\n  \"output_requirement\": {\n    \"asset\": \"GOLD\",\n    \"layer\": \"layer_1_raw\",\n    \"logic_version\": \"2.0_weighted_engine\",\n    \"format\": \"valid_json_only\",\n    \"conviction_fields\": \"must_be_null\",\n    \"factor_classification_only\": true\n  }\n}"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.3,
+        "position": [
+          896,
+          0
+        ],
+        "id": "fb76045b-8e97-4bb7-93cc-6a643c76e6a0",
+        "name": "Message a model",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "openAiApi": {
+            "id": "VY1FMMlFQNwU3Ctt",
+            "name": "OpenAI account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "market_snapshots",
+          "returnAll": true,
+          "filterType": "none"
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          176,
+          0
+        ],
+        "id": "b70e4758-7df8-4794-8f25-6fa622451946",
+        "name": "Supabase Get Many",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "agent_outputs",
+          "dataToSend": "autoMapInputData"
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1056,
+          256
+        ],
+        "id": "f571d714-11c8-4aa5-80a1-a5ace73f57a5",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const logicItem = $('Get GOLD Logic Document').first().json;\nconst marketItem = $('Build GOLD Input Pack').first().json;\n\nlet logicDocument = logicItem.content || '';\n\nif (logicItem.encoding === 'base64') {\n  logicDocument = Buffer.from(logicDocument, 'base64').toString('utf8');\n}\n\nreturn [\n  {\n    json: {\n      logic_document: logicDocument,\n      market_snapshot: marketItem\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          720,
+          0
+        ],
+        "id": "05a1eede-a4a0-4969-8cab-0bc21c111864",
+        "name": "Combine md & market snapshot"
+      },
+      {
+        "parameters": {
+          "jsCode": "const rows = $input.all().map(item => item.json);\n\nconst snapshot = rows\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .sort((a, b) => new Date(b.run_time_et) - new Date(a.run_time_et))[0];\n\nif (!snapshot) {\n  throw new Error(\"No valid market snapshot found\");\n}\n\nconst goldInputPack = {\n  agent_name: \"GOLD\",\n  layer: 1,\n  isolation_rule: \"This Layer 1 agent may only use this market snapshot. It must not read other agent outputs.\",\n  execution_question: \"Based on confirmed value-driving factors available at execution time, what is the likely direction of Gold?\",\n\n  snapshot_id: snapshot.id,\n  snapshot_date: snapshot.snapshot_date,\n  run_time_et: snapshot.run_time_et,\n\n  available_inputs: {\n    gold_price: snapshot.gold_price,\n    gold_d1_pct: snapshot.gold_d1_pct,\n    gold_d5_pct: snapshot.gold_d5_pct,\n    gold_d20_pct: snapshot.gold_d20_pct,\n\n    dxy_level: snapshot.dxy_level,\n    dxy_d1: snapshot.dxy_d1,\n    dxy_d5: snapshot.dxy_d5,\n    dxy_d20: snapshot.dxy_d20,\n\n    us_2y_yield: snapshot.us_2y_yield,\n    us_2y_d5_bps: snapshot.us_2y_d5_bps,\n    us_2y_d20_bps: snapshot.us_2y_d20_bps,\n\n    us_10y_yield: snapshot.us_10y_yield,\n    us_10y_d5_bps: snapshot.us_10y_d5_bps,\n    us_10y_d20_bps: snapshot.us_10y_d20_bps,\n\n    us_10y_real_yield: snapshot.us_10y_real_yield,\n    us_10y_real_yield_d5_bps: snapshot.us_10y_real_yield_d5_bps,\n    us_10y_real_yield_d20_bps: snapshot.us_10y_real_yield_d20_bps,\n\n    vix_level: snapshot.vix_level,\n    vix_d1: snapshot.vix_d1,\n    vix_d5: snapshot.vix_d5,\n\n    latest_us_event: snapshot.latest_us_event,\n\n    fed_bias: snapshot.fed_bias,\n\n    equities_regime: snapshot.equities_regime,\n\nglobal_growth_regime: snapshot.global_growth_regime,\n\ngeopolitical_risk_flag: snapshot.geopolitical_risk_flag\n  },\n\n  missing_inputs_must_be_scored_neutral: [\n    \"gold_d5_pct if unavailable\",\n    \"gold_d20_pct if unavailable\",\n    \"dxy_d5 if unavailable\",\n    \"us_2y_d5_bps if unavailable\",\n    \"us_10y_real_yield_d5_bps if unavailable\",\n    \"vix_level if unavailable\",\n    \"latest_us_event if unavailable\",\n    \"fed_bias if unavailable\",\n    \"equities_regime if unavailable\",\n\"global_growth_regime if unavailable\",\n\"geopolitical_risk_flag if unavailable\"\n  ]\n};\n\nreturn [{ json: goldInputPack }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          368,
+          0
+        ],
+        "id": "bc13d867-f311-4068-b78b-1ab42d76193b",
+        "name": "Build GOLD Input Pack"
+      },
+      {
+        "parameters": {
+          "authentication": "oAuth2",
+          "resource": "file",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "value": "kevincreedycars-debug",
+            "mode": "list",
+            "cachedResultName": "kevincreedycars-debug",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "trading-agent-dashboard",
+            "mode": "list",
+            "cachedResultName": "trading-agent-dashboard",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard"
+          },
+          "filePath": "logic/agent_gold_direction.md",
+          "asBinaryProperty": false,
+          "additionalParameters": {}
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          544,
+          0
+        ],
+        "id": "e26a94af-63c1-486b-a2fa-a0347ec9365e",
+        "name": "Get GOLD Logic Document",
+        "webhookId": "7466e72c-3fb1-4bfa-9bed-259ad7321f74",
+        "credentials": {
+          "githubOAuth2Api": {
+            "id": "wr4dhSbWkjNonhfi",
+            "name": "GitHub account 3"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const openAiItem = $input.first().json;\n\nlet text =\n  openAiItem.output?.[0]?.content?.[0]?.text ||\n  openAiItem.text ||\n  openAiItem.message ||\n  '';\n\nif (!text) {\n  throw new Error('No OpenAI text output found');\n}\n\ntext = String(text)\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```$/i, '')\n  .trim();\n\nconst report = JSON.parse(text);\n\nconst marketSnapshot =\n  $('Combine md & market snapshot').first().json.market_snapshot || {};\n\nfunction reasonFor(tf) {\n  return (\n    report[`${tf}_reason`] ||\n    report.reasoning_summary ||\n    ''\n  );\n}\n\nreturn [\n  {\n    json: {\n      snapshot_id: marketSnapshot.snapshot_id || null,\n      agent_name: 'GOLD',\n      layer: 1,\n\n      run_time_et:\n        marketSnapshot.run_time_et ||\n        new Date().toISOString(),\n\n      snapshot_date:\n        marketSnapshot.snapshot_date ||\n        new Date().toISOString().slice(0, 10),\n\n      market_inputs:\n        marketSnapshot.available_inputs || {},\n\n      call_24h_direction: report.direction_24h || null,\n      call_24h_conviction: null,\n      call_24h_reason: reasonFor('24h'),\n\n      call_3d_direction: report.direction_3_day || null,\n      call_3d_conviction: null,\n      call_3d_reason: reasonFor('3d'),\n\n      call_current_week_direction:\n        report.direction_current_week || null,\n      call_current_week_conviction: null,\n      call_current_week_reason:\n        reasonFor('current_week'),\n\n      call_next_week_direction:\n        report.direction_next_week || null,\n      call_next_week_conviction: null,\n      call_next_week_reason:\n        reasonFor('next_week'),\n\n      call_current_month_direction:\n        report.direction_current_month || null,\n      call_current_month_conviction: null,\n      call_current_month_reason:\n        reasonFor('current_month'),\n\n      direction_24h: report.direction_24h || null,\n      conviction_24h: null,\n\n      direction_3_day: report.direction_3_day || null,\n      conviction_3_day: null,\n\n      direction_current_week:\n        report.direction_current_week || null,\n      conviction_current_week: null,\n\n      direction_next_week:\n        report.direction_next_week || null,\n      conviction_next_week: null,\n\n      direction_current_month:\n        report.direction_current_month || null,\n      conviction_current_month: null,\n\n      factor_breakdown:\n        report.factor_breakdown || {},\n\n      warnings:\n        report.risk_flags ||\n        report.warnings ||\n        [],\n\n      full_output: report,\n      raw_agent_output: report,\n\n      logic_document: 'agent_gold_direction.md',\n      logic_document_version:\n        report.logic_document_version ||\n        '2.0_weighted_engine',\n\n      reasoning_summary:\n        report.reasoning_summary || '',\n\n      score_bullish:\n        report.score_bullish ?? null,\n\n      score_bearish:\n        report.score_bearish ?? null,\n\n      score_neutral:\n        report.score_neutral ?? null,\n\n      weighted_score:\n        report.weighted_score || null,\n\n      conviction_model:\n        report.conviction_model || null\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1200,
+          0
+        ],
+        "id": "9b4f9ede-6294-401b-96bb-9cd94b3c42af",
+        "name": "Parse GOLD Agent Output"
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.first().json;\nconst inputs = item.market_inputs || {};\n\nfunction n(v) {\n  const x = Number(v);\n  return Number.isFinite(x) ? x : null;\n}\n\nfunction makeFactor(signal, evidence, reason) {\n  return { signal, evidence, reason };\n}\n\nfunction safeJson(value) {\n  try {\n    return JSON.stringify(value);\n  } catch (error) {\n    return String(value || \"\");\n  }\n}\n\nconst TIMEFRAME_WEIGHTS = {\n  \"24h\": {\n    F1: 26, F2: 22, F3: 12, F4: 10, F5: 10,\n    F6: 8, F7: 8, F8: 2, F9: 1, F10: 1\n  },\n  \"3d\": {\n    F1: 24, F2: 20, F3: 14, F4: 10, F5: 8,\n    F6: 10, F7: 6, F8: 4, F9: 3, F10: 1\n  },\n  \"current_week\": {\n    F1: 22, F2: 18, F3: 16, F4: 10, F5: 8,\n    F6: 10, F7: 5, F8: 5, F9: 4, F10: 2\n  },\n  \"next_week\": {\n    F1: 20, F2: 16, F3: 18, F4: 10, F5: 6,\n    F6: 8, F7: 4, F8: 8, F9: 6, F10: 4\n  },\n  \"current_month\": {\n    F1: 18, F2: 16, F3: 18, F4: 10, F5: 6,\n    F6: 6, F7: 4, F8: 10, F9: 6, F10: 6\n  }\n};\n\nfunction factorSignals(tf) {\n  const use20d = tf === \"next_week\" || tf === \"current_month\";\n\n  const realYieldDelta =\n    use20d && n(inputs.us_10y_real_yield_d20_bps) !== null\n      ? n(inputs.us_10y_real_yield_d20_bps)\n      : n(inputs.us_10y_real_yield_d5_bps);\n\n  const dxyDelta =\n    use20d && n(inputs.dxy_d20) !== null\n      ? n(inputs.dxy_d20)\n      : tf === \"24h\" && n(inputs.dxy_d1) !== null\n        ? n(inputs.dxy_d1)\n        : n(inputs.dxy_d5);\n\n  const goldDelta =\n    use20d && n(inputs.gold_d20_pct) !== null\n      ? n(inputs.gold_d20_pct)\n      : tf === \"24h\" && n(inputs.gold_d1_pct) !== null\n        ? n(inputs.gold_d1_pct)\n        : n(inputs.gold_d5_pct);\n\n  const us2yDelta =\n    use20d && n(inputs.us_2y_d20_bps) !== null\n      ? n(inputs.us_2y_d20_bps)\n      : n(inputs.us_2y_d5_bps);\n\n  const vix = n(inputs.vix_level);\n  const fed = String(inputs.fed_bias || \"\").toLowerCase();\n\n  const growth = String(\n    inputs.global_growth_regime ||\n    inputs.growth_regime ||\n    \"\"\n  ).toLowerCase();\n\n  const geopoliticalFlag =\n    inputs.geopolitical_risk_flag === true ||\n    inputs.geopolitical_risk_flag === \"true\";\n\n  const riskText = String(\n    inputs.risk_headline_context ||\n    (geopoliticalFlag ? \"stress\" : \"\")\n  ).toLowerCase();\n\n  const signals = {};\n\n  signals.F1 = (() => {\n    if (realYieldDelta === null) {\n      return makeFactor(\"NEUTRAL\", \"Missing real yield delta\", \"Missing input\");\n    }\n\n    if (realYieldDelta <= -5) {\n      return makeFactor(\"BULLISH\", `Real yield ${realYieldDelta}bps`, \"Falling real yields support Gold\");\n    }\n\n    if (realYieldDelta >= 5) {\n      return makeFactor(\"BEARISH\", `Real yield ${realYieldDelta}bps`, \"Rising real yields pressure Gold\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `Real yield ${realYieldDelta}bps`, \"Real yield move below threshold\");\n  })();\n\n  signals.F2 = (() => {\n    if (dxyDelta === null) {\n      return makeFactor(\"NEUTRAL\", \"Missing DXY delta\", \"Missing input\");\n    }\n\n    const threshold = tf === \"24h\" ? 0.15 : 0.3;\n\n    if (dxyDelta <= -threshold) {\n      return makeFactor(\"BULLISH\", `DXY ${dxyDelta}%`, \"Dollar weakness supports Gold\");\n    }\n\n    if (dxyDelta >= threshold) {\n      return makeFactor(\"BEARISH\", `DXY ${dxyDelta}%`, \"Dollar strength pressures Gold\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `DXY ${dxyDelta}%`, \"DXY move below threshold\");\n  })();\n\n  signals.F3 = (() => {\n    if (!fed || fed === \"unknown\") {\n      return makeFactor(\"NEUTRAL\", \"Fed bias unknown\", \"Missing input\");\n    }\n\n    if (fed.includes(\"dovish\")) {\n      return makeFactor(\"BULLISH\", `Fed bias ${fed}`, \"Dovish Fed supports Gold through lower real-yield and liquidity expectations\");\n    }\n\n    if (fed.includes(\"hawkish\")) {\n      return makeFactor(\"BEARISH\", `Fed bias ${fed}`, \"Hawkish Fed pressures Gold through higher real-yield and policy-rate expectations\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `Fed bias ${fed}`, \"No clear Fed impulse\");\n  })();\n\n  signals.F4 = (() => {\n    if (us2yDelta === null) {\n      return makeFactor(\"NEUTRAL\", \"Missing US 2Y delta\", \"Missing input\");\n    }\n\n    if (us2yDelta <= -5) {\n      return makeFactor(\"BULLISH\", `US 2Y ${us2yDelta}bps`, \"Falling front-end yields support Gold\");\n    }\n\n    if (us2yDelta >= 5) {\n      return makeFactor(\"BEARISH\", `US 2Y ${us2yDelta}bps`, \"Rising front-end yields pressure Gold\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `US 2Y ${us2yDelta}bps`, \"US 2Y move below threshold\");\n  })();\n\n  signals.F5 = (() => {\n    if (goldDelta === null) {\n      return makeFactor(\"NEUTRAL\", \"Missing Gold delta\", \"Missing input\");\n    }\n\n    const threshold = tf === \"24h\" ? 0.3 : 0.5;\n\n    if (goldDelta >= threshold) {\n      return makeFactor(\"BULLISH\", `Gold ${goldDelta}%`, \"Gold own-price trend confirms upside pressure\");\n    }\n\n    if (goldDelta <= -threshold) {\n      return makeFactor(\"BEARISH\", `Gold ${goldDelta}%`, \"Gold own-price trend confirms downside pressure\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `Gold ${goldDelta}%`, \"Gold price move below threshold\");\n  })();\n\n  signals.F6 = (() => {\n    if (vix === null) {\n      return makeFactor(\"NEUTRAL\", \"Missing VIX\", \"Missing input\");\n    }\n\n    if (vix > 25) {\n      return makeFactor(\"BULLISH\", `VIX ${vix}`, \"Risk-off conditions support Gold safe-haven demand\");\n    }\n\n    if (vix < 16) {\n      return makeFactor(\"BEARISH\", `VIX ${vix}`, \"Risk-on conditions reduce defensive Gold demand\");\n    }\n\n    return makeFactor(\"NEUTRAL\", `VIX ${vix}`, \"Neutral risk regime\");\n  })();\n\n  signals.F7 = (() => {\n    const ev = inputs.latest_us_event;\n    const text = safeJson(ev).toLowerCase();\n\n    if (!ev || text === \"{}\") {\n      return makeFactor(\"NEUTRAL\", \"No recent US event\", \"No confirmed US economic surprise\");\n    }\n\n    if (\n      text.includes(\"negative\") ||\n      text.includes(\"miss\") ||\n      text.includes(\"bearish\")\n    ) {\n      return makeFactor(\"BULLISH\", safeJson(ev), \"Negative US surprise supports Gold through lower yield and Fed repricing risk\");\n    }\n\n    if (\n      text.includes(\"positive\") ||\n      text.includes(\"beat\") ||\n      text.includes(\"bullish\")\n    ) {\n      return makeFactor(\"BEARISH\", safeJson(ev), \"Positive US surprise pressures Gold through higher yield and Fed repricing risk\");\n    }\n\n    return makeFactor(\"NEUTRAL\", safeJson(ev), \"No clear Gold signal from latest US event\");\n  })();\n\n  signals.F8 = (() => {\n    return makeFactor(\n      \"NEUTRAL\",\n      \"Inflation signal unavailable\",\n      \"Collector does not currently provide a top-level inflation_signal column\"\n    );\n  })();\n\n  signals.F9 = (() => {\n    if (\n      riskText.includes(\"safe_haven\") ||\n      riskText.includes(\"stress\") ||\n      riskText.includes(\"crisis\") ||\n      riskText.includes(\"risk_active\")\n    ) {\n      return makeFactor(\"BULLISH\", riskText, \"Safe-haven demand supports Gold\");\n    }\n\n    return makeFactor(\"NEUTRAL\", riskText || \"normal\", \"No active safe-haven demand signal\");\n  })();\n\n  signals.F10 = (() => {\n    if (\n      growth.includes(\"weakening\") ||\n      growth.includes(\"contraction\")\n    ) {\n      return makeFactor(\"BULLISH\", growth, \"Weakening growth supports Gold through defensive demand and lower yield expectations\");\n    }\n\n    if (\n      growth.includes(\"supportive\") ||\n      growth.includes(\"expansion\")\n    ) {\n      return makeFactor(\"BEARISH\", growth, \"Supportive growth reduces defensive Gold demand and can lift yields\");\n    }\n\n    return makeFactor(\"NEUTRAL\", growth || \"neutral\", \"No clear growth or liquidity signal\");\n  })();\n\n  return signals;\n}\n\nfunction scoreTimeframe(tf) {\n  const weights = TIMEFRAME_WEIGHTS[tf];\n  const signals = factorSignals(tf);\n\n  let bullish = 0;\n  let bearish = 0;\n  let neutral = 0;\n\n  let bullishCount = 0;\n  let bearishCount = 0;\n  let neutralCount = 0;\n\n  const factorBreakdown = {};\n\n  for (const [id, sig] of Object.entries(signals)) {\n    const weight = weights[id] || 0;\n\n    factorBreakdown[id] = { ...sig, weight };\n\n    if (sig.signal === \"BULLISH\") {\n      bullish += weight;\n      bullishCount++;\n    } else if (sig.signal === \"BEARISH\") {\n      bearish += weight;\n      bearishCount++;\n    } else {\n      neutral += weight;\n      neutralCount++;\n    }\n  }\n\n  const active = bullish + bearish;\n  const participation = active;\n\n  const bullishArgument = active > 0 ? Math.round((bullish / active) * 100) : 0;\n  const bearishArgument = active > 0 ? Math.round((bearish / active) * 100) : 0;\n  const neutralPct = Math.round(neutral);\n  const netEdge = bullishArgument - bearishArgument;\n\n  const baseDirection =\n    bullish > bearish\n      ? \"BULLISH\"\n      : bearish > bullish\n        ? \"BEARISH\"\n        : \"NO_CLEAR_BIAS\";\n\n  const absEdge = Math.abs(netEdge);\n  const weightMargin = Math.abs(bullish - bearish);\n\n  const direction =\n    baseDirection === \"NO_CLEAR_BIAS\"\n      ? \"NO_CLEAR_BIAS\"\n      : active < 50 || weightMargin < 15 || absEdge < 20\n        ? `${baseDirection}_LEAN`\n        : baseDirection;\n\n  const winningArgument =\n    baseDirection === \"BULLISH\"\n      ? bullishArgument\n      : baseDirection === \"BEARISH\"\n        ? bearishArgument\n        : 0;\n\n  const participationCap = Math.min(participation, 80);\n\n  const conviction =\n    baseDirection === \"NO_CLEAR_BIAS\"\n      ? 0\n      : Math.round(winningArgument * (participationCap / 100));\n\n  const strength =\n    absEdge >= 40 && participation >= 70 ? \"VERY_STRONG\" :\n    absEdge >= 25 && participation >= 50 ? \"STRONG\" :\n    absEdge >= 15 ? \"MODERATE\" :\n    \"WEAK\";\n\n  const reason =\n    `${tf} deterministic Gold score: bull case ${bullishArgument}%, bear case ${bearishArgument}%, directional participation ${participation}%, neutral/inactive ${neutralPct}%, net edge ${netEdge > 0 ? \"+\" : \"\"}${netEdge}. Real yields and DXY remain the highest-priority Gold drivers.`;\n\n  return {\n    direction,\n    conviction,\n    reason,\n    factor_breakdown: factorBreakdown,\n    score_bullish: bullishCount,\n    score_bearish: bearishCount,\n    score_neutral: neutralCount,\n    weighted_score: {\n      bullish_weight: bullish,\n      bearish_weight: bearish,\n      neutral_weight: neutral,\n      active_weight: active,\n      weight_margin: weightMargin\n    },\n    conviction_model: {\n      bull_case: bullishArgument,\n      bear_case: bearishArgument,\n      winning_side: baseDirection,\n      directional_participation: participation,\n      net_edge: netEdge,\n      final_conviction: conviction,\n      verdict_strength: strength,\n      final_conviction_logic: reason,\n\n      bullish_argument_pct: bullishArgument,\n      bearish_argument_pct: bearishArgument,\n      neutral_pct: neutralPct,\n      active_participation_pct: participation,\n      net_edge_pct: netEdge,\n\n      weighted_edge: Math.abs(netEdge) / 100,\n      raw_conviction: conviction,\n      base_conviction: conviction,\n      participation,\n      participation_cap: participationCap,\n      conflict_penalty: 0,\n      missing_input_penalty: 0,\n      agreement_boost: 0\n    }\n  };\n}\n\nconst r24h = scoreTimeframe(\"24h\");\nconst r3d = scoreTimeframe(\"3d\");\nconst rWeek = scoreTimeframe(\"current_week\");\nconst rNextWeek = scoreTimeframe(\"next_week\");\nconst rMonth = scoreTimeframe(\"current_month\");\n\nconst output = {\n  ...(item.full_output || {}),\n\n  asset: \"GOLD\",\n  agent_name: \"GOLD\",\n  logic_document: \"agent_gold_direction.md\",\n  logic_document_version: \"2.0_weighted_engine\",\n\n  direction_24h: r24h.direction,\n  conviction_24h: r24h.conviction,\n  reason_24h: r24h.reason,\n\n  direction_3_day: r3d.direction,\n  conviction_3_day: r3d.conviction,\n  reason_3_day: r3d.reason,\n\n  direction_current_week: rWeek.direction,\n  conviction_current_week: rWeek.conviction,\n  reason_current_week: rWeek.reason,\n\n  direction_next_week: rNextWeek.direction,\n  conviction_next_week: rNextWeek.conviction,\n  reason_next_week: rNextWeek.reason,\n\n  direction_current_month: rMonth.direction,\n  conviction_current_month: rMonth.conviction,\n  reason_current_month: rMonth.reason,\n\n  weighted_score: r24h.weighted_score,\n  conviction_model: r24h.conviction_model,\n  factor_breakdown: r24h.factor_breakdown,\n\n  timeframe_models: {\n    \"24h\": r24h,\n    \"3d\": r3d,\n    \"current_week\": rWeek,\n    \"next_week\": rNextWeek,\n    \"current_month\": rMonth\n  },\n\n  score_bullish: r24h.score_bullish,\n  score_bearish: r24h.score_bearish,\n  score_neutral: r24h.score_neutral,\n\n  reasoning_summary:\n    `GOLD weighted verdicts calculated deterministically by timeframe. ` +\n    `24h ${r24h.direction} ${r24h.conviction}%, ` +\n    `3d ${r3d.direction} ${r3d.conviction}%, ` +\n    `current week ${rWeek.direction} ${rWeek.conviction}%, ` +\n    `next week ${rNextWeek.direction} ${rNextWeek.conviction}%, ` +\n    `current month ${rMonth.direction} ${rMonth.conviction}%.`\n};\n\nconst { market_inputs, ...safeItem } = item;\n\ndelete safeItem.non_neutral_count;\ndelete safeItem.missing_inputs;\ndelete safeItem.timeframe_models;\n\nreturn [{\n  json: {\n    ...safeItem,\n\n    agent_name: \"GOLD\",\n    logic_document: \"agent_gold_direction.md\",\n    logic_document_version: \"2.0_weighted_engine\",\n\n    call_24h_direction: output.direction_24h,\n    call_24h_conviction: output.conviction_24h,\n    call_24h_reason: output.reason_24h,\n\n    call_3d_direction: output.direction_3_day,\n    call_3d_conviction: output.conviction_3_day,\n    call_3d_reason: output.reason_3_day,\n\n    call_current_week_direction: output.direction_current_week,\n    call_current_week_conviction: output.conviction_current_week,\n    call_current_week_reason: output.reason_current_week,\n\n    call_next_week_direction: output.direction_next_week,\n    call_next_week_conviction: output.conviction_next_week,\n    call_next_week_reason: output.reason_next_week,\n\n    call_current_month_direction: output.direction_current_month,\n    call_current_month_conviction: output.conviction_current_month,\n    call_current_month_reason: output.reason_current_month,\n\n    direction_24h: output.direction_24h,\n    conviction_24h: output.conviction_24h,\n\n    direction_3_day: output.direction_3_day,\n    conviction_3_day: output.conviction_3_day,\n\n    direction_current_week: output.direction_current_week,\n    conviction_current_week: output.conviction_current_week,\n\n    direction_next_week: output.direction_next_week,\n    conviction_next_week: output.conviction_next_week,\n\n    direction_current_month: output.direction_current_month,\n    conviction_current_month: output.conviction_current_month,\n\n    factor_breakdown: output.factor_breakdown,\n    weighted_score: output.weighted_score,\n    conviction_model: output.conviction_model,\n\n    full_output: output,\n    raw_agent_output: output,\n\n    reasoning_summary: output.reasoning_summary,\n    score_bullish: output.score_bullish,\n    score_bearish: output.score_bearish,\n    score_neutral: output.score_neutral\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          832,
+          256
+        ],
+        "id": "ebd77d2b-3445-4bd7-8a75-a1d3c8e5cf61",
+        "name": "Calculate GOLD Conviction"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "f684a159-1a69-448a-ad14-5d3031d74672",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Supabase Get Many": {
+        "main": [
+          [
+            {
+              "node": "Build GOLD Input Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "Parse GOLD Agent Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Combine md & market snapshot": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build GOLD Input Pack": {
+        "main": [
+          [
+            {
+              "node": "Get GOLD Logic Document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get GOLD Logic Document": {
+        "main": [
+          [
+            {
+              "node": "Combine md & market snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse GOLD Agent Output": {
+        "main": [
+          [
+            {
+              "node": "Calculate GOLD Conviction",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculate GOLD Conviction": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Supabase Get Many",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Daniel Silver",
+    "name": null,
+    "description": null,
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-20T12:24:25.046Z",
+        "id": 15,
+        "workflowId": "wwBVT0EQcKu5517I",
+        "versionId": "4a2281df-5097-46dd-837a-aa9e4473ad00",
+        "event": "activated",
+        "userId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    ]
+  }
 }

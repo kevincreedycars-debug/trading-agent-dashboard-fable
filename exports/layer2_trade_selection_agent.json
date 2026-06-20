@@ -4,7 +4,7 @@
   "id": "ZKGSuYcWb6EfgXBE",
   "name": "Layer 2 Trade Selection Agent",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -138,7 +138,7 @@
   "nodeGroups": [],
   "pinData": null,
   "versionId": "dfb631c9-9b98-4ba3-b216-76ee65e324ee",
-  "activeVersionId": null,
+  "activeVersionId": "dfb631c9-9b98-4ba3-b216-76ee65e324ee",
   "versionCounter": 2,
   "triggerCount": 0,
   "sourceWorkflowId": null,
@@ -163,5 +163,151 @@
     }
   ],
   "tags": [],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-06-19T17:44:55.412Z",
+    "createdAt": "2026-06-19T17:44:55.412Z",
+    "versionId": "dfb631c9-9b98-4ba3-b216-76ee65e324ee",
+    "workflowId": "ZKGSuYcWb6EfgXBE",
+    "nodes": [
+      {
+        "id": "layer2-trigger",
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "typeVersion": 1.2
+      },
+      {
+        "id": "layer2-get-agent-outputs",
+        "name": "Get Layer 1 Agent Outputs",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "position": [
+          260,
+          0
+        ],
+        "parameters": {
+          "tableId": "agent_outputs",
+          "operation": "getAll",
+          "limit": 1000,
+          "filters": {
+            "conditions": []
+          }
+        },
+        "typeVersion": 1
+      },
+      {
+        "id": "layer2-build-json",
+        "name": "Build Layer 2 Trade Selection JSON",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          520,
+          0
+        ],
+        "parameters": {
+          "jsCode": "const rows = $input.all().map(i => i.json);\nconst assets = [\"USD\", \"EUR\", \"GOLD\", \"NQ\", \"BTC\"];\nconst pairs = [\n  { instrument: \"EUR/USD\", base: \"EUR\" },\n  { instrument: \"XAU/USD\", base: \"GOLD\" },\n  { instrument: \"BTC/USD\", base: \"BTC\" },\n  { instrument: \"NQ/USD\", base: \"NQ\" }\n];\nconst LOW_CONVICTION_THRESHOLD = 60;\n\nfunction parseMaybeJson(value, fallback = {}) {\n  if (value === null || value === undefined || value === \"\") return fallback;\n  if (typeof value === \"object\") return value;\n  try {\n    return JSON.parse(value);\n  } catch (e) {\n    return fallback;\n  }\n}\n\nfunction parseMaybeArray(value, fallback = []) {\n  if (value === null || value === undefined || value === \"\") return fallback;\n  if (Array.isArray(value)) return value;\n  try {\n    const parsed = JSON.parse(value);\n    return Array.isArray(parsed) ? parsed : fallback;\n  } catch (e) {\n    return [String(value)];\n  }\n}\n\nfunction toNumber(value) {\n  if (value === null || value === undefined || value === \"\") return null;\n  const n = Number(value);\n  return Number.isFinite(n) ? n : null;\n}\n\nfunction clamp(value, min = 0, max = 100) {\n  const n = toNumber(value);\n  if (n === null) return null;\n  return Math.max(min, Math.min(max, Math.round(n)));\n}\n\nfunction normalizeDirection(value) {\n  const raw = String(value || \"PENDING\").trim().toUpperCase().replace(/\\s+/g, \"_\");\n  if ([\"PENDING\", \"NO_24H_CALL\", \"NO_CLEAR_BIAS\", \"NEUTRAL\", \"MARKET_CLOSED\", \"\"].includes(raw)) return \"NO_CLEAR_BIAS\";\n  if (raw.includes(\"BULLISH\") || raw.includes(\"LONG\")) return \"BULLISH\";\n  if (raw.includes(\"BEARISH\") || raw.includes(\"SHORT\")) return \"BEARISH\";\n  return \"NO_CLEAR_BIAS\";\n}\n\nfunction outputFromRow(row) {\n  return parseMaybeJson(row.full_output, parseMaybeJson(row.raw_agent_output, {}));\n}\n\nfunction latestFor(agent) {\n  return rows\n    .filter(row => row.agent_name === agent && Number(row.layer) === 1)\n    .filter(row => {\n      const output = outputFromRow(row);\n      const todayCall = output.today_call || {};\n      return row.call_24h_direction || row.direction_24h || output.direction_24h || todayCall.direction;\n    })\n    .sort((a, b) => {\n      const dateA = new Date(a.created_at || a.run_time_et || 0).getTime();\n      const dateB = new Date(b.created_at || b.run_time_et || 0).getTime();\n      return dateB - dateA;\n    })[0] || null;\n}\n\nfunction assetCall(agent) {\n  const row = latestFor(agent);\n  if (!row) {\n    return {\n      agent,\n      direction: \"NO_CLEAR_BIAS\",\n      conviction: null,\n      reason: \"No usable Layer 1 24H output found.\",\n      warnings: [\"Missing Layer 1 output\"]\n    };\n  }\n\n  const output = outputFromRow(row);\n  const todayCall = output.today_call || {};\n\n  return {\n    agent,\n    direction: normalizeDirection(todayCall.direction || row.call_24h_direction || row.direction_24h || output.direction_24h),\n    conviction: clamp(todayCall.confidence ?? row.call_24h_conviction ?? row.conviction_24h ?? output.conviction_24h),\n    reason: todayCall.executive_summary || row.call_24h_reason || output.reason_24h || row.reasoning_summary || output.reasoning_summary || \"\",\n    warnings: [\n      ...parseMaybeArray(row.warnings),\n      ...parseMaybeArray(output.risk_flags),\n      ...parseMaybeArray(output.warnings),\n      ...parseMaybeArray(todayCall.invalidation_risks)\n    ].filter(Boolean)\n  };\n}\n\nconst calls = Object.fromEntries(assets.map(asset => [asset, assetCall(asset)]));\nconst usd = calls.USD;\nconst trade_opportunities = [];\nconst avoid_today = [];\n\nfunction avoid(instrument, reason) {\n  avoid_today.push({ instrument, reason });\n}\n\nfor (const pair of pairs) {\n  const base = calls[pair.base];\n  const confidence = clamp(((base.conviction ?? 0) + (usd.conviction ?? 0)) / 2);\n\n  if (base.conviction === null || usd.conviction === null) {\n    avoid(pair.instrument, \"Missing 24H conviction from one or both Layer 1 assets.\");\n  } else if (base.direction === \"NO_CLEAR_BIAS\" || usd.direction === \"NO_CLEAR_BIAS\") {\n    avoid(pair.instrument, \"One or both assets have no clear 24H bias.\");\n  } else if (base.conviction < LOW_CONVICTION_THRESHOLD || usd.conviction < LOW_CONVICTION_THRESHOLD) {\n    avoid(pair.instrument, \"Mixed or low conviction 24H signals.\");\n  } else if (base.direction === usd.direction) {\n    avoid(pair.instrument, \"Both assets point in the same 24H direction, so there is no clear relative edge.\");\n  } else if (base.direction === \"BULLISH\" && usd.direction === \"BEARISH\") {\n    trade_opportunities.push({\n      instrument: pair.instrument,\n      direction: \"BUY\",\n      confidence,\n      reason: `${pair.base} is independently bullish while USD is independently bearish during today's session.`\n    });\n  } else if (base.direction === \"BEARISH\" && usd.direction === \"BULLISH\") {\n    trade_opportunities.push({\n      instrument: pair.instrument,\n      direction: \"SELL\",\n      confidence,\n      reason: `USD is independently bullish while ${pair.base} is independently bearish during today's session.`\n    });\n  } else {\n    avoid(pair.instrument, \"Mixed 24H signals.\");\n  }\n}\n\ntrade_opportunities\n  .sort((a, b) => b.confidence - a.confidence)\n  .forEach((opportunity, index) => {\n    opportunity.rank = index + 1;\n  });\n\nconst dashboard = {\n  dashboard_meta: {\n    last_updated_et: new Date().toISOString(),\n    source: \"layer_2_trade_selection_agent\"\n  },\n  trade_opportunities,\n  avoid_today\n};\n\nreturn [\n  {\n    json: {\n      file_content: JSON.stringify(dashboard, null, 2),\n      dashboard\n    }\n  }\n];"
+        },
+        "typeVersion": 2
+      },
+      {
+        "id": "layer2-write-github",
+        "name": "Write data/layer2.json to GitHub",
+        "credentials": {
+          "githubOAuth2Api": {
+            "id": "wr4dhSbWkjNonhfi",
+            "name": "GitHub account 3"
+          }
+        },
+        "type": "n8n-nodes-base.github",
+        "position": [
+          780,
+          0
+        ],
+        "parameters": {
+          "resource": "file",
+          "owner": {
+            "mode": "list",
+            "__rl": true,
+            "cachedResultName": "kevincreedycars-debug",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug",
+            "value": "kevincreedycars-debug"
+          },
+          "fileContent": "={{ $json.file_content }}",
+          "authentication": "oAuth2",
+          "filePath": "data/layer2.json",
+          "operation": "edit",
+          "repository": {
+            "mode": "list",
+            "__rl": true,
+            "cachedResultName": "trading-agent-dashboard",
+            "cachedResultUrl": "https://github.com/kevincreedycars-debug/trading-agent-dashboard",
+            "value": "trading-agent-dashboard"
+          },
+          "commitMessage": "Update layer2 dashboard data from trade selection agent"
+        },
+        "typeVersion": 1.1,
+        "webhookId": "eaf73ad3-058e-46e0-81c6-cce7d95aaf32"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Get Layer 1 Agent Outputs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Layer 1 Agent Outputs": {
+        "main": [
+          [
+            {
+              "node": "Build Layer 2 Trade Selection JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Layer 2 Trade Selection JSON": {
+        "main": [
+          [
+            {
+              "node": "Write data/layer2.json to GitHub",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Daniel Silver",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-20T12:24:25.657Z",
+        "id": 18,
+        "workflowId": "ZKGSuYcWb6EfgXBE",
+        "versionId": "dfb631c9-9b98-4ba3-b216-76ee65e324ee",
+        "event": "activated",
+        "userId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    ]
+  }
 }

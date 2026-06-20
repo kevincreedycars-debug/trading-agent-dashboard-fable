@@ -1,7 +1,8 @@
 {
-  "enabled": false,
-  "webhook_url": "",
+  "enabled": true,
+  "webhook_url": "https://silver17.app.n8n.cloud/webhook/master-orchestrator-dashboard-refresh",
   "method": "POST",
+  "request_mode": "no-cors",
   "status_url": "./data/workflow-status.json",
   "poll_interval_ms": 10000,
   "poll_after_trigger_ms": 180000

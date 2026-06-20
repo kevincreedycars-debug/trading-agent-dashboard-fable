@@ -40,6 +40,12 @@
 
 ### Pending
 
-- Add a Webhook Trigger to the live Master Orchestrator.
-- Configure `data/workflow-control.json` with the production webhook URL.
-- Update Master Orchestrator to publish final success/failure status to `data/workflow-status.json`.
+- Verify an end-to-end dashboard-triggered run.
+- Refine status reporting if n8n child workflow error payloads need richer parsing.
+
+### Changed
+
+- Added a production Webhook Trigger to the live Master Orchestrator.
+- Published the Master Orchestrator and referenced child workflows.
+- Configured `data/workflow-control.json` with the production webhook URL.
+- Added Master Orchestrator status publishing to `data/workflow-status.json`.

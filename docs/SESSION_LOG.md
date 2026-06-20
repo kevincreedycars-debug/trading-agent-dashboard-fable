@@ -55,3 +55,11 @@ The n8n API key was exposed in chat again. It should be revoked after this proof
 - Add a Webhook Trigger to the live Master Orchestrator.
 - Update `data/workflow-control.json` with the production webhook URL.
 - Add final status writing in Master Orchestrator so it updates `data/workflow-status.json`.
+
+### Follow-up Completed
+
+- Added a production Webhook Trigger to the live Master Orchestrator.
+- Configured all referenced child workflows as active/published so the Master Orchestrator can publish.
+- Added a final status builder and GitHub file writer to the Master Orchestrator.
+- Updated `data/workflow-control.json` with the production webhook URL.
+- Refreshed workflow JSON exports after live n8n changes.

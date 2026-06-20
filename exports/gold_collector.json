@@ -4,7 +4,7 @@
   "id": "0z71FpOfKdL72hgW",
   "name": "Data Collector - GOLD",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -775,7 +775,7 @@
   "nodeGroups": [],
   "pinData": {},
   "versionId": "3e6ae2fb-5d10-48c9-b360-e4f4d33281ff",
-  "activeVersionId": null,
+  "activeVersionId": "3e6ae2fb-5d10-48c9-b360-e4f4d33281ff",
   "versionCounter": 18,
   "triggerCount": 0,
   "sourceWorkflowId": null,
@@ -800,5 +800,782 @@
     }
   ],
   "tags": [],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-06-18T19:44:31.837Z",
+    "createdAt": "2026-06-18T19:44:31.837Z",
+    "versionId": "3e6ae2fb-5d10-48c9-b360-e4f4d33281ff",
+    "workflowId": "0z71FpOfKdL72hgW",
+    "nodes": [
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DGS2&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          16,
+          96
+        ],
+        "id": "bfd16f33-90e4-46f5-a323-077098a3b548",
+        "name": "HTTP Request | US 2Y Treasury Yield - FRED API"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          224,
+          96
+        ],
+        "id": "530137fa-04bb-4537-8298-b3e9264c8670",
+        "name": "HTTP Request | US 10Y Treasury Yield - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DFII10&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          240,
+          288
+        ],
+        "id": "791f0077-117b-447a-8d7e-13fdbebe2640",
+        "name": "HTTP Request | TIPS 10Y Real Yield - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=IRLTLT01DEM156N&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          32,
+          -96
+        ],
+        "id": "24fd5912-62da-48fd-a69d-66a56fd6d310",
+        "name": "HTTP Request | Germany 10Y Proxy - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=IRLTLT01GBM156N&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          224,
+          -96
+        ],
+        "id": "e6ff263c-ac94-4487-87ea-8f62bee7ba50",
+        "name": "HTTP Request | UK 10Y Proxy - FRED api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=VIXCLS&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          640,
+          -96
+        ],
+        "id": "55f761c1-eb54-4c99-9580-6bbea805f1c7",
+        "name": "HTTP Request | VIX - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DTWEXBGS&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          832,
+          -96
+        ],
+        "id": "7d852a80-ae62-4fad-bfeb-ecc28b270430",
+        "name": "HTTP Request | DXY - FRED Dollar Index - FRED API"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/XAU-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1024,
+          -96
+        ],
+        "id": "eba3eb80-b83b-4875-9dbe-8434074c69b0",
+        "name": "HTTP Request | Gold - Coinbase",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1216,
+          -96
+        ],
+        "id": "aa553499-2805-49f1-8f98-d9f704284eae",
+        "name": "HTTP Request | BTC - Coinbase"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/JPY-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          640,
+          96
+        ],
+        "id": "f56280b0-f62e-4396-b5c8-317a5f8973fa",
+        "name": "HTTP Request | USD/JPY - Coinbase"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/GBP-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          832,
+          96
+        ],
+        "id": "b10f23e1-6c51-4301-a77d-a62d9ef7abfb",
+        "name": "HTTP Request | GBP/USD - Coinbase"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/CAD-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1024,
+          96
+        ],
+        "id": "a2291e37-d8ae-4dee-8d15-82ad1132009d",
+        "name": "HTTP Request | USD/CAD - Coinbase"
+      },
+      {
+        "parameters": {
+          "url": "https://api.coinbase.com/v2/prices/AUD-USD/spot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1216,
+          96
+        ],
+        "id": "07e52ab4-9f1b-4fdb-b827-54607d3ab9da",
+        "name": "HTTP Request | AUD/USD - Coinbase"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DCOILWTICO&sort_order=desc&limit=1&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1408,
+          -96
+        ],
+        "id": "a97810c6-595e-4730-a784-1daf949c307e",
+        "name": "HTTP Request | WTI Oil - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DCOILBRENTEU&sort_order=desc&limit=1&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1600,
+          -96
+        ],
+        "id": "5a477035-2c2f-462b-86c8-2026abe83b93",
+        "name": "HTTP Request | Brent Oil - FRED Api"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=DEXUSEU&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1408,
+          96
+        ],
+        "id": "3b7d05af-7850-4024-96db-76f7fddd9ed3",
+        "name": "HTTP Request | EURUSD - FRED API"
+      },
+      {
+        "parameters": {
+          "url": "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=QQQ&apikey=2IN3KKFU7553XNYS",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1600,
+          96
+        ],
+        "id": "d72de37b-8765-4159-b32b-805520249fb7",
+        "name": "HTTP Request | NQ - Alpha Vantage"
+      },
+      {
+        "parameters": {
+          "url": "https://api.stlouisfed.org/fred/series/observations?series_id=IRLTLT01JPM156N&sort_order=desc&limit=25&file_type=json&api_key=09f21c24ed25f7a25791b32e1cee3138",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          432,
+          -96
+        ],
+        "id": "5017be7d-06c7-4b7b-9330-5fa975682bd9",
+        "name": "HTTP Request | Japan 10Y Proxy - FRED API"
+      },
+      {
+        "parameters": {
+          "jsCode": "function num(v) {\n  if (v === null || v === undefined || v === \".\" || v === \"\") return null;\n  const cleaned = String(v).replace(\"%\", \"\").replace(\",\", \".\").trim();\n  const n = Number(cleaned);\n  return Number.isFinite(n) ? n : null;\n}\n\nfunction getNode(name) {\n  try {\n    return $(name).first().json;\n  } catch (error) {\n    return null;\n  }\n}\n\nfunction getNodeAll(name) {\n  try {\n    return $(name).all().map(item => item.json);\n  } catch (error) {\n    return [];\n  }\n}\n\nfunction fredLatest(data) {\n  const obs = data?.observations || [];\n  const valid = obs.filter(o => num(o.value) !== null);\n  const latest = num(valid[0]?.value);\n\n  return {\n    latest,\n    d1: valid[1] && latest !== null ? latest - num(valid[1].value) : null,\n    d5: valid[5] && latest !== null ? latest - num(valid[5].value) : null,\n    d20: valid[20] && latest !== null ? latest - num(valid[20].value) : null,\n    date: valid[0]?.date || null\n  };\n}\n\nfunction fredPct(data) {\n  const obs = data?.observations || [];\n  const valid = obs.filter(o => num(o.value) !== null);\n  const latest = num(valid[0]?.value);\n\n  function pct(i) {\n    const old = num(valid[i]?.value);\n    if (latest === null || old === null || old === 0) return null;\n    return ((latest - old) / old) * 100;\n  }\n\n  return {\n    latest,\n    d1: pct(1),\n    d5: pct(5),\n    d20: pct(20),\n    date: valid[0]?.date || null\n  };\n}\n\nfunction bundesbankCsvLatest(data) {\n  const text = data?.data || \"\";\n  const rows = String(text)\n    .split(\"\\n\")\n    .map(line => line.trim())\n    .filter(line => /^\\d{4}-\\d{2}-\\d{2};/.test(line))\n    .map(line => {\n      const parts = line.split(\";\");\n      return { date: parts[0], value: num(parts[1]) };\n    })\n    .filter(row => row.value !== null)\n    .reverse();\n\n  const latest = rows[0]?.value ?? null;\n\n  return {\n    latest,\n    d1: rows[1] && latest !== null ? latest - rows[1].value : null,\n    d5: rows[5] && latest !== null ? latest - rows[5].value : null,\n    d20: rows[20] && latest !== null ? latest - rows[20].value : null,\n    date: rows[0]?.date || null\n  };\n}\n\nfunction coinbasePrice(data) {\n  return num(data?.data?.amount);\n}\n\nfunction alphaQuote(data) {\n  const q = data?.[\"Global Quote\"] || {};\n  return {\n    price: num(q[\"05. price\"]),\n    d1_pct: num(q[\"10. change percent\"])\n  };\n}\n\nfunction pctChange(current, old) {\n  current = num(current);\n  old = num(old);\n  if (current === null || old === null || old === 0) return null;\n  return ((current - old) / old) * 100;\n}\n\nfunction bps(v) {\n  return v !== null && v !== undefined ? v * 100 : null;\n}\n\nfunction spread(a, b) {\n  return a !== null && b !== null ? a - b : null;\n}\n\nfunction spreadD5(a, b) {\n  if (a?.latest === null || b?.latest === null || a?.d5 === null || b?.d5 === null) return null;\n  const spreadNow = a.latest - b.latest;\n  const spread5dAgo = (a.latest - a.d5) - (b.latest - b.d5);\n  return (spreadNow - spread5dAgo) * 100;\n}\n\nfunction rawText(data) {\n  if (!data) return \"\";\n  if (typeof data === \"string\") return data;\n  return data.data || data.body || data.html || JSON.stringify(data);\n}\n\nfunction parseFearGreed(data) {\n  return num(data?.data?.[0]?.value);\n}\n\nfunction parseCoinGeckoGlobal(data) {\n  const d = data?.data || {};\n  return {\n    btc_dominance: num(d.market_cap_percentage?.btc),\n    total_crypto_market_cap: num(d.total_market_cap?.usd)\n  };\n}\n\nfunction parseFarsideNumber(v) {\n  if (v === null || v === undefined) return null;\n  let s = String(v).trim();\n  if (!s || s === \"-\" || s === \"–\") return null;\n\n  let negative = false;\n  if (s.startsWith(\"(\") && s.endsWith(\")\")) {\n    negative = true;\n    s = s.slice(1, -1);\n  }\n\n  s = s.replace(/,/g, \"\");\n  const n = Number(s);\n  if (!Number.isFinite(n)) return null;\n  return negative ? -n : n;\n}\n\nfunction parseFarsideEtfFlows(data) {\n  const text = rawText(data)\n    .replace(/<[^>]*>/g, \"\\n\")\n    .replace(/&nbsp;/g, \" \")\n    .replace(/&#8211;/g, \"-\")\n    .replace(/&amp;/g, \"&\");\n\n  const tokens = text\n    .split(/\\n+/)\n    .map(x => x.trim())\n    .filter(Boolean);\n\n  const rows = [];\n\n  for (let i = 0; i < tokens.length; i++) {\n    if (!/^\\d{1,2}\\s+[A-Za-z]{3}\\s+20\\d{2}$/.test(tokens[i])) continue;\n\n    const date = tokens[i];\n    const vals = [];\n\n    for (let j = i + 1; j < tokens.length; j++) {\n      if (/^\\d{1,2}\\s+[A-Za-z]{3}\\s+20\\d{2}$/.test(tokens[j])) break;\n      const parsed = parseFarsideNumber(tokens[j]);\n      if (parsed !== null) vals.push(parsed);\n    }\n\n    if (vals.length) {\n      const totalUsdm = vals[vals.length - 1];\n      rows.push({\n        date,\n        total_usdm: totalUsdm,\n        total_usd: totalUsdm * 1000000\n      });\n    }\n  }\n\n  const valid = rows.filter(r => Number.isFinite(r.total_usd));\n\n  return {\n    latest: valid[0]?.total_usd ?? null,\n    d5: valid.length ? valid.slice(0, 5).reduce((sum, r) => sum + r.total_usd, 0) : null,\n    d20: valid.length ? valid.slice(0, 20).reduce((sum, r) => sum + r.total_usd, 0) : null,\n    rows: valid.slice(0, 20)\n  };\n}\n\nfunction deriveInflationSignal(latestUsEvent, fedBias) {\n  const eventName = String(latestUsEvent?.event || \"\").toLowerCase();\n  const surprise = String(latestUsEvent?.surprise || \"\").toLowerCase();\n  const usdSignal = String(latestUsEvent?.usd_signal || \"\").toUpperCase();\n\n  const isInflationEvent =\n    eventName.includes(\"cpi\") ||\n    eventName.includes(\"inflation\") ||\n    eventName.includes(\"pce\") ||\n    eventName.includes(\"prices\");\n\n  if (!isInflationEvent) return \"neutral\";\n\n  if ((surprise === \"positive\" || usdSignal === \"BULLISH\") && fedBias === \"dovish\") {\n    return \"hot_inflation_dovish_expectations\";\n  }\n\n  if (surprise === \"negative\" || usdSignal === \"BEARISH\") {\n    return \"disinflation\";\n  }\n\n  if (surprise === \"positive\" || usdSignal === \"BULLISH\") {\n    return \"hot_inflation_hawkish_risk\";\n  }\n\n  return \"neutral\";\n}\n\nfunction deriveRiskHeadlineContext(vixLevel, latestUsEvent) {\n  const eventName = String(latestUsEvent?.event || \"\").toLowerCase();\n\n  if (vixLevel !== null && vixLevel > 25) return \"financial_stress\";\n  if (\n    eventName.includes(\"war\") ||\n    eventName.includes(\"geopolitical\") ||\n    eventName.includes(\"conflict\") ||\n    eventName.includes(\"sanction\")\n  ) {\n    return \"geopolitical_stress\";\n  }\n\n  return \"calm\";\n}\n\nfunction deriveGrowthRegime(latestUsEvent, equitiesRegime) {\n  const eventName = String(latestUsEvent?.event || \"\").toLowerCase();\n  const usdSignal = String(latestUsEvent?.usd_signal || \"\").toUpperCase();\n\n  const isGrowthEvent =\n    eventName.includes(\"gdp\") ||\n    eventName.includes(\"pmi\") ||\n    eventName.includes(\"ism\") ||\n    eventName.includes(\"production\") ||\n    eventName.includes(\"retail\") ||\n    eventName.includes(\"manufacturing\") ||\n    eventName.includes(\"housing\");\n\n  if (isGrowthEvent && usdSignal === \"BULLISH\") return \"growth_improving\";\n  if (isGrowthEvent && usdSignal === \"BEARISH\") return \"growth_weakening\";\n  if (equitiesRegime === \"risk_on\") return \"liquidity_expansion\";\n  if (equitiesRegime === \"risk_off\") return \"liquidity_contraction\";\n\n  return \"neutral\";\n}\n\nconst now = new Date();\nconst today = now.toISOString().slice(0, 10);\n\nconst previousRows = getNodeAll(\"Supabase | Get Previous Market Snapshots\")\n  .filter(r => r.snapshot_date && r.run_time_et)\n  .filter(r => r.snapshot_date < today)\n  .sort((a, b) => new Date(b.run_time_et) - new Date(a.run_time_et));\n\nconst uniquePreviousRows = [];\nconst seenDates = new Set();\n\nfor (const row of previousRows) {\n  if (!seenDates.has(row.snapshot_date)) {\n    uniquePreviousRows.push(row);\n    seenDates.add(row.snapshot_date);\n  }\n}\n\nfunction historyPct(current, field, index) {\n  const oldRow = uniquePreviousRows[index];\n  return oldRow ? pctChange(current, oldRow[field]) : null;\n}\n\nconst us2yRaw = getNode(\"HTTP Request | US 2Y Treasury Yield - FRED API\");\nconst us10yRaw = getNode(\"HTTP Request | US 10Y Treasury Yield - FRED Api\");\nconst tips10yRaw = getNode(\"HTTP Request | TIPS 10Y Real Yield - FRED Api\");\nconst de2yRaw = getNode(\"HTTP Request | Germany 2Y Yield\");\nconst de10yRaw = getNode(\"HTTP Request | Germany 10Y Proxy - FRED Api\");\nconst uk10yRaw = getNode(\"HTTP Request | UK 10Y Proxy - FRED api\");\nconst jp10yRaw = getNode(\"HTTP Request | Japan 10Y Proxy - FRED API\");\n\nconst vixRaw = getNode(\"HTTP Request | VIX - FRED Api\");\nconst dxyRaw = getNode(\"HTTP Request | DXY - FRED Dollar Index - FRED API\");\nconst goldRaw = getNode(\"HTTP Request | Gold - Coinbase\");\nconst btcRaw = getNode(\"HTTP Request | BTC - Coinbase\");\nconst wtiRaw = getNode(\"HTTP Request | WTI Oil - FRED Api\");\nconst brentRaw = getNode(\"HTTP Request | Brent Oil - FRED Api\");\n\nconst jpyUsdRaw = getNode(\"HTTP Request | USD/JPY - Coinbase\");\nconst gbpUsdRaw = getNode(\"HTTP Request | GBP/USD - Coinbase\");\nconst cadUsdRaw = getNode(\"HTTP Request | USD/CAD - Coinbase\");\nconst audUsdRaw = getNode(\"HTTP Request | AUD/USD - Coinbase\");\nconst eurusdRaw = getNode(\"HTTP Request | EURUSD - FRED API\");\nconst nqRaw = getNode(\"HTTP Request | NQ - Alpha Vantage\");\n\nconst fearGreedRaw = getNode(\"HTTP Request | Crypto Fear Greed\");\nconst coinGeckoRaw = getNode(\"HTTP Request | BTC Market Data - CoinGecko\");\nconst btcEtfRaw = getNode(\"HTTP Request | BTC ETF Flows - Farside\");\n\nconst usEcoRaw = getNode(\"Code | Derive US Eco Inputs\");\n\nconst latestUsEvent = usEcoRaw?.latest_us_event || null;\nconst upcomingEvents = usEcoRaw?.upcoming_us_events || [];\nconst fedBias = usEcoRaw?.fed_bias || \"unknown\";\n\nconst us2y = fredLatest(us2yRaw);\nconst us10y = fredLatest(us10yRaw);\nconst tips10y = fredLatest(tips10yRaw);\nconst de2y = bundesbankCsvLatest(de2yRaw);\nconst de10y = fredLatest(de10yRaw);\nconst uk10y = fredLatest(uk10yRaw);\nconst jp10y = fredLatest(jp10yRaw);\nconst vix = fredLatest(vixRaw);\nconst dxy = fredPct(dxyRaw);\n\nconst goldPrice = coinbasePrice(goldRaw);\nconst btcPrice = coinbasePrice(btcRaw);\n\nconst goldD1Pct = historyPct(goldPrice, \"gold_price\", 0) ?? 0;\nconst goldD5Pct = historyPct(goldPrice, \"gold_price\", 4) ?? goldD1Pct;\nconst goldD20Pct = historyPct(goldPrice, \"gold_price\", 19) ?? goldD5Pct;\n\nconst btcD1Pct = historyPct(btcPrice, \"btc_price\", 0) ?? 0;\nconst btcD5Pct = historyPct(btcPrice, \"btc_price\", 4) ?? btcD1Pct;\nconst btcD20Pct = historyPct(btcPrice, \"btc_price\", 19) ?? btcD5Pct;\n\nconst wti = fredPct(wtiRaw);\nconst brent = fredPct(brentRaw);\n\nconst jpyUsd = coinbasePrice(jpyUsdRaw);\nconst gbpUsd = coinbasePrice(gbpUsdRaw);\nconst cadUsd = coinbasePrice(cadUsdRaw);\nconst audUsd = coinbasePrice(audUsdRaw);\n\nconst eurusd = fredPct(eurusdRaw);\nconst nq = alphaQuote(nqRaw);\n\nconst nqD5Pct = historyPct(nq.price, \"nq_price\", 4) ?? nq.d1_pct;\nconst nqD20Pct = historyPct(nq.price, \"nq_price\", 19) ?? nqD5Pct;\n\nconst fearGreed = parseFearGreed(fearGreedRaw);\nconst cryptoGlobal = parseCoinGeckoGlobal(coinGeckoRaw);\nconst etfFlows = parseFarsideEtfFlows(btcEtfRaw);\n\nconst btcDominance = cryptoGlobal.btc_dominance;\nconst totalCryptoMarketCap = cryptoGlobal.total_crypto_market_cap;\n\nconst btcDominanceD5 = historyPct(btcDominance, \"btc_dominance\", 4);\nconst btcDominanceD20 = historyPct(btcDominance, \"btc_dominance\", 19);\n\nconst totalCryptoMarketCapD5 = historyPct(totalCryptoMarketCap, \"total_crypto_market_cap\", 4);\nconst totalCryptoMarketCapD20 = historyPct(totalCryptoMarketCap, \"total_crypto_market_cap\", 19);\n\nconst usDe2ySpread = spread(us2y.latest, de2y.latest);\nconst usDe2ySpreadD5Bps = spreadD5(us2y, de2y);\nconst usDe10ySpread = spread(us10y.latest, de10y.latest);\nconst usJp10ySpread = spread(us10y.latest, jp10y.latest);\n\nconst equitiesRegime =\n  vix.latest !== null && vix.latest < 16 ? \"risk_on\" :\n  vix.latest !== null && vix.latest > 25 ? \"risk_off\" :\n  \"neutral\";\n\nconst inflationSignal = deriveInflationSignal(latestUsEvent, fedBias);\nconst riskHeadlineContext = deriveRiskHeadlineContext(vix.latest, latestUsEvent);\nconst growthRegime = deriveGrowthRegime(latestUsEvent, equitiesRegime);\n\nconst missing = [];\n\nfunction checkMissing(label, value) {\n  if (value === null || value === undefined || value === \"unknown\") missing.push(label);\n}\n\ncheckMissing(\"vix_level\", vix.latest);\ncheckMissing(\"dxy_level\", dxy.latest);\ncheckMissing(\"us_2y_yield\", us2y.latest);\ncheckMissing(\"us_10y_yield\", us10y.latest);\ncheckMissing(\"us_10y_real_yield\", tips10y.latest);\ncheckMissing(\"gold_price\", goldPrice);\ncheckMissing(\"gold_d1_pct\", goldD1Pct);\ncheckMissing(\"gold_d5_pct\", goldD5Pct);\ncheckMissing(\"latest_us_event\", latestUsEvent);\ncheckMissing(\"fed_bias\", fedBias);\ncheckMissing(\"inflation_signal\", inflationSignal);\ncheckMissing(\"risk_headline_context\", riskHeadlineContext);\ncheckMissing(\"growth_regime\", growthRegime);\n\nconst row = {\n  snapshot_date: today,\n  run_time_et: now.toISOString(),\n  source_status: missing.length ? \"partial\" : \"collected\",\n  collector_version: \"gold_v2_economic_events_weighted_inputs\",\n\n  vix_level: vix.latest,\n  vix_d1: vix.d1,\n  vix_d5: vix.d5,\n\n  dxy_level: dxy.latest,\n  dxy_d1: dxy.d1,\n  dxy_d5: dxy.d5,\n  dxy_d20: dxy.d20,\n\n  us_2y_yield: us2y.latest,\n  us_2y_d5_bps: bps(us2y.d5),\n  us_2y_d20_bps: bps(us2y.d20),\n\n  de_2y_yield: de2y.latest,\n  de_2y_d5_bps: bps(de2y.d5),\n\n  us_de_2y_spread: usDe2ySpread,\n  us_de_2y_spread_d5_bps: usDe2ySpreadD5Bps,\n\n  us_10y_yield: us10y.latest,\n  us_10y_d5_bps: bps(us10y.d5),\n\n  us_10y_real_yield: tips10y.latest,\n  us_10y_real_yield_d5_bps: bps(tips10y.d5),\n  us_10y_real_yield_d20_bps: bps(tips10y.d20),\n\n  gold_price: goldPrice,\n  gold_d1_pct: goldD1Pct,\n  gold_d5_pct: goldD5Pct,\n  gold_d20_pct: goldD20Pct,\n\n  nq_price: nq.price,\n  nq_d1_pct: nq.d1_pct,\n  nq_d5_pct: nqD5Pct,\n  nq_d20_pct: nqD20Pct,\n\n  btc_price: btcPrice,\n  btc_d1_pct: btcD1Pct,\n  btc_d5_pct: btcD5Pct,\n  btc_d20_pct: btcD20Pct,\n\n  btc_dominance: btcDominance,\n  btc_dominance_d5: btcDominanceD5,\n  btc_dominance_d20: btcDominanceD20,\n\n  crypto_fear_greed: fearGreed,\n\n  total_crypto_market_cap: totalCryptoMarketCap,\n  total_crypto_market_cap_d5_pct: totalCryptoMarketCapD5,\n  total_crypto_market_cap_d20_pct: totalCryptoMarketCapD20,\n\n  btc_etf_net_flow_1d_usd: etfFlows.latest,\n  btc_etf_net_flow_5d_usd: etfFlows.d5,\n  btc_etf_net_flow_20d_usd: etfFlows.d20,\n\n  stablecoin_supply: null,\n  stablecoin_supply_d5_pct: null,\n  stablecoin_supply_d20_pct: null,\n\n  spx_d1_pct: null,\n  equities_regime: equitiesRegime,\n\n  latest_us_event: latestUsEvent,\n  latest_ez_event: null,\n  upcoming_events: upcomingEvents,\n\n  fed_bias: fedBias,\n  ecb_bias: null,\n\nglobal_growth_regime: growthRegime,\n\n  ez_stress_flag: null,\n  geopolitical_risk_flag: riskHeadlineContext === \"geopolitical_stress\",\n\n  data_quality: {\n    collector_status: missing.length ? \"partial\" : \"complete\",\n    missing,\n    history_rows_used: uniquePreviousRows.length,\n    eco_events_found: usEcoRaw?.data_quality?.deduped_us_events_found || 0,\n    completed_us_events_found: usEcoRaw?.data_quality?.completed_us_events_found || 0,\n    upcoming_events_found: upcomingEvents.length,\n    fed_bias_model_status: usEcoRaw ? \"connected\" : \"missing\",\n    btc_etf_rows_found: etfFlows.rows?.length || 0,\n    notes: [\n      \"GOLD Layer 1 may read this row, but must not read other agent outputs.\",\n      \"Gold d1/d5/d20 deltas are calculated from previous Supabase market_snapshots.\",\n      \"Gold history deltas fall back to shorter lookbacks until enough historical market_snapshots exist.\",\n      \"latest_us_event, upcoming_events and fed_bias are sourced from economic_events via Code | Derive US Eco Inputs.\",\n      \"Real yields, DXY, Fed bias and US 2Y trend are the primary GOLD directional inputs.\",\n      \"inflation_signal, risk_headline_context and growth_regime are written as top-level GOLD fields for the agent.\"\n    ]\n  },\n\n  raw_payload: {\n    previous_snapshot_dates_used: uniquePreviousRows.map(r => r.snapshot_date),\n    us_eco_inputs: usEcoRaw,\n    us2y,\n    us10y,\n    tips10y,\n    de2y,\n    de10y,\n    uk10y,\n    jp10y,\n    vix,\n    dxy,\n    goldPrice,\n    btcPrice,\n    wti,\n    brent,\n    jpyUsd,\n    gbpUsd,\n    cadUsd,\n    audUsd,\n    eurusd,\n    nq,\n    crypto_fear_greed_raw: fearGreedRaw,\n    crypto_global: cryptoGlobal,\n    btc_etf_flows: etfFlows,\n    proxy_spreads: {\n      us_de_2y_spread: usDe2ySpread,\n      us_de_2y_spread_d5_bps: usDe2ySpreadD5Bps,\n      us_de_10y_spread: usDe10ySpread,\n      us_jp_10y_spread: usJp10ySpread\n    }\n  }\n};\n\nreturn [{ json: row }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          912,
+          704
+        ],
+        "id": "667f8e37-4024-4740-9451-7f6892e292ee",
+        "name": "Normalise Market Snapshot"
+      },
+      {
+        "parameters": {
+          "tableId": "market_snapshots",
+          "dataToSend": "autoMapInputData"
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1104,
+          704
+        ],
+        "id": "708eefe8-8631-4a19-8f38-c3506ae8c649",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://api.statistiken.bundesbank.de/rest/data/BBSSY/D.REN.EUR.A610.000000WT0202.A?format=csv",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          400,
+          288
+        ],
+        "id": "4247d9fb-8570-4e35-8489-aa385aa8715d",
+        "name": "HTTP Request | Germany 2Y Yield"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "market_snapshots",
+          "limit": 25
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          688,
+          432
+        ],
+        "id": "a0c3c1ce-c032-454c-a801-49f937295096",
+        "name": "Supabase | Get Previous Market Snapshots",
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://finnhub.io/api/v1/calendar/economic?from={{ new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0] }}&to={{ new Date().toISOString().split('T')[0] }}&token=d808mnpr01qq9ln30cd0d808mnpr01qq9ln30cdg",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -656,
+          928
+        ],
+        "id": "3fb3da24-ea6b-42b2-b628-027be81119ed",
+        "name": "HTTP Request | Eco Calendar Recent - Finnhub",
+        "disabled": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "url": "=https://finnhub.io/api/v1/calendar/economic?from={{ new Date().toISOString().split('T')[0] }}&to={{ new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0] }}&token=d808mnpr01qq9ln30cd0d808mnpr01qq9ln30cdg",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -464,
+          928
+        ],
+        "id": "be7cc761-0876-4d05-8675-6f07aa4d54e7",
+        "name": "HTTP Request | Eco Calendar Upcoming - Finnhub",
+        "disabled": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const recent   = $('HTTP Request | Eco Calendar Recent - Finnhub').first().json.economicCalendar;\nconst upcoming = $('HTTP Request | Eco Calendar Upcoming - Finnhub').first().json.economicCalendar;\n\n// Tier-1 US indicators with sigma values for surprise normalisation\nconst TIER1 = {\n  'Non Farm Payrolls':          { key: 'NFP',           sigma: 80 },\n  'Average Hourly Earnings MoM':{ key: 'AHE_MOM',       sigma: 0.1 },\n  'Unemployment Rate':          { key: 'UNEMPLOYMENT',  sigma: 0.15 },\n  'Core Inflation Rate MoM':    { key: 'CORE_CPI_MOM',  sigma: 0.1 },\n  'Inflation Rate MoM':         { key: 'CPI_MOM',       sigma: 0.15 },\n  'ISM Manufacturing PMI':      { key: 'ISM_MFG',       sigma: 2.5 },\n  'ISM Services PMI':           { key: 'ISM_SVCS',      sigma: 2.5 },\n  'GDP Growth Rate QoQ Adv':    { key: 'GDP_ADV',       sigma: 0.5 },\n  'ADP Employment Change':      { key: 'ADP',           sigma: 50 },\n  'Initial Jobless Claims':     { key: 'JOBLESS_CLAIMS',sigma: 15 },\n  'JOLTs Job Openings':         { key: 'JOLTS',         sigma: 0.3 }\n};\n\n// Filter recent US high/medium impact events with actuals\nconst recentUS = (recent || []).filter(e =>\n  e.country === 'US' &&\n  ['high','medium'].includes(e.impact) &&\n  e.actual !== null\n);\n\n// Filter upcoming US high/medium impact events without actuals\nconst upcomingUS = (upcoming || []).filter(e =>\n  e.country === 'US' &&\n  ['high','medium'].includes(e.impact) &&\n  e.actual === null\n);\n\n// Compute surprise scores for tier-1 recent prints\nconst surprises = [];\nfor (const event of recentUS) {\n  const tier1 = TIER1[event.event];\n  if (!tier1) continue;\n  if (event.actual === null || event.estimate === null) continue;\n  const surprise = (event.actual - event.estimate) / tier1.sigma;\n  surprises.push({\n    key:       tier1.key,\n    event:     event.event,\n    date:      event.time.split(' ')[0],\n    actual:    event.actual,\n    estimate:  event.estimate,\n    surprise:  Math.round(surprise * 100) / 100,\n    direction: surprise > 0 ? 'BEAT' : surprise < 0 ? 'MISS' : 'IN LINE'\n  });\n}\n\n// Format upcoming calendar\nconst calendar = upcomingUS.map(e => ({\n  event:    e.event,\n  time:     e.time,\n  estimate: e.estimate,\n  impact:   e.impact\n}));\n\n// Format recent all US high/medium events (not just tier-1) for prompt context\nconst recentSummary = recentUS.slice(-20).map(e => ({\n  event:    e.event,\n  time:     e.time.split(' ')[0],\n  actual:   e.actual,\n  estimate: e.estimate,\n  prev:     e.prev,\n  impact:   e.impact\n}));\n\nreturn [{\n  json: {\n    surprises,\n    calendar,\n    recentSummary\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -256,
+          928
+        ],
+        "id": "e085f056-d8b5-4c23-8b7d-9acadd6bf8e0",
+        "name": "Code | Process Eco Data",
+        "disabled": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const eco = $('Code | Process Eco Data').first().json;\n\nconst surprises = eco.surprises || [];\n\nlet score = 0;\nconst reasons = [];\n\nfor (const s of surprises) {\n  if (s.direction === \"BEAT\") {\n    score += 1;\n    reasons.push(`${s.event} beat forecast`);\n  }\n\n  if (s.direction === \"MISS\") {\n    score -= 1;\n    reasons.push(`${s.event} missed forecast`);\n  }\n}\n\nlet fed_bias = \"neutral\";\n\nif (score >= 2) fed_bias = \"hawkish\";\nif (score <= -2) fed_bias = \"dovish\";\n\nreturn [\n  {\n    json: {\n      fed_bias,\n      fed_bias_score: score,\n      fed_bias_reasons: reasons.slice(0, 5)\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -48,
+          928
+        ],
+        "id": "5fa46fd1-cbb9-41d7-a940-e3ee38ef6d55",
+        "name": "Code | Derive Fed Bias",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "jsCode": "function impactRank(impact) {\n  const s = String(impact || '').toLowerCase();\n  if (s.includes('high')) return 3;\n  if (s.includes('medium')) return 2;\n  if (s.includes('low')) return 1;\n  return 0;\n}\n\nfunction priority(name) {\n  const n = String(name || '').toLowerCase();\n\n  if (n.includes('non farm') || n.includes('nfp')) return 100;\n  if (n.includes('cpi') || n.includes('inflation')) return 98;\n  if (n.includes('fomc') || n.includes('fed')) return 96;\n  if (n.includes('ism')) return 94;\n  if (n.includes('pmi')) return 90;\n  if (n.includes('gdp')) return 88;\n  if (n.includes('unemployment')) return 85;\n  if (n.includes('average hourly')) return 82;\n  if (n.includes('jobless')) return 78;\n  if (n.includes('jolts')) return 75;\n  if (n.includes('retail sales')) return 72;\n\n  return 50;\n}\n\nfunction eventTimestamp(e) {\n  const date = e.event_date || e.date || '';\n  const time = e.event_time_text || e.time || '00:00';\n  const cleanTime = String(time).replace(/am/i, ' AM').replace(/pm/i, ' PM');\n  const parsed = new Date(`${date} ${cleanTime}`);\n  return Number.isFinite(parsed.getTime()) ? parsed.getTime() : 0;\n}\n\nfunction eventKey(e) {\n  return [\n    e.event_date || '',\n    e.event_time_text || '',\n    e.currency || '',\n    e.event_name || ''\n  ].join('|').toLowerCase();\n}\n\nconst rawEvents = $input.all().map(i => i.json);\n\nconst seen = new Set();\nconst events = [];\n\nfor (const e of rawEvents) {\n  const key = eventKey(e);\n  if (seen.has(key)) continue;\n  seen.add(key);\n  events.push(e);\n}\n\nconst completed = events\n  .filter(e => e.actual !== null && e.actual !== undefined && e.actual !== '')\n  .map(e => ({\n    event: e.event_name,\n    actual: e.actual,\n    forecast: e.forecast,\n    previous: e.previous,\n    surprise: e.surprise_direction,\n    usd_signal: e.currency_signal,\n    surprise_score: e.surprise_score ?? null,\n    date: e.event_date,\n    time: e.event_time_text,\n    impact: e.impact,\n    priority: priority(e.event_name),\n    impact_rank: impactRank(e.impact),\n    raw: e,\n    timestamp: eventTimestamp(e)\n  }))\n  .sort((a, b) => {\n    const timeDiff = b.timestamp - a.timestamp;\n    if (timeDiff !== 0) return timeDiff;\n\n    const impactDiff = b.impact_rank - a.impact_rank;\n    if (impactDiff !== 0) return impactDiff;\n\n    return b.priority - a.priority;\n  });\n\nconst upcoming_us_events = events\n  .filter(e => e.actual === null || e.actual === undefined || e.actual === '')\n  .map(e => ({\n    event: e.event_name,\n    forecast: e.forecast,\n    previous: e.previous,\n    date: e.event_date,\n    time: e.event_time_text,\n    impact: e.impact,\n    priority: priority(e.event_name),\n    impact_rank: impactRank(e.impact),\n    timestamp: eventTimestamp(e)\n  }))\n  .sort((a, b) => {\n    const timeDiff = a.timestamp - b.timestamp;\n    if (timeDiff !== 0) return timeDiff;\n\n    const impactDiff = b.impact_rank - a.impact_rank;\n    if (impactDiff !== 0) return impactDiff;\n\n    return b.priority - a.priority;\n  })\n  .slice(0, 10);\n\nconst latest_us_event = completed[0] || null;\n\nlet fed_bias_score = 0;\nconst fed_bias_reasons = [];\n\nfor (const e of completed.slice(0, 8)) {\n  const signal = String(e.usd_signal || '').toUpperCase();\n  const weight = e.impact_rank >= 3 ? 2 : 1;\n\n  if (signal === 'BULLISH') {\n    fed_bias_score += weight;\n    fed_bias_reasons.push(`${e.event} beat forecast`);\n  }\n\n  if (signal === 'BEARISH') {\n    fed_bias_score -= weight;\n    fed_bias_reasons.push(`${e.event} missed forecast`);\n  }\n}\n\nlet fed_bias = 'neutral';\nif (fed_bias_score >= 2) fed_bias = 'hawkish';\nif (fed_bias_score <= -2) fed_bias = 'dovish';\n\nreturn [{\n  json: {\n    latest_us_event,\n    upcoming_us_events,\n    fed_bias,\n    fed_bias_score,\n    fed_bias_reasons,\n    recentUsSummary: completed,\n    usCalendar: upcoming_us_events,\n    source: 'economic_events',\n    data_quality: {\n      raw_us_events_found: rawEvents.length,\n      deduped_us_events_found: events.length,\n      completed_us_events_found: completed.length,\n      upcoming_us_events_found: upcoming_us_events.length\n    }\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1232,
+          416
+        ],
+        "id": "fda32cfe-1b4c-4acf-a11b-b3e51b70498a",
+        "name": "Code | Derive US Eco Inputs"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "economic_events",
+          "returnAll": true,
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "event_date",
+                "condition": "eq",
+                "keyValue": "={{ new Date().toISOString().split('T')[0] }}\n"
+              },
+              {
+                "keyName": "currency",
+                "condition": "eq",
+                "keyValue": "USD"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          992,
+          416
+        ],
+        "id": "6db7c2a5-909a-44b8-8b2e-dd41775c20fc",
+        "name": "Supabase | Get Today US Economic Events",
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "trM35g1QCTOgQp4K",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -224,
+          96
+        ],
+        "id": "67628769-b955-457e-864a-03d5c4a5760a",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "HTTP Request | US 2Y Treasury Yield - FRED API": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | US 10Y Treasury Yield - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | US 10Y Treasury Yield - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | TIPS 10Y Real Yield - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | TIPS 10Y Real Yield - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Germany 2Y Yield",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Germany 10Y Proxy - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | UK 10Y Proxy - FRED api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | UK 10Y Proxy - FRED api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Japan 10Y Proxy - FRED API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | VIX - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | DXY - FRED Dollar Index - FRED API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | DXY - FRED Dollar Index - FRED API": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Gold - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Gold - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | BTC - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | BTC - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | WTI Oil - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | USD/JPY - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | GBP/USD - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | GBP/USD - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | USD/CAD - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | USD/CAD - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | AUD/USD - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | AUD/USD - Coinbase": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | EURUSD - FRED API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | WTI Oil - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Brent Oil - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Brent Oil - FRED Api": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | USD/JPY - Coinbase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | EURUSD - FRED API": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | NQ - Alpha Vantage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Japan 10Y Proxy - FRED API": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | VIX - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | NQ - Alpha Vantage": {
+        "main": [
+          [
+            {
+              "node": "Supabase | Get Previous Market Snapshots",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalise Market Snapshot": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Germany 2Y Yield": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Germany 10Y Proxy - FRED Api",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase | Get Previous Market Snapshots": {
+        "main": [
+          [
+            {
+              "node": "Supabase | Get Today US Economic Events",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Eco Calendar Recent - Finnhub": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | Eco Calendar Upcoming - Finnhub",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request | Eco Calendar Upcoming - Finnhub": {
+        "main": [
+          [
+            {
+              "node": "Code | Process Eco Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code | Process Eco Data": {
+        "main": [
+          [
+            {
+              "node": "Code | Derive Fed Bias",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code | Derive Fed Bias": {
+        "main": [
+          []
+        ]
+      },
+      "Supabase | Get Today US Economic Events": {
+        "main": [
+          [
+            {
+              "node": "Code | Derive US Eco Inputs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code | Derive US Eco Inputs": {
+        "main": [
+          [
+            {
+              "node": "Normalise Market Snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request | US 2Y Treasury Yield - FRED API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Daniel Silver",
+    "name": null,
+    "description": null,
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-20T12:24:23.949Z",
+        "id": 10,
+        "workflowId": "0z71FpOfKdL72hgW",
+        "versionId": "3e6ae2fb-5d10-48c9-b360-e4f4d33281ff",
+        "event": "activated",
+        "userId": "eb4fba3e-5170-481b-abc5-ce65776c1113"
+      }
+    ]
+  }
 }

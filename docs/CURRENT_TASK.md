@@ -39,6 +39,9 @@ In progress.
 - Dashboard workflow status and error report rendering added
 - `data/workflow-control.json` added for non-secret webhook configuration
 - `data/workflow-status.json` added for run status published by n8n
+- Live Master Orchestrator configured with a production Webhook Trigger
+- Referenced child workflows published so the Master Orchestrator webhook can run
+- Master Orchestrator configured to publish run status to `data/workflow-status.json`
 
 ## n8n Workspace
 
@@ -56,16 +59,16 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Add a Webhook Trigger to the live Master Orchestrator.
-2. Configure `data/workflow-control.json` with the production webhook URL.
-3. Add Master Orchestrator final success/failure status writing to `data/workflow-status.json`.
-4. Fix EUR parser.
-5. Fix Eco Events duplicate insert.
-6. Run the Master Orchestrator from the dashboard and verify the error report.
+1. Run the Master Orchestrator from the dashboard and verify the status/error report.
+2. Fix EUR parser.
+3. Fix Eco Events duplicate insert.
+4. Refine Master Orchestrator status parsing if needed after the first failed run payload is observed.
 
 ## Current Blocker
 
-The dashboard trigger UI is built, but the live Master Orchestrator still needs a production Webhook Trigger and status writer.
+No current repository-side blocker.
+
+The next risk is runtime validation: a full dashboard-triggered run may expose existing workflow bugs, especially Eco Events duplicate inserts or EUR parser object/string handling.
 
 The n8n API key was supplied in chat and must not be committed to GitHub.
 
