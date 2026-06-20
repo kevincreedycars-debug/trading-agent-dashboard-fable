@@ -6,6 +6,8 @@ Last updated: 2026-06-20
 
 The Layer 1 trading-agent platform is largely complete. The project is now moving from individual agent construction into AI-assisted development, project memory, workflow orchestration, and direct integration between ChatGPT/Codex, GitHub, and n8n.
 
+The dashboard now distinguishes evidence split from headline call quality by deriving a separate confidence score from directional dominance, participation, and net edge, then applying penalties when the live data exposes missing-input or risk conditions.
+
 ## Current Architecture
 
 ```text
@@ -90,6 +92,8 @@ Dashboard Writer
 ```
 
 Every workflow has been converted to use `Execute Sub-workflow Trigger`, allowing the master workflow to call workflows sequentially.
+
+Runtime evidence in `data/workflow-status.json` shows a successful Master Orchestrator run on 2026-06-20, so dashboard-side validation has at least one successful published status payload available.
 
 ## Known Current Issues
 
@@ -205,7 +209,7 @@ Both should eventually be able to inspect GitHub and n8n without manual copy/pas
 
 Codex startup is now governed by `CODEX_STARTUP.md`.
 
-Every Codex session must read the startup file and the project memory documents before making edits, then summarise current state, active task, recently completed work, and planned next steps.
+Every Codex session must use `CODEX_STARTUP.md` as the single startup entry point, always read the core memory files first, selectively load additional documents only when relevant, then inspect repository and runtime state before editing.
 
 The memory documents are authoritative between sessions and should be updated only when their contents actually change.
 

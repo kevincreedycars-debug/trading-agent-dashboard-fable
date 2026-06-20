@@ -76,7 +76,7 @@
     <section class="rules-strip">
       <div><strong>Layer 1:</strong> Independent raw calls only</div>
       <div><strong>No contamination:</strong> agents cannot read each other</div>
-      <div><strong>Conviction:</strong> numeric percentage weighting</div>
+      <div><strong>Confidence:</strong> headline call quality score</div>
       <div><strong>Primary run:</strong> 07:00 ET</div>
     </section>
 
@@ -106,6 +106,24 @@
 
       <section id="overviewStats" class="overview-stats"></section>
       <section id="layer1Grid" class="agent-grid"></section>
+      <section class="detail-panel overview-legend-panel" aria-label="Overview definitions legend">
+        <div class="panel-head compact-panel-head">
+          <div>
+            <p class="eyebrow">Overview Definitions</p>
+            <h3>What the numbers mean</h3>
+          </div>
+        </div>
+        <div class="legend-grid">
+          <div class="legend-item"><strong>Direction</strong><span>The model's current directional call for the asset and timeframe.</span></div>
+          <div class="legend-item"><strong>Confidence</strong><span>The headline quality score for the call. It combines evidence dominance, participation, net edge, missing data, event risk, and timing filters. It is not a guaranteed probability.</span></div>
+          <div class="legend-item"><strong>Bull Case</strong><span>The percentage of active directional evidence supporting an upward or bullish call.</span></div>
+          <div class="legend-item"><strong>Bear Case</strong><span>The percentage of active directional evidence supporting a downward or bearish call.</span></div>
+          <div class="legend-item"><strong>Net Edge</strong><span>The gap between bull evidence and bear evidence. A wider gap means the active evidence is less conflicted.</span></div>
+          <div class="legend-item"><strong>Participation</strong><span>How much of the model had usable directional evidence. Low participation means the call is based on fewer active inputs.</span></div>
+          <div class="legend-item"><strong>Strength</strong><span>A descriptive label derived from confidence, net edge, and participation.</span></div>
+          <div class="legend-item"><strong>No Call</strong><span>The model did not have enough clean evidence, participation, or market conditions to issue a directional call.</span></div>
+        </div>
+      </section>
 
       <section class="section-header overview-layer2-title">
         <div>

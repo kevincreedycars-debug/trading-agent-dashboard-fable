@@ -349,6 +349,16 @@ function formatConviction(value) {
   return value === null || value === undefined || value === "" ? "--" : `${Number(value)}%`;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function numberOrNull(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -392,6 +402,157 @@ function getCall(agent, timeframe = "24h") {
   };
 }
 
+function getOutput(agent) {
+  return asObject(agent?.full_output || agent?.raw_agent_output, {});
+}
+
+function getTimeframeModel(agent, timeframe = "24h") {
+  const output = getOutput(agent);
+  return asObject(output.timeframe_models?.[timeframe], {});
+}
+
+function combinedConfidenceFlags(call, agent, timeframe = "24h") {
+  const output = getOutput(agent);
+  const timeframeModel = getTimeframeModel(agent, timeframe);
+
+  return [
+    ...asArray(agent?.warnings),
+    ...asArray(call?.warnings),
+    ...asArray(output.risk_flags),
+    ...asArray(output.warnings),
+    ...asArray(timeframeModel.risk_flags),
+    ...asArray(timeframeModel.warnings),
+    ...asArray(call?.conviction_model?.audit_warnings),
+    ...asArray(timeframeModel.conviction_audit_warnings)
+  ]
+    .filter(Boolean)
+    .map(value => String(value));
+}
+
+function missingInputsCount(call, agent, timeframe = "24h") {
+  const output = getOutput(agent);
+  const timeframeModel = getTimeframeModel(agent, timeframe);
+
+  return [
+    ...asArray(call?.missing_inputs),
+    ...asArray(call?.conviction_model?.missing_inputs),
+    ...asArray(timeframeModel.missing_inputs),
+    ...asArray(output.missing_inputs)
+  ].filter(Boolean).length;
+}
+
+function getWeeklyCandleStatus(call, agent, timeframe = "24h") {
+  const output = getOutput(agent);
+  const timeframeModel = getTimeframeModel(agent, timeframe);
+  const model = call?.conviction_model || {};
+
+  return (
+    model.weekly_candle_status ||
+    timeframeModel.weekly_candle_status ||
+    output.weekly_candle_status ||
+    ""
+  );
+}
+
+function deriveConfidenceStrength(confidence, netEdge, participation, direction) {
+  if (direction === "NO_CALL" || direction === "NO 24H CALL") return "NO_CALL";
+  if (confidence === null || confidence === undefined) return "PENDING";
+
+  const edge = Math.abs(Number(netEdge) || 0);
+  const active = Number(participation) || 0;
+
+  if (confidence >= 80 && edge >= 25 && active >= 50) return "VERY_STRONG";
+  if (confidence >= 65 && edge >= 18 && active >= 35) return "STRONG";
+  if (confidence >= 50 && edge >= 10 && active >= 25) return "MODERATE";
+  if (confidence > 0) return "WEAK";
+  return "NO_CALL";
+}
+
+function confidenceData(call, agent, timeframe = "24h") {
+  const model = call?.conviction_model || {};
+  const direction = call?.direction || "PENDING";
+  const bullCase = numberOrNull(model.bullish_argument_pct);
+  const bearCase = numberOrNull(model.bearish_argument_pct);
+  const participation = numberOrNull(
+    model.directional_participation_pct ??
+    model.active_participation_pct ??
+    model.participation
+  );
+  const netEdge = numberOrNull(model.net_edge_pct);
+
+  const hasInputs = [bullCase, bearCase, participation, netEdge].every(Number.isFinite);
+  if (!hasInputs) {
+    const fallback = numberOrNull(model.final_confidence ?? call?.confidence);
+    return {
+      value: Number.isFinite(fallback) ? fallback : call?.conviction ?? null,
+      strength: deriveConfidenceStrength(fallback, netEdge, participation, direction),
+      evidenceDominance: null,
+      participation,
+      netEdge,
+      missingInputsCount: missingInputsCount(call, agent, timeframe)
+    };
+  }
+
+  let confidence =
+    ((Math.max(bullCase, bearCase) / 100) * 0.45) +
+    ((participation / 100) * 0.35) +
+    ((Math.abs(netEdge) / 100) * 0.20);
+
+  if (participation < 40) confidence -= 0.10;
+  if (participation < 25) confidence -= 0.20;
+  if (Math.abs(netEdge) < 20) confidence -= 0.10;
+
+  const missingCount = missingInputsCount(call, agent, timeframe);
+  if (missingCount >= 3) confidence -= 0.05;
+  if (missingCount >= 6) confidence -= 0.10;
+
+  const flags = combinedConfidenceFlags(call, agent, timeframe);
+  const weeklyStatus = String(getWeeklyCandleStatus(call, agent, timeframe)).toLowerCase();
+  const flagText = flags.join(" ").toLowerCase();
+
+  if (
+    flagText.includes("event risk") ||
+    flagText.includes("high impact event") ||
+    flagText.includes("tier 1 event")
+  ) {
+    confidence -= 0.10;
+  }
+
+  if (weeklyStatus === "consolidating" || flagText.includes("weekly consolidation")) {
+    confidence -= 0.05;
+  }
+
+  if (
+    flagText.includes("conviction audit") ||
+    flagText.includes("audit flag") ||
+    flagText.includes("audit warning")
+  ) {
+    confidence -= 0.05;
+  }
+
+  if (flagText.includes("o layer")) confidence -= 0.05;
+  if (flagText.includes("adr warning") || flagText.includes("session warning")) confidence -= 0.05;
+
+  const finalConfidence = Math.round(clamp(confidence, 0, 1) * 100);
+
+  return {
+    value: finalConfidence,
+    strength: model.confidence_strength || deriveConfidenceStrength(finalConfidence, netEdge, participation, direction),
+    evidenceDominance: Math.max(bullCase, bearCase),
+    participation,
+    netEdge,
+    missingInputsCount: missingCount
+  };
+}
+
+function confidenceValue(call, agent, timeframe = "24h") {
+  return confidenceData(call, agent, timeframe).value;
+}
+
+function confidenceStrength(call, agent, timeframe = "24h") {
+  return confidenceData(call, agent, timeframe).strength;
+}
+
 function getAgent(name) {
   return (layer1Data?.agents || []).find(agent => agent.agent === name);
 }
@@ -407,11 +568,11 @@ function getAgentUpdatedAt(agent) {
 function bestLiveAgent() {
   const live = (layer1Data?.agents || []).filter(agent => {
     const call24 = getCall(agent, "24h");
-    return call24.conviction !== null && call24.direction !== "PENDING";
+    return confidenceValue(call24, agent, "24h") !== null && call24.direction !== "PENDING";
   });
 
   return live.sort((a, b) => {
-    return Number(getCall(b, "24h").conviction || 0) - Number(getCall(a, "24h").conviction || 0);
+    return Number(confidenceValue(getCall(b, "24h"), b, "24h") || 0) - Number(confidenceValue(getCall(a, "24h"), a, "24h") || 0);
   })[0] || null;
 }
 
@@ -432,7 +593,7 @@ function renderOverviewStats() {
   if (heroLiveAgents) heroLiveAgents.textContent = `${liveCount} / ${orderedAgents.length}`;
   if (heroStrongestSignal) {
     heroStrongestSignal.textContent = strongest
-      ? `${strongest.agent} ${formatConviction(getCall(strongest, "24h").conviction)}`
+      ? `${strongest.agent} ${formatConviction(confidenceValue(getCall(strongest, "24h"), strongest, "24h"))}`
       : "Pending";
   }
   if (heroLastRun) heroLastRun.textContent = dashboardAge || (dashboardUpdated ? "Live" : "Pending");
@@ -444,7 +605,7 @@ function renderOverviewStats() {
       <strong class="direction ${directionClass(getCall(strongest, "24h").direction)}">
         ${strongest ? normaliseDirection(getCall(strongest, "24h").direction) : "PENDING"}
       </strong>
-      <span>${strongest ? formatConviction(getCall(strongest, "24h").conviction) : "--"} conviction</span>
+      <span>${strongest ? formatConviction(confidenceValue(getCall(strongest, "24h"), strongest, "24h")) : "--"} confidence</span>
     </article>
 
     <article class="metric-card">
@@ -463,18 +624,20 @@ function renderOverviewStats() {
 
 function renderAgentCard(agent) {
   const call24 = getCall(agent, "24h");
+  const call24Confidence = confidenceValue(call24, agent, "24h");
   const assetUpdated = getAgentUpdatedAt(agent);
   const formattedAssetUpdated = formatDashboardTime(assetUpdated);
   const assetAge = formatRelativeAge(assetUpdated);
 
   const calls = Object.entries(agent.calls || {}).map(([tf, call]) => {
     const direction = call.direction || "PENDING";
+    const metric = confidenceValue(call, agent, tf);
 
     return `
       <div class="call-row compact-call">
         <div class="call-row-head">
           <span class="timeframe">${labels[tf] || tf}</span>
-          <span class="direction ${directionClass(direction)}">${normaliseDirection(direction)} ${formatConviction(call.conviction)}</span>
+          <span class="direction ${directionClass(direction)}">${normaliseDirection(direction)} ${formatConviction(metric)}</span>
         </div>
       </div>
     `;
@@ -492,7 +655,7 @@ function renderAgentCard(agent) {
 
       <div class="main-signal">
         <span class="direction ${directionClass(call24.direction)}">${normaliseDirection(call24.direction)}</span>
-        <strong>${formatConviction(call24.conviction)}</strong>
+        <strong>${formatConviction(call24Confidence)}</strong>
       </div>
 
       <p class="summary">${escapeHtml(agent.summary || "")}</p>
@@ -664,9 +827,9 @@ function describeEventRisk(event) {
 
 function renderTodayCall(agent) {
   const today = getCall(agent, "24h");
-  const model = today.conviction_model || {};
+  const confidence = confidenceValue(today, agent, "24h");
   const assetUpdated = getAgentUpdatedAt(agent);
-  const strength = model.verdict_strength || "Not supplied";
+  const strength = confidenceStrength(today, agent, "24h") || "Not supplied";
 
   return `
     <section class="today-call-panel">
@@ -683,8 +846,8 @@ function renderTodayCall(agent) {
       <div class="today-signal-card">
         <span>24H only</span>
         <strong class="direction ${directionClass(today.direction)}">${normaliseDirection(today.direction)}</strong>
-        <b>${formatConviction(today.conviction)}</b>
-        <small>Current trading-session bias</small>
+        <b>${formatConviction(confidence)}</b>
+        <small>Confidence in the current trading-session bias</small>
       </div>
     </section>
   `;
@@ -768,11 +931,12 @@ function renderSecondaryTimeframes(agent) {
 
   return timeframeKeys.map(tf => {
     const call = getCall(agent, tf);
+    const confidence = confidenceValue(call, agent, tf);
     return `
       <div class="secondary-timeframe-card">
         <span class="timeframe">${labels[tf] || tf}</span>
         <strong class="direction ${directionClass(call.direction)}">${normaliseDirection(call.direction)}</strong>
-        <b>${formatConviction(call.conviction)}</b>
+        <b>${formatConviction(confidence)}</b>
         <p>${escapeHtml(firstSentence(cleanDecisionReason(call.reason)) || "No reason supplied.")}</p>
       </div>
     `;
@@ -800,7 +964,7 @@ function renderRawModelDetails(agent) {
           <p><strong>Bearish factors:</strong> ${escapeHtml(bearish)}</p>
           <p><strong>Neutral factors:</strong> ${escapeHtml(neutral)}</p>
           <p><strong>Winning side:</strong> ${escapeHtml(model.winning_side || "--")}</p>
-          <p><strong>Directional participation:</strong> ${formatModelPercent(model.directional_participation_pct)}</p>
+          <p><strong>Participation:</strong> ${formatModelPercent(model.directional_participation_pct)}</p>
           <p><strong>Net edge:</strong> ${model.net_edge_pct ?? "--"}%</p>
         </div>
       </details>
@@ -841,7 +1005,8 @@ function formatModelPercent(value) {
 }
 
 function renderScoreBreakdown(agent) {
-  const output = asObject(agent.full_output || agent.raw_agent_output, {});
+  const output = getOutput(agent);
+  const today = getCall(agent, "24h");
   const model = agent.conviction_model || output.conviction_model || {};
 
   const bullish = agent.score_bullish ?? output.score_bullish ?? "--";
@@ -852,10 +1017,10 @@ function renderScoreBreakdown(agent) {
   const bearCase = model.bearish_argument_pct;
   const neutralPct = model.neutral_pct;
   const netEdge = model.net_edge_pct;
-  const conviction = model.final_conviction;
+  const confidence = confidenceValue(today, agent, "24h");
   const participation = model.directional_participation_pct;
   const winningSide = model.winning_side;
-  const verdictStrength = model.verdict_strength;
+  const verdictStrength = confidenceStrength(today, agent, "24h");
 
   return `
     <div class="score-grid">
@@ -868,12 +1033,12 @@ function renderScoreBreakdown(agent) {
     <div class="conviction-model">
       <p><strong>Bull Case:</strong> ${formatModelPercent(bullCase)}</p>
       <p><strong>Bear Case:</strong> ${formatModelPercent(bearCase)}</p>
-      <p><strong>Conviction:</strong> ${formatModelPercent(conviction)}</p>
+      <p><strong>Confidence:</strong> ${formatModelPercent(confidence)}</p>
       <p><strong>Net Edge:</strong> ${netEdge ?? "--"}%</p>
-      <p><strong>Directional Participation:</strong> ${formatModelPercent(participation)}</p>
+      <p><strong>Participation:</strong> ${formatModelPercent(participation)}</p>
       <p><strong>Neutral factors:</strong> ${formatModelPercent(neutralPct)}</p>
-      <p><strong>Verdict Strength:</strong> ${verdictStrength || "--"}</p>
-      <p><strong>Final Logic:</strong> ${escapeHtml(model.final_conviction_logic ?? "No conviction model supplied yet.")}</p>
+      <p><strong>Strength:</strong> ${verdictStrength || "--"}</p>
+      <p><strong>Model Logic:</strong> ${escapeHtml(model.final_conviction_logic ?? "No confidence model supplied yet.")}</p>
     </div>
   `;
 }
@@ -917,7 +1082,7 @@ function renderAgentDetailLegacy(agentName) {
       <div class="signal-tower">
         <span>24H Call</span>
         <strong class="direction ${directionClass(call24.direction)}">${normaliseDirection(call24.direction)}</strong>
-        <b>${formatConviction(call24.conviction)}</b>
+        <b>${formatConviction(confidenceValue(call24, agent, "24h"))}</b>
         <small>Last asset update: ${escapeHtml(formatDashboardTime(assetUpdated))}</small>
       </div>
     </section>
@@ -941,8 +1106,8 @@ function renderAgentDetailLegacy(agentName) {
 
       <article class="detail-panel">
         <div class="panel-head">
-          <p class="eyebrow">Conviction</p>
-          <h3>Raw Model Details</h3>
+          <p class="eyebrow">Confidence</p>
+          <h3>Evidence Split And Call Quality</h3>
         </div>
         ${renderScoreBreakdown(agent)}
       </article>
@@ -1200,7 +1365,7 @@ function renderRecentCallsTable(calls = []) {
             <th>Exit/settlement price</th>
             <th>Actual direction</th>
             <th>Result</th>
-            <th>Conviction</th>
+            <th>Confidence</th>
             <th>Strength</th>
           </tr>
         </thead>
@@ -1215,7 +1380,7 @@ function renderRecentCallsTable(calls = []) {
               <td>${escapeHtml(call.exit_price)}</td>
               <td>${escapeHtml(call.actual_direction)}</td>
               <td><span class="result-pill ${resultClass(call.result)}">${escapeHtml(call.result)}</span></td>
-              <td>${percentValue(call.conviction)}</td>
+              <td>${percentValue(call.confidence ?? call.conviction)}</td>
               <td>${escapeHtml(call.strength)}</td>
             </tr>
           `).join("")}

@@ -2,29 +2,27 @@
 
 ## Current Feature
 
-AI-assisted development environment
+Dashboard confidence and call clarity
 
 ## Current Milestone
 
-Live Master Orchestrator validation
+Confidence headline, overview legend, and card strip refresh
 
-## Current Status
+## Status
 
-In Progress
+Complete
 
-## Completed During This Milestone
+## Completed Work
 
-- Confirmed GitHub repository access and project memory scaffold.
-- Added permanent Codex startup and session-management rules.
-- Added continuous project memory maintenance and logical milestone commit rules.
-- Exported live n8n workflow JSON snapshots into `exports/`.
-- Added dashboard Master Orchestrator control panel and status/error report rendering.
-- Added non-secret dashboard workflow control and status files.
-- Configured the live Master Orchestrator webhook and status publishing.
+- Replaced headline conviction rendering with a derived confidence score that uses evidence dominance, participation, and net edge, then applies penalties where live data exposes risk or missing-input conditions.
+- Kept Bull Case, Bear Case, Net Edge, and Participation visible as separate evidence diagnostics.
+- Added a compact Overview definitions legend under the Layer 1 calls.
+- Replaced the shared card top strip gradient with a single navy strip.
+- Validated front-end syntax with `node --check script.js`.
 
 ## Remaining Work
 
-- Run the Master Orchestrator from the dashboard.
+- Re-run the Master Orchestrator from the dashboard against the updated Overview UI.
 - Verify whether `data/workflow-status.json` receives a useful success or failure report.
 - Fix EUR Layer 1 parser handling for OpenAI object|string output if exposed during validation.
 - Fix Eco Events Collector duplicate insert handling if exposed during validation.
@@ -32,10 +30,9 @@ In Progress
 
 ## Current Files Being Modified
 
-- `data/workflow-status.json`
-- `data/workflow-control.json`
-- `exports/*.json`
-- `workflows/*.md`
+- `index.html`
+- `script.js`
+- `styles.css`
 - `docs/ACTIVE_MILESTONE.md`
 
 ## Blockers
@@ -44,8 +41,8 @@ None.
 
 ## Next Immediate Action
 
-Run the Master Orchestrator from the dashboard and verify whether `data/workflow-status.json` receives a useful success or failure report.
+Run the Master Orchestrator from the dashboard and verify whether `data/workflow-status.json` receives a useful success or failure report in the updated dashboard UI.
 
 ## Last Updated
 
-2026-06-20 14:45 Europe/London
+2026-06-20 15:23 Europe/London
