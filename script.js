@@ -1,7 +1,8 @@
 const layer1Url = "./data/layer1.json";
 const layer2Url = "./data/layer2.json";
-const backtestUrl = "./data/backtest.json";
 const workflowControlUrl = "./data/workflow-control.json";
+const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
+const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 
 const labels = {
   "24h": "24H",
@@ -1859,16 +1860,6 @@ function percentValue(value) {
   return value === null || value === undefined || value === "" ? "--" : `${Number(value)}%`;
 }
 
-function renderBacktestEmptyStates() {
-  return `
-    <div class="backtest-empty-strip">
-      <span>Backtest data not connected yet</span>
-      <span>Waiting for historical snapshots</span>
-      <span>Database engine to be added in next phase</span>
-    </div>
-  `;
-}
-
 function renderBacktestMetric(label, value, detail = "") {
   return `
     <article class="backtest-metric-card">
@@ -1879,270 +1870,204 @@ function renderBacktestMetric(label, value, detail = "") {
   `;
 }
 
-function renderAccuracyBars(items = [], labelKey) {
-  if (!items.length) return `<div class="empty-state">Backtest data not connected yet.</div>`;
-
-  return items.map(item => {
-    const label = item[labelKey] || item.asset || item.timeframe || "Item";
-    const value = Number(item.accuracy || 0);
-    return `
-      <div class="accuracy-bar-row">
-        <div>
-          <strong>${escapeHtml(label)}</strong>
-          <small>${escapeHtml(item.sample_size || 0)} mock samples</small>
-        </div>
-        <div class="accuracy-bar-track" aria-hidden="true">
-          <span style="width: ${Math.max(0, Math.min(value, 100))}%"></span>
-        </div>
-        <b>${percentValue(value)}</b>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderRecentCallsTable(calls = []) {
-  if (!calls.length) return `<div class="empty-state">Waiting for historical snapshots.</div>`;
-
+function renderProgressPill(label = "", value = "") {
   return `
-    <div class="table-scroll">
-      <table class="dashboard-table">
-        <thead>
-          <tr>
-            <th>Date/time call made</th>
-            <th>Asset</th>
-            <th>Timeframe</th>
-            <th>Agent call</th>
-            <th>Entry/reference price</th>
-            <th>Exit/settlement price</th>
-            <th>Actual direction</th>
-            <th>Result</th>
-            <th>Confidence</th>
-            <th>Strength</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${calls.map(call => `
-            <tr>
-              <td>${escapeHtml(call.called_at)}</td>
-              <td>${escapeHtml(call.asset)}</td>
-              <td>${escapeHtml(call.timeframe)}</td>
-              <td><span class="direction ${directionClass(call.agent_call)}">${escapeHtml(call.agent_call)}</span></td>
-              <td>${escapeHtml(call.entry_price)}</td>
-              <td>${escapeHtml(call.exit_price)}</td>
-              <td>${escapeHtml(call.actual_direction)}</td>
-              <td><span class="result-pill ${resultClass(call.result)}">${escapeHtml(call.result)}</span></td>
-              <td>${percentValue(call.confidence ?? call.conviction)}</td>
-              <td>${escapeHtml(call.strength)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
+    <div class="progress-pill">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
     </div>
   `;
 }
 
-function renderNextBuildPhase(phases = []) {
+function formatDateValue(value) {
+  if (!value) return "Not yet available";
+  return escapeHtml(String(value));
+}
+
+function metricAvailable(value) {
+  return value !== null && value !== undefined && value !== "";
+}
+
+function renderUnavailableMetric(label, detail) {
+  return renderBacktestMetric(label, "Not yet available", detail);
+}
+
+function renderResearchBreakdownTable(title, subtitle, rows, columns) {
+  if (!rows.length) {
+    return `
+      <article class="detail-panel">
+        <div class="panel-head">
+          <p class="eyebrow">${escapeHtml(subtitle)}</p>
+          <h3>${escapeHtml(title)}</h3>
+        </div>
+        <div class="empty-state">Not yet available from the research layer.</div>
+      </article>
+    `;
+  }
+
   return `
-    <article class="detail-panel next-phase-card">
+    <article class="detail-panel">
       <div class="panel-head">
-        <p class="eyebrow">Next Build Phase</p>
-        <h3>Backtest Engine Roadmap</h3>
+        <p class="eyebrow">${escapeHtml(subtitle)}</p>
+        <h3>${escapeHtml(title)}</h3>
       </div>
-      <ol class="phase-list">
-        ${phases.map(phase => `<li>${escapeHtml(phase)}</li>`).join("")}
-      </ol>
+      <div class="table-scroll">
+        <table class="dashboard-table">
+          <thead>
+            <tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>${columns.map(column => `<td>${column.render(row)}</td>`).join("")}</tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
     </article>
   `;
 }
 
-function renderAccuracyBacktest(data = {}) {
-  const accuracy = data.accuracy || {};
+function renderResearchAccuracy(data = {}) {
+  const overall = data.accuracy?.overall || null;
+  const timeframe = data.accuracy?.by_timeframe || [];
+  const conviction = data.accuracy?.by_conviction_bucket || [];
+  const weekday = data.accuracy?.by_weekday || [];
+  const magnitude = data.accuracy?.by_magnitude_bucket || [];
+  const regime = data.accuracy?.by_market_regime || [];
+  const factorReliability = data.accuracy?.top_factor_reliability || [];
+  const factorContribution = data.accuracy?.top_factor_contribution || [];
+  const bestCombos = data.accuracy?.best_factor_combinations || [];
+  const asCell = value => escapeHtml(metricAvailable(value) ? String(value) : "Not yet available");
 
   return `
-    ${renderBacktestEmptyStates()}
+    <article class="detail-panel wide-panel explanation-card">
+      <p class="eyebrow">Research Accuracy</p>
+      <h3>Real historical metrics from Supabase research views</h3>
+      <p>This section is read-only. It reads downstream research outputs only and does not influence live Layer 1 agents or workflow decisions.</p>
+    </article>
 
     <section class="backtest-metric-grid">
-      ${renderBacktestMetric("Overall Accuracy", percentValue(accuracy.overall_accuracy), "All assets and tracked timeframes")}
-      ${renderBacktestMetric("Bullish Call Accuracy", percentValue(accuracy.bullish_accuracy), "Mock directional outcomes")}
-      ${renderBacktestMetric("Bearish Call Accuracy", percentValue(accuracy.bearish_accuracy), "Mock directional outcomes")}
-      ${renderBacktestMetric("No-call Count", String(accuracy.no_call_count ?? "--"), "Filtered or avoided calls")}
-      ${renderBacktestMetric("Current Streak", accuracy.current_streak || "--", "Completed calls only")}
-      ${renderBacktestMetric("Best Asset", accuracy.best_asset || "--", "Highest mock hit rate")}
-      ${renderBacktestMetric("Weakest Asset", accuracy.weakest_asset || "--", "Lowest mock hit rate")}
+      ${overall
+        ? renderBacktestMetric("Overall Evaluated Predictions", String(overall.evaluated_predictions ?? "--"), "Primary-summary predictions with real outcome scoring")
+        : renderUnavailableMetric("Overall Evaluated Predictions", "Waiting for populated research views")}
+      ${overall
+        ? renderBacktestMetric("Overall Win Rate", percentValue(overall.win_rate_pct), "Real combined-result win rate from the research layer")
+        : renderUnavailableMetric("Overall Win Rate", "Waiting for populated research views")}
+      ${overall
+        ? renderBacktestMetric("Wins", String(overall.wins ?? "--"), "Combined-result CORRECT rows")
+        : renderUnavailableMetric("Wins", "Waiting for populated research views")}
+      ${overall
+        ? renderBacktestMetric("Losses", String(overall.losses ?? "--"), "Combined-result WRONG rows")
+        : renderUnavailableMetric("Losses", "Waiting for populated research views")}
+      ${overall
+        ? renderBacktestMetric("Flats", String(overall.flats ?? "--"), "Combined-result FLAT rows")
+        : renderUnavailableMetric("Flats", "Waiting for populated research views")}
+      ${overall
+        ? renderBacktestMetric("Mixed", String(overall.mixed ?? "--"), "Multi-market mixed USD outcomes")
+        : renderUnavailableMetric("Mixed", "Waiting for populated research views")}
     </section>
 
     <section class="backtest-grid two-column">
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Accuracy By Asset</p>
-          <h3>Asset Direction Calls</h3>
-        </div>
-        ${renderAccuracyBars(accuracy.asset_accuracy, "asset")}
-      </article>
-
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Accuracy By Timeframe</p>
-          <h3>Time Horizon Hit Rate</h3>
-        </div>
-        ${renderAccuracyBars(accuracy.timeframe_accuracy, "timeframe")}
-      </article>
+      ${renderResearchBreakdownTable("Win Rate by Timeframe", "Breakdown", timeframe, [
+        { label: "Timeframe", render: row => asCell(row.timeframe) },
+        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
+        { label: "Wins", render: row => asCell(row.wins) },
+        { label: "Mixed", render: row => asCell(row.mixed) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
+      ${renderResearchBreakdownTable("Win Rate by Conviction Bucket", "Breakdown", conviction, [
+        { label: "Conviction Bucket", render: row => asCell(row.conviction_bucket) },
+        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
+        { label: "Avg Conviction", render: row => percentValue(row.avg_conviction) },
+        { label: "Mixed", render: row => asCell(row.mixed) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
     </section>
 
-    <article class="detail-panel wide-panel">
-      <div class="panel-head">
-        <p class="eyebrow">Recent Completed Calls</p>
-        <h3>Mock Direction Accuracy Ledger</h3>
-      </div>
-      ${renderRecentCallsTable(accuracy.recent_completed_calls)}
-    </article>
+    <section class="backtest-grid two-column">
+      ${renderResearchBreakdownTable("Win Rate by Weekday", "Breakdown", weekday, [
+        { label: "Weekday", render: row => asCell(row.call_day_of_week) },
+        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
+        { label: "Wins", render: row => asCell(row.wins) },
+        { label: "Mixed", render: row => asCell(row.mixed) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
+      ${renderResearchBreakdownTable("Win Rate by Magnitude Bucket", "Breakdown", magnitude, [
+        { label: "Magnitude Bucket", render: row => asCell(row.move_magnitude_bucket) },
+        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
+        { label: "Avg Abs Move", render: row => metricAvailable(row.avg_abs_move_pct) ? `${escapeHtml(String(row.avg_abs_move_pct))}%` : "Not yet available" },
+        { label: "Mixed", render: row => asCell(row.mixed) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
+    </section>
 
-    ${renderNextBuildPhase(data.next_build_phase || [])}
-  `;
-}
-
-function renderMiniLeaderboard(items = [], valueKey, suffix = "%") {
-  if (!items.length) return `<div class="empty-state">Database engine to be added in next phase.</div>`;
-
-  return items.map((item, index) => {
-    const value = item[valueKey] ?? item.correlation ?? item.hit_rate ?? item.confidence ?? "--";
-    return `
-      <div class="leaderboard-row">
-        <span>${index + 1}</span>
-        <div>
-          <strong>${escapeHtml(item.factor)}</strong>
-          <small>${escapeHtml(item.asset || item.timeframe || "")}</small>
-        </div>
-        <b>${escapeHtml(value)}${value === "--" ? "" : suffix}</b>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderCorrelationByTimeframe(items = []) {
-  if (!items.length) return `<div class="empty-state">Waiting for historical snapshots.</div>`;
-
-  return items.map(item => `
-    <div class="correlation-chip">
-      <span>${escapeHtml(item.timeframe)}</span>
-      <strong>${percentValue(item.correlation)}</strong>
-    </div>
-  `).join("");
-}
-
-function renderFactorHitRateTable(rows = []) {
-  if (!rows.length) return `<div class="empty-state">Backtest data not connected yet.</div>`;
-
-  return `
-    <div class="table-scroll">
-      <table class="dashboard-table">
-        <thead>
-          <tr>
-            <th>Asset</th>
-            <th>Variable / factor</th>
-            <th>Signal direction</th>
-            <th>Timeframe</th>
-            <th>Sample size</th>
-            <th>Bullish outcome %</th>
-            <th>Bearish outcome %</th>
-            <th>Neutral / mixed %</th>
-            <th>Confidence score</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(row => `
-            <tr>
-              <td>${escapeHtml(row.asset)}</td>
-              <td>${escapeHtml(row.factor)}</td>
-              <td>${escapeHtml(row.signal_direction)}</td>
-              <td>${escapeHtml(row.timeframe)}</td>
-              <td>${escapeHtml(row.sample_size)}</td>
-              <td>${percentValue(row.bullish_outcome_pct)}</td>
-              <td>${percentValue(row.bearish_outcome_pct)}</td>
-              <td>${percentValue(row.neutral_mixed_pct)}</td>
-              <td>${percentValue(row.confidence_score)}</td>
-              <td>${escapeHtml(row.notes)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderCorrelationBacktest(data = {}) {
-  const correlation = data.correlation || {};
-
-  return `
-    ${renderBacktestEmptyStates()}
-
-    <article class="detail-panel wide-panel explanation-card">
-      <p class="eyebrow">Example Question</p>
-      <h3>${escapeHtml(correlation.example_question || "If CPI surprise is bullish USD, how often did USD/DXY rise over each timeframe?")}</h3>
-      <p>Placeholder only. Historical snapshots, settlement prices, and factor outcomes will be connected in a later phase.</p>
-    </article>
+    <section class="backtest-grid">
+      ${renderResearchBreakdownTable("Win Rate by Market Regime", "Breakdown", regime, [
+        { label: "Equities Regime", render: row => asCell(row.equities_regime) },
+        { label: "Fed Bias", render: row => asCell(row.fed_bias) },
+        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
+        { label: "Mixed", render: row => asCell(row.mixed) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
+    </section>
 
     <section class="backtest-grid three-column">
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Variable Leaderboard</p>
-          <h3>Top Mock Factors</h3>
-        </div>
-        ${renderMiniLeaderboard(correlation.leaderboard, "correlation")}
-      </article>
-
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Best Bullish Predictors</p>
-          <h3>Positive Outcomes</h3>
-        </div>
-        ${renderMiniLeaderboard(correlation.best_bullish_predictors, "hit_rate")}
-      </article>
-
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Best Bearish Predictors</p>
-          <h3>Negative Outcomes</h3>
-        </div>
-        ${renderMiniLeaderboard(correlation.best_bearish_predictors, "hit_rate")}
-      </article>
+      ${renderResearchBreakdownTable("Top Factor Reliability", "Research Factors", factorReliability, [
+        { label: "Factor", render: row => asCell(row.factor_name || row.factor_key) },
+        { label: "Signal", render: row => asCell(row.factor_signal) },
+        { label: "Timeframe", render: row => asCell(row.timeframe) },
+        { label: "Occurrences", render: row => asCell(row.factor_occurrences) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
+      ${renderResearchBreakdownTable("Top Factor Contribution", "Research Factors", factorContribution, [
+        { label: "Factor", render: row => asCell(row.factor_name || row.factor_key) },
+        { label: "Signal", render: row => asCell(row.factor_signal) },
+        { label: "Timeframe", render: row => asCell(row.timeframe) },
+        { label: "Contribution", render: row => asCell(row.contribution_score) },
+        { label: "Weighted", render: row => asCell(row.weighted_contribution_score) }
+      ])}
+      ${renderResearchBreakdownTable("Best Factor Combinations", "Research Factors", bestCombos, [
+        { label: "Timeframe", render: row => asCell(row.timeframe) },
+        { label: "Factor 1", render: row => asCell(`${row.factor_key_1} (${row.factor_signal_1})`) },
+        { label: "Factor 2", render: row => asCell(`${row.factor_key_2} (${row.factor_signal_2})`) },
+        { label: "Occurrences", render: row => asCell(row.combo_occurrences) },
+        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
+      ])}
     </section>
+  `;
+}
 
-    <section class="backtest-grid two-column">
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Weak / Unreliable Variables</p>
-          <h3>Low Confidence Factors</h3>
-        </div>
-        ${renderMiniLeaderboard(correlation.weak_variables, "confidence")}
-      </article>
+function renderResearchInfrastructure(data = {}) {
+  const infrastructure = data.infrastructure || {};
 
-      <article class="detail-panel">
-        <div class="panel-head">
-          <p class="eyebrow">Correlation By Timeframe</p>
-          <h3>Historical Window Fit</h3>
-        </div>
-        <div class="correlation-chip-grid">${renderCorrelationByTimeframe(correlation.timeframe_correlation)}</div>
-      </article>
-    </section>
-
-    <article class="detail-panel wide-panel">
-      <div class="panel-head">
-        <p class="eyebrow">Factor Hit-rate Table</p>
-        <h3>Mock Variable Outcome Matrix</h3>
-      </div>
-      ${renderFactorHitRateTable(correlation.factor_hit_rates)}
+  return `
+    <article class="detail-panel wide-panel explanation-card">
+      <p class="eyebrow">Infrastructure Status</p>
+      <h3>USD historical research pipeline state</h3>
+      <p>The dashboard reads infrastructure state from research SQL views only. This section is downstream-only and cannot feed back into live Layer 1 outputs.</p>
     </article>
 
-    ${renderNextBuildPhase(data.next_build_phase || [])}
+    <section class="backtest-metric-grid research-progress-grid">
+      ${renderBacktestMetric("Historical Warehouse", infrastructure.historical_warehouse_status || "Not yet available", "Historical source tables populated")}
+      ${renderBacktestMetric("Snapshot Builder", infrastructure.snapshot_builder_status || "Not yet available", "Historical USD market snapshots available")}
+      ${renderBacktestMetric("Replay Engine", infrastructure.replay_engine_status || "Not yet available", "Research observations and predictions written")}
+      ${renderBacktestMetric("Outcome Evaluation", infrastructure.outcome_evaluation_status || "Not yet available", "Predictions evaluated against realised outcomes")}
+      ${renderBacktestMetric("Research SQL", infrastructure.research_sql_status || "Not yet available", "Dashboard reads research views only")}
+      ${renderBacktestMetric("Last Replay Date", formatDateValue(infrastructure.last_replay_date), "Most recent replayed snapshot date")}
+      ${renderBacktestMetric("Replay Coverage", infrastructure.replay_coverage || "Not yet available", "Full currently available USD replay range")}
+      ${renderBacktestMetric("Observations", String(infrastructure.observation_count ?? "Not yet available"), "Research observations written")}
+      ${renderBacktestMetric("Predictions", String(infrastructure.prediction_count ?? "Not yet available"), "Research timeframe predictions written")}
+      ${renderBacktestMetric("Evaluation Rows", String(infrastructure.evaluation_row_count ?? "Not yet available"), "Prediction evaluation rows written")}
+    </section>
   `;
 }
 
 function renderBacktest(data = {}) {
   const updated = document.getElementById("backtestUpdated");
   if (updated) {
-    const marker = data.meta?.placeholder ? "Placeholder mock data" : `Last updated: ${formatDashboardTime(data.meta?.last_updated)}`;
+    const marker = data.meta?.error
+      ? `Research data unavailable: ${data.meta.error}`
+      : `Last synced: ${formatDashboardTime(data.meta?.last_updated)}`;
     updated.textContent = marker;
   }
 
@@ -2150,8 +2075,8 @@ function renderBacktest(data = {}) {
   if (!panel) return;
 
   panel.innerHTML = activeBacktestTab === "correlation"
-    ? renderCorrelationBacktest(data)
-    : renderAccuracyBacktest(data);
+    ? renderResearchInfrastructure(data)
+    : renderResearchAccuracy(data);
 }
 
 function workflowErrorText(error) {
@@ -2440,32 +2365,130 @@ function setupTabs() {
   });
 }
 
+async function fetchResearchView(viewName, options = {}) {
+  const url = new URL(`${researchSupabaseUrl}/${viewName}`);
+  url.searchParams.set("select", options.select || "*");
+
+  if (options.order) url.searchParams.set("order", options.order);
+  if (metricAvailable(options.limit)) url.searchParams.set("limit", String(options.limit));
+
+  const response = await fetch(url.toString(), {
+    cache: "no-store",
+    headers: {
+      apikey: researchSupabaseKey,
+      Authorization: `Bearer ${researchSupabaseKey}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`${viewName} ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function fetchResearchDashboardData() {
+  const [
+    overallRows,
+    timeframeRows,
+    convictionRows,
+    weekdayRows,
+    magnitudeRows,
+    regimeRows,
+    factorReliabilityRows,
+    factorContributionRows,
+    factorComboRows,
+    infrastructureRows
+  ] = await Promise.all([
+    fetchResearchView("research_overall_win_rate"),
+    fetchResearchView("research_win_rate_by_timeframe", { order: "timeframe.asc" }),
+    fetchResearchView("research_win_rate_by_conviction_bucket"),
+    fetchResearchView("research_win_rate_by_weekday"),
+    fetchResearchView("research_win_rate_by_magnitude_bucket"),
+    fetchResearchView("research_win_rate_by_market_regime"),
+    fetchResearchView("research_factor_reliability", {
+      order: "win_rate_pct.desc,factor_occurrences.desc,avg_factor_weight.desc",
+      limit: 8
+    }),
+    fetchResearchView("research_factor_contribution", {
+      order: "weighted_contribution_score.desc,contribution_score.desc,factor_occurrences.desc",
+      limit: 8
+    }),
+    fetchResearchView("research_best_factor_combinations", {
+      order: "win_rate_pct.desc,combo_occurrences.desc,avg_combined_weight.desc",
+      limit: 8
+    }),
+    fetchResearchView("research_dashboard_infrastructure_status")
+  ]);
+
+  return {
+    meta: {
+      last_updated: new Date().toISOString(),
+      source: "supabase_research_views",
+      read_only: true
+    },
+    accuracy: {
+      overall: overallRows[0] || null,
+      by_timeframe: timeframeRows,
+      by_conviction_bucket: convictionRows,
+      by_weekday: weekdayRows,
+      by_magnitude_bucket: magnitudeRows,
+      by_market_regime: regimeRows,
+      top_factor_reliability: factorReliabilityRows,
+      top_factor_contribution: factorContributionRows,
+      best_factor_combinations: factorComboRows
+    },
+    infrastructure: infrastructureRows[0] || {}
+  };
+}
+
 async function loadDashboard() {
+  const [layer1Result, layer2Result, researchResult] = await Promise.allSettled([
+    fetch(layer1Url, { cache: "no-store" }),
+    fetch(layer2Url, { cache: "no-store" }),
+    fetchResearchDashboardData()
+  ]);
+
   try {
-    const [layer1Res, layer2Res, backtestRes] = await Promise.all([
-      fetch(layer1Url, { cache: "no-store" }),
-      fetch(layer2Url, { cache: "no-store" }),
-      fetch(backtestUrl, { cache: "no-store" })
-    ]);
+    if (layer1Result.status === "fulfilled") {
+      layer1Data = normaliseLayer1Data(await layer1Result.value.json());
+      renderLayer1(layer1Data);
+    } else {
+      throw layer1Result.reason;
+    }
 
-    layer1Data = normaliseLayer1Data(await layer1Res.json());
-    layer2Data = await layer2Res.json();
-    backtestData = await backtestRes.json();
-
-    renderLayer1(layer1Data);
-    renderLayer2(layer2Data);
-    renderBacktest(backtestData);
-
-    if (orderedAgents.includes(activeTab)) {
-      renderAgentDetail(activeTab);
+    if (layer2Result.status === "fulfilled") {
+      layer2Data = await layer2Result.value.json();
+      renderLayer2(layer2Data);
+    } else {
+      throw layer2Result.reason;
     }
   } catch (err) {
     console.error(err);
-
     const grid = document.getElementById("layer1Grid");
     if (grid) {
       grid.innerHTML = `<p class="warning">Could not load dashboard JSON.</p>`;
     }
+  }
+
+  if (researchResult.status === "fulfilled") {
+    backtestData = researchResult.value;
+  } else {
+    console.error(researchResult.reason);
+    backtestData = {
+      meta: {
+        last_updated: new Date().toISOString(),
+        error: researchResult.reason?.message || String(researchResult.reason)
+      },
+      accuracy: {},
+      infrastructure: {}
+    };
+  }
+
+  renderBacktest(backtestData);
+
+  if (orderedAgents.includes(activeTab) && layer1Data) {
+    renderAgentDetail(activeTab);
   }
 }
 

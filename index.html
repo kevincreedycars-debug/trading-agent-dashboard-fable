@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260620-premium-5" />
+  <link rel="stylesheet" href="styles.css?v=20260621-research-accuracy-1" />
 </head>
 <body>
   <header class="topbar">
@@ -31,7 +31,7 @@
         <p class="eyebrow">Independent Agentic Trading Intelligence</p>
         <h1>Asset Directional Movement Dashboard</h1>
         <p class="subcopy">
-          A premium macro command centre for sealed Layer 1 directional calls, Layer 2 trade selection, workflow health, and Backtest / Accuracy scaffolding.
+          A premium macro command centre for sealed Layer 1 directional calls, Layer 2 trade selection, workflow health, and read-only historical research accuracy.
         </p>
         <div class="hero-stats" aria-label="Live dashboard summary">
           <div class="hero-stat">
@@ -175,20 +175,20 @@
       <section class="section-header backtest-title">
         <div>
           <p class="eyebrow">Backtest / Accuracy</p>
-          <h2>Agent Accuracy & Variable Correlation</h2>
+          <h2>Historical Research Accuracy</h2>
         </div>
-        <p id="backtestUpdated">Placeholder data only</p>
+        <p id="backtestUpdated">Loading research metrics...</p>
       </section>
 
       <nav class="subtab-bar" aria-label="Backtest sections">
-        <button class="subtab-button active" type="button" data-backtest-tab="accuracy">Agent Direction Accuracy</button>
-        <button class="subtab-button" type="button" data-backtest-tab="correlation">Variable Correlation Analysis</button>
+        <button class="subtab-button active" type="button" data-backtest-tab="accuracy">Accuracy Metrics</button>
+        <button class="subtab-button" type="button" data-backtest-tab="correlation">Infrastructure Status</button>
       </nav>
 
       <section id="backtestPanel" class="backtest-panel"></section>
     </section>
   </main>
 
-  <script src="script.js?v=20260620-premium-5"></script>
+  <script src="script.js?v=20260621-research-accuracy-1"></script>
 </body>
 </html>
