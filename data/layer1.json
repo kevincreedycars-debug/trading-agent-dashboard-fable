@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-06-21T08:14:54.012Z",
+    "last_updated_et": "2026-06-21T09:06:48.991Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Sunday"
@@ -12,7 +12,7 @@
       "agent": "USD",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-21T08:13:48.174+00:00",
+      "last_run_et": "2026-06-21T09:05:34.153+00:00",
       "summary": "USD Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -534,7 +534,7 @@
       "score_bullish": 2,
       "score_bearish": 1,
       "score_neutral": 7,
-      "non_neutral_count": 8,
+      "non_neutral_count": 6,
       "logic_document": "agent_usd_direction.md",
       "logic_document_version": "2.1_weighted_engine",
       "conviction_model": {
@@ -1045,12 +1045,12 @@
       "full_output": {
         "asset": "USD",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-21T08:13:48.250776+00:00",
+        "created_at": "2026-06-21T09:05:34.214303+00:00",
         "reason_24h": "24h deterministic score: bullish argument 56%, bearish argument 44%, neutral/inactive 68%, net edge +12 bullish.",
         "risk_flags": [
-          "Missing latest US economic event data",
-          "Primary drivers mixed with conflicting DXY delta",
-          "Neutral Fed bias and Dollar Smile regime limit conviction"
+          "Missing latest US economic event input",
+          "Primary drivers partially conflicted",
+          "Fed bias neutral limits conviction"
         ],
         "reason_3_day": "3d deterministic score: bullish argument 63%, bearish argument 37%, neutral/inactive 62%, net edge +26 bullish.",
         "direction_24h": "BULLISH_LEAN",
@@ -1630,27 +1630,27 @@
             }
           }
         },
-        "non_neutral_count": 8,
+        "non_neutral_count": 6,
         "reasoning_summary": "USD weighted verdicts calculated deterministically by timeframe. 24h BULLISH_LEAN 56%, 3d BULLISH 63%, current week BULLISH_LEAN 58%, next week BULLISH 100%, current month BULLISH 100%.",
         "snapshot_selection": {
           "warnings": [],
           "selected_by": "latest_usd_usable_snapshot",
-          "selected_from_rows": 98,
-          "selected_created_at": "2026-06-21T08:13:48.250776+00:00",
-          "selected_run_time_et": "2026-06-21T08:13:48.174+00:00",
-          "selected_snapshot_id": "fb3784aa-4b5e-4782-adb7-93da10627900",
+          "selected_from_rows": 103,
+          "selected_created_at": "2026-06-21T09:05:34.214303+00:00",
+          "selected_run_time_et": "2026-06-21T09:05:34.153+00:00",
+          "selected_snapshot_id": "c0c92def-caf8-4087-9614-7c2e5480da72",
           "selected_snapshot_date": "2026-06-21",
           "top_5_rows_seen_by_workflow": [
             {
-              "id": "8fdadcbb-c41b-4f83-9de6-3ca478d3cd91",
+              "id": "e9637ce9-885b-4fb6-be3d-3bb6cde9527c",
               "rank": 1,
               "fed_bias": "neutral",
               "dxy_level": 119.5073,
               "vix_level": 18.44,
-              "created_at": "2026-06-21T08:13:53.764294+00:00",
+              "created_at": "2026-06-21T09:05:40.412186+00:00",
               "usd_usable": false,
               "de_2y_yield": null,
-              "run_time_et": "2026-06-21T08:13:53.668+00:00",
+              "run_time_et": "2026-06-21T09:05:40.281+00:00",
               "snapshot_date": "2026-06-21",
               "source_status": "partial",
               "us_de_2y_spread": null,
@@ -1658,15 +1658,15 @@
               "us_de_2y_spread_d5_bps": null
             },
             {
-              "id": "fb3784aa-4b5e-4782-adb7-93da10627900",
+              "id": "c0c92def-caf8-4087-9614-7c2e5480da72",
               "rank": 2,
               "fed_bias": "neutral",
               "dxy_level": 119.5073,
               "vix_level": 18.44,
-              "created_at": "2026-06-21T08:13:48.250776+00:00",
+              "created_at": "2026-06-21T09:05:34.214303+00:00",
               "usd_usable": true,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:48.174+00:00",
+              "run_time_et": "2026-06-21T09:05:34.153+00:00",
               "snapshot_date": "2026-06-21",
               "source_status": "partial",
               "us_de_2y_spread": 1.5700000000000003,
@@ -1674,15 +1674,15 @@
               "us_de_2y_spread_d5_bps": 4.000000000000048
             },
             {
-              "id": "9bde39fb-e69f-4ece-ae64-f10dd403f94b",
+              "id": "b0896a2a-0124-4e59-8a7c-ddfde555c30a",
               "rank": 3,
               "fed_bias": "neutral",
               "dxy_level": 119.5073,
               "vix_level": 18.44,
-              "created_at": "2026-06-21T08:13:36.201802+00:00",
+              "created_at": "2026-06-21T09:05:21.286137+00:00",
               "usd_usable": true,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:36.138+00:00",
+              "run_time_et": "2026-06-21T09:05:21.207+00:00",
               "snapshot_date": "2026-06-21",
               "source_status": "partial",
               "us_de_2y_spread": 1.5700000000000003,
@@ -1690,15 +1690,15 @@
               "us_de_2y_spread_d5_bps": 4.000000000000048
             },
             {
-              "id": "e2b6edf3-8c01-4373-bac2-926292e237c7",
+              "id": "08eabf31-9308-4921-9a62-30a2fec01d65",
               "rank": 4,
               "fed_bias": null,
               "dxy_level": 119.5073,
               "vix_level": 18.44,
-              "created_at": "2026-06-21T08:13:29.515754+00:00",
+              "created_at": "2026-06-21T09:05:14.204597+00:00",
               "usd_usable": false,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:29.365+00:00",
+              "run_time_et": "2026-06-21T09:05:14.071+00:00",
               "snapshot_date": "2026-06-21",
               "source_status": "partial",
               "us_de_2y_spread": 1.5700000000000003,
@@ -1706,15 +1706,15 @@
               "us_de_2y_spread_d5_bps": 4.000000000000048
             },
             {
-              "id": "2e443c78-bb2c-4768-96b2-84d09ff39ade",
+              "id": "090ead98-c7ef-4776-8e65-573a693e0531",
               "rank": 5,
               "fed_bias": "neutral",
               "dxy_level": 119.5073,
               "vix_level": 18.44,
-              "created_at": "2026-06-21T08:13:23.355109+00:00",
+              "created_at": "2026-06-21T09:05:07.641802+00:00",
               "usd_usable": true,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:23.257+00:00",
+              "run_time_et": "2026-06-21T09:05:07.57+00:00",
               "snapshot_date": "2026-06-21",
               "source_status": "partial",
               "us_de_2y_spread": 1.5700000000000003,
@@ -1733,9 +1733,9 @@
         "conviction_current_week": 58,
         "direction_current_month": "BULLISH",
         "model_reported_warnings": [
-          "Missing latest US economic event data",
-          "Primary drivers mixed with conflicting DXY delta",
-          "Neutral Fed bias and Dollar Smile regime limit conviction"
+          "Missing latest US economic event input",
+          "Primary drivers partially conflicted",
+          "Fed bias neutral limits conviction"
         ],
         "conviction_current_month": 100,
         "input_validation_warnings": [
@@ -1749,13 +1749,13 @@
           "dxy_d20": 0.7059095168434022,
           "fed_bias": "neutral",
           "nq_price": 740.62,
-          "btc_price": 64068.74,
+          "btc_price": 63937.195,
           "dxy_level": 119.5073,
           "nq_d1_pct": 2.5065,
           "nq_d5_pct": -0.45430107526881663,
           "vix_level": 18.44,
-          "btc_d1_pct": 0.5941957090950822,
-          "btc_d5_pct": -3.029916850340075,
+          "btc_d1_pct": 0.3876571775966833,
+          "btc_d5_pct": -3.2290144069319764,
           "gold_price": 4155.464227686196,
           "nq_d20_pct": null,
           "btc_d20_pct": null,
@@ -1794,7 +1794,7 @@
       "agent": "EUR",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-21T08:13:29.365+00:00",
+      "last_run_et": "2026-06-21T09:05:14.071+00:00",
       "summary": "EUR Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -2314,7 +2314,7 @@
       "score_bullish": 2,
       "score_bearish": 1,
       "score_neutral": 7,
-      "non_neutral_count": 4,
+      "non_neutral_count": 5,
       "logic_document": "agent_eur_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
@@ -2855,7 +2855,7 @@
       "full_output": {
         "asset": "EUR",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-21T08:13:29.515754+00:00",
+        "created_at": "2026-06-21T09:05:14.204597+00:00",
         "reason_24h": "24h EUR deterministic score: bull case 80%, bear case 20%, neutral/inactive 80%, directional participation 20%, net edge +60.",
         "risk_flags": [],
         "reason_3_day": "3d EUR deterministic score: bull case 67%, bear case 33%, neutral/inactive 88%, directional participation 12%, net edge +34.",
@@ -3472,28 +3472,28 @@
             }
           }
         },
-        "non_neutral_count": 4,
+        "non_neutral_count": 5,
         "reasoning_summary": "EUR weighted verdicts calculated deterministically by timeframe. 24h BULLISH 80%, 3d BULLISH 67%, current week BULLISH 75%, next week BEARISH 70%, current month BEARISH 67%.",
         "snapshot_selection": {
           "warnings": [
             "gold_d5_pct missing; using gold_d1_pct fallback"
           ],
           "selected_by": "latest_v11_eur_usable_snapshot",
-          "selected_from_rows": 98,
-          "selected_created_at": "2026-06-21T08:13:29.515754+00:00",
-          "selected_run_time_et": "2026-06-21T08:13:29.365+00:00",
-          "selected_snapshot_id": "e2b6edf3-8c01-4373-bac2-926292e237c7",
+          "selected_from_rows": 103,
+          "selected_created_at": "2026-06-21T09:05:14.204597+00:00",
+          "selected_run_time_et": "2026-06-21T09:05:14.071+00:00",
+          "selected_snapshot_id": "08eabf31-9308-4921-9a62-30a2fec01d65",
           "selected_snapshot_date": "2026-06-21",
           "top_5_rows_seen_by_workflow": [
             {
-              "id": "8fdadcbb-c41b-4f83-9de6-3ca478d3cd91",
+              "id": "e9637ce9-885b-4fb6-be3d-3bb6cde9527c",
               "rank": 1,
               "ecb_bias": null,
               "fed_bias": "neutral",
-              "created_at": "2026-06-21T08:13:53.764294+00:00",
+              "created_at": "2026-06-21T09:05:40.412186+00:00",
               "eur_usable": false,
               "de_2y_yield": null,
-              "run_time_et": "2026-06-21T08:13:53.668+00:00",
+              "run_time_et": "2026-06-21T09:05:40.281+00:00",
               "de_2y_d5_bps": null,
               "eurusd_price": null,
               "de_2y_d20_bps": null,
@@ -3511,14 +3511,14 @@
               "ez_composite_pmi_direction": null
             },
             {
-              "id": "fb3784aa-4b5e-4782-adb7-93da10627900",
+              "id": "c0c92def-caf8-4087-9614-7c2e5480da72",
               "rank": 2,
               "ecb_bias": null,
               "fed_bias": "neutral",
-              "created_at": "2026-06-21T08:13:48.250776+00:00",
+              "created_at": "2026-06-21T09:05:34.214303+00:00",
               "eur_usable": false,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:48.174+00:00",
+              "run_time_et": "2026-06-21T09:05:34.153+00:00",
               "de_2y_d5_bps": 2.9999999999999805,
               "eurusd_price": null,
               "de_2y_d20_bps": null,
@@ -3536,14 +3536,14 @@
               "ez_composite_pmi_direction": null
             },
             {
-              "id": "9bde39fb-e69f-4ece-ae64-f10dd403f94b",
+              "id": "b0896a2a-0124-4e59-8a7c-ddfde555c30a",
               "rank": 3,
               "ecb_bias": null,
               "fed_bias": "neutral",
-              "created_at": "2026-06-21T08:13:36.201802+00:00",
+              "created_at": "2026-06-21T09:05:21.286137+00:00",
               "eur_usable": false,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:36.138+00:00",
+              "run_time_et": "2026-06-21T09:05:21.207+00:00",
               "de_2y_d5_bps": 2.9999999999999805,
               "eurusd_price": null,
               "de_2y_d20_bps": null,
@@ -3561,14 +3561,14 @@
               "ez_composite_pmi_direction": null
             },
             {
-              "id": "e2b6edf3-8c01-4373-bac2-926292e237c7",
+              "id": "08eabf31-9308-4921-9a62-30a2fec01d65",
               "rank": 4,
               "ecb_bias": "neutral",
               "fed_bias": null,
-              "created_at": "2026-06-21T08:13:29.515754+00:00",
+              "created_at": "2026-06-21T09:05:14.204597+00:00",
               "eur_usable": true,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:29.365+00:00",
+              "run_time_et": "2026-06-21T09:05:14.071+00:00",
               "de_2y_d5_bps": 2.9999999999999805,
               "eurusd_price": 1.1573,
               "de_2y_d20_bps": -2.0000000000000018,
@@ -3586,14 +3586,14 @@
               "ez_composite_pmi_direction": "improving"
             },
             {
-              "id": "2e443c78-bb2c-4768-96b2-84d09ff39ade",
+              "id": "090ead98-c7ef-4776-8e65-573a693e0531",
               "rank": 5,
               "ecb_bias": null,
               "fed_bias": "neutral",
-              "created_at": "2026-06-21T08:13:23.355109+00:00",
+              "created_at": "2026-06-21T09:05:07.641802+00:00",
               "eur_usable": false,
               "de_2y_yield": 2.63,
-              "run_time_et": "2026-06-21T08:13:23.257+00:00",
+              "run_time_et": "2026-06-21T09:05:07.57+00:00",
               "de_2y_d5_bps": 2.9999999999999805,
               "eurusd_price": null,
               "de_2y_d20_bps": null,
@@ -3724,7 +3724,7 @@
       "agent": "GOLD",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-21T08:13:53.668+00:00",
+      "last_run_et": "2026-06-21T09:05:40.281+00:00",
       "summary": "GOLD Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -4210,7 +4210,7 @@
           "reason": "Gold own-price trend confirms downside pressure",
           "signal": "BEARISH",
           "weight": 10,
-          "evidence": "Gold -2.5925941316534216%"
+          "evidence": "Gold -2.592594049234458%"
         },
         "F6": {
           "reason": "Neutral risk regime",
@@ -4248,7 +4248,7 @@
         "F2 [22]: BULLISH — DXY -0.5079197518427827% (Dollar weakness supports Gold)",
         "F3 [12]: NEUTRAL — Fed bias neutral (No clear Fed impulse)",
         "F4 [10]: BEARISH — US 2Y 7.000000000000028bps (Rising front-end yields pressure Gold)",
-        "F5 [10]: BEARISH — Gold -2.5925941316534216% (Gold own-price trend confirms downside pressure)",
+        "F5 [10]: BEARISH — Gold -2.592594049234458% (Gold own-price trend confirms downside pressure)",
         "F6 [8]: NEUTRAL — VIX 18.44 (Neutral risk regime)",
         "F7 [8]: NEUTRAL — No recent US event (No confirmed US economic surprise)",
         "F8 [2]: NEUTRAL — Inflation signal unavailable (Collector does not currently provide a top-level inflation_signal column)",
@@ -4446,7 +4446,7 @@
               "reason": "Gold own-price trend confirms downside pressure",
               "signal": "BEARISH",
               "weight": 10,
-              "evidence": "Gold -2.5925941316534216%"
+              "evidence": "Gold -2.592594049234458%"
             },
             "F6": {
               "reason": "Neutral risk regime",
@@ -4810,6 +4810,7 @@
           "gold_d5_pct",
           "gold_d20_pct",
           "latest_us_event",
+          "us_10y_real_yield_d20_bps",
           "geopolitical_risk_flag"
         ],
         "weighted_score": {
@@ -4873,7 +4874,7 @@
             "reason": "Gold own-price trend confirms downside pressure",
             "signal": "BEARISH",
             "weight": 10,
-            "evidence": "Gold -2.5925941316534216%"
+            "evidence": "Gold -2.592594049234458%"
           },
           "F6": {
             "reason": "Neutral risk regime",
@@ -5074,7 +5075,7 @@
                 "reason": "Gold own-price trend confirms downside pressure",
                 "signal": "BEARISH",
                 "weight": 10,
-                "evidence": "Gold -2.5925941316534216%"
+                "evidence": "Gold -2.592594049234458%"
               },
               "F6": {
                 "reason": "Neutral risk regime",
@@ -5425,7 +5426,7 @@
       "agent": "NQ",
       "status": "live",
       "market_status": "closed",
-      "last_run_et": "2026-06-21T08:13:53.668+00:00",
+      "last_run_et": "2026-06-21T09:05:40.281+00:00",
       "summary": "NQ Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -5919,7 +5920,7 @@
           "reason": "BTC strength confirms high-beta risk appetite",
           "signal": "BULLISH",
           "weight": 2,
-          "evidence": "BTC delta 3.88%"
+          "evidence": "BTC delta 3.66%"
         },
         "F10": {
           "reason": "Gold weakness outside risk-off supports risk appetite",
@@ -5937,10 +5938,12 @@
         "F6 [12]: NEUTRAL — Fed bias neutral (No clear Fed liquidity impulse)",
         "F7 [8]: NEUTRAL — No recent US event (No confirmed US economic surprise)",
         "F8 [10]: BULLISH — NQ delta 2.51% (NQ own price action confirms bullish pressure)",
-        "F9 [2]: BULLISH — BTC delta 3.88% (BTC strength confirms high-beta risk appetite)",
+        "F9 [2]: BULLISH — BTC delta 3.66% (BTC strength confirms high-beta risk appetite)",
         "F10 [2]: BULLISH — Gold delta -2.59%, VIX 18.44 (Gold weakness outside risk-off supports risk appetite)"
       ],
-      "warnings": [],
+      "warnings": [
+        "NQ_BTC_DECOUPLING"
+      ],
       "reasoning_summary": "NQ weighted verdicts calculated deterministically by timeframe. 24h BULLISH 65%, 3d BULLISH 100%, current week BULLISH 100%, next week BEARISH 60%, current month BEARISH 67%.",
       "score_bullish": 4,
       "score_bearish": 1,
@@ -6157,7 +6160,7 @@
               "reason": "BTC strength confirms high-beta risk appetite",
               "signal": "BULLISH",
               "weight": 2,
-              "evidence": "BTC delta 3.88%"
+              "evidence": "BTC delta 3.66%"
             },
             "F10": {
               "reason": "Gold weakness outside risk-off supports risk appetite",
@@ -6488,7 +6491,9 @@
         "layer": "layer_1_raw",
         "created_at": null,
         "reason_24h": "24h NQ deterministic score: bull case 65%, bear case 35%, neutral/inactive 60%, directional participation 40%, net edge +30.",
-        "risk_flags": [],
+        "risk_flags": [
+          "NQ_BTC_DECOUPLING"
+        ],
         "reason_3_day": "3d NQ deterministic score: bull case 100%, bear case 0%, neutral/inactive 67%, directional participation 33%, net edge +100.",
         "direction_24h": "BULLISH",
         "score_bearish": 1,
@@ -6498,6 +6503,7 @@
         "conviction_24h": 65,
         "logic_document": "agent_nq_direction.md",
         "missing_inputs": [
+          "us_10y_d20_bps",
           "latest_us_event",
           "nq_d5_pct",
           "nq_d20_pct",
@@ -6592,7 +6598,7 @@
             "reason": "BTC strength confirms high-beta risk appetite",
             "signal": "BULLISH",
             "weight": 2,
-            "evidence": "BTC delta 3.88%"
+            "evidence": "BTC delta 3.66%"
           },
           "F10": {
             "reason": "Gold weakness outside risk-off supports risk appetite",
@@ -6795,7 +6801,7 @@
                 "reason": "BTC strength confirms high-beta risk appetite",
                 "signal": "BULLISH",
                 "weight": 2,
-                "evidence": "BTC delta 3.88%"
+                "evidence": "BTC delta 3.66%"
               },
               "F10": {
                 "reason": "Gold weakness outside risk-off supports risk appetite",
@@ -7126,7 +7132,7 @@
       "agent": "BTC",
       "status": "live",
       "market_status": "open",
-      "last_run_et": "2026-06-21T08:13:53.668+00:00",
+      "last_run_et": "2026-06-21T09:05:40.281+00:00",
       "summary": "BTC Layer 1 raw call generated from sealed independent workflow.",
       "calls": {
         "24h": {
@@ -7183,7 +7189,7 @@
               "reason": "BTC own trend is above noise threshold and supports upside pressure",
               "signal": "BULLISH",
               "weight": 16,
-              "evidence": "BTC 1d % 3.880300921825434"
+              "evidence": "BTC 1d % 3.6584239748385983"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Real yield move below threshold",
@@ -7715,7 +7721,7 @@
             "reason": "BTC own trend is above noise threshold and supports upside pressure",
             "signal": "BULLISH",
             "weight": 16,
-            "evidence": "BTC 1d % 3.880300921825434"
+            "evidence": "BTC 1d % 3.6584239748385983"
           },
           "F3 US 10Y Real Yield Delta": {
             "reason": "Real yield move below threshold",
@@ -7778,7 +7784,7 @@
           "reason": "BTC own trend is above noise threshold and supports upside pressure",
           "signal": "BULLISH",
           "weight": 16,
-          "evidence": "BTC 1d % 3.880300921825434"
+          "evidence": "BTC 1d % 3.6584239748385983"
         },
         "F3 US 10Y Real Yield Delta": {
           "reason": "Real yield move below threshold",
@@ -7831,7 +7837,7 @@
       },
       "key_factors": [
         "F2 DXY / USD Pressure [14]: BULLISH — DXY 1d % -0.5079197518427827 (DXY weakness supports BTC/USD)",
-        "F1 BTC Own Price Delta [16]: BULLISH — BTC 1d % 3.880300921825434 (BTC own trend is above noise threshold and supports upside pressure)",
+        "F1 BTC Own Price Delta [16]: BULLISH — BTC 1d % 3.6584239748385983 (BTC own trend is above noise threshold and supports upside pressure)",
         "F3 US 10Y Real Yield Delta [10]: NEUTRAL — Real yield 5d bps 2.0000000000000018 (Real yield move below threshold)",
         "F5 VIX Level and Risk Regime [16]: BULLISH — VIX 18.44, VIX d5 -3.7799999999999976 (VIX falling materially supports risk appetite)",
         "F4 Fed Bias / Policy Liquidity [10]: NEUTRAL — Fed bias neutral (No clear Fed liquidity impulse)",
@@ -8013,7 +8019,7 @@
           ],
           "bear_case": [],
           "bull_case": [
-            "F1 BTC Own Price Delta (16): BTC 1d % 3.880300921825434",
+            "F1 BTC Own Price Delta (16): BTC 1d % 3.6584239748385983",
             "F2 DXY / USD Pressure (14): DXY 1d % -0.5079197518427827",
             "F5 VIX Level and Risk Regime (16): VIX 18.44, VIX d5 -3.7799999999999976",
             "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 2.5065",
@@ -8070,7 +8076,7 @@
               "reason": "BTC own trend is above noise threshold and supports upside pressure",
               "signal": "BULLISH",
               "weight": 16,
-              "evidence": "BTC 1d % 3.880300921825434"
+              "evidence": "BTC 1d % 3.6584239748385983"
             },
             "F3 US 10Y Real Yield Delta": {
               "reason": "Real yield move below threshold",
@@ -8494,7 +8500,7 @@
       "full_output": {
         "asset": "BTC",
         "layer": "layer_1_raw",
-        "created_at": "2026-06-21T08:14:50.891Z",
+        "created_at": "2026-06-21T09:06:45.447Z",
         "reason_24h": "24h BTC deterministic score: bull case 68 weight, bear case 0 weight, neutral evidence 32 weight. Winning side BULLISH, conviction 100%, net edge +100, directional participation 68%.",
         "risk_flags": [
           "WEEKEND_LIQUIDITY_RISK",
@@ -8567,7 +8573,7 @@
             "reason": "BTC own trend is above noise threshold and supports upside pressure",
             "signal": "BULLISH",
             "weight": 16,
-            "evidence": "BTC 1d % 3.880300921825434"
+            "evidence": "BTC 1d % 3.6584239748385983"
           },
           "F3 US 10Y Real Yield Delta": {
             "reason": "Real yield move below threshold",
@@ -8746,7 +8752,7 @@
             ],
             "bear_case": [],
             "bull_case": [
-              "F1 BTC Own Price Delta (16): BTC 1d % 3.880300921825434",
+              "F1 BTC Own Price Delta (16): BTC 1d % 3.6584239748385983",
               "F2 DXY / USD Pressure (14): DXY 1d % -0.5079197518427827",
               "F5 VIX Level and Risk Regime (16): VIX 18.44, VIX d5 -3.7799999999999976",
               "F6 NQ / High-Beta Risk Confirmation (14): NQ 1d % 2.5065",
@@ -8803,7 +8809,7 @@
                 "reason": "BTC own trend is above noise threshold and supports upside pressure",
                 "signal": "BULLISH",
                 "weight": 16,
-                "evidence": "BTC 1d % 3.880300921825434"
+                "evidence": "BTC 1d % 3.6584239748385983"
               },
               "F3 US 10Y Real Yield Delta": {
                 "reason": "Real yield move below threshold",
