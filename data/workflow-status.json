@@ -1,15 +1,14 @@
 {
-  "status": "failed",
-  "last_run_started_at": "2026-06-21T08:14:56.643Z",
-  "last_run_finished_at": "2026-06-21T08:14:56.644Z",
+  "status": "success",
+  "last_run_started_at": "2026-06-21T09:06:51.430Z",
+  "last_run_finished_at": "2026-06-21T09:06:51.431Z",
   "triggered_by": "dashboard_or_manual",
-  "message": "Master Orchestrator finished with errors.",
-  "failed_step": "Call '1. Economic Events Collector'",
+  "message": "Manual Refresh Complete",
+  "failed_step": null,
   "steps": [
     {
       "name": "Call '1. Economic Events Collector'",
-      "status": "failed",
-      "error": "Your request is invalid or could not be processed by the service: duplicate key value violates unique constraint \"economic_events_event_date_currency_event_name_event_time_t_key\""
+      "status": "success"
     },
     {
       "name": "USD Collector",
@@ -60,8 +59,5 @@
       "status": "success"
     }
   ],
-  "error": {
-    "step": "Call '1. Economic Events Collector'",
-    "reason": "Your request is invalid or could not be processed by the service: duplicate key value violates unique constraint \"economic_events_event_date_currency_event_name_event_time_t_key\""
-  }
+  "error": null
 }
