@@ -2008,8 +2008,43 @@ function renderResearchInfrastructureSummary(data = {}) {
   `;
 }
 
+function renderResearch24hSummary(summary = null) {
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">24H USD Direction Accuracy</p>
+          <h3>Short-horizon benchmark summary</h3>
+        </div>
+        <p class="research-panel-copy">A simplified DXY-only read of the following 24hrs horizon. This answers the basic question first: when the USD agent called up or down, what did DXY actually do?</p>
+      </div>
+      <section class="backtest-metric-grid research-summary-grid research-24h-grid">
+        ${summary
+          ? renderBacktestMetric("Overall 24H Accuracy", percentValue(summary.overall_accuracy_pct), "USD vs DXY, following 24hrs only")
+          : renderUnavailableMetric("Overall 24H Accuracy", "Waiting for populated research views")}
+        ${summary
+          ? renderBacktestMetric("Bullish Call Accuracy", percentValue(summary.bullish_call_accuracy_pct), "When the USD agent called bullish, how often was DXY up?")
+          : renderUnavailableMetric("Bullish Call Accuracy", "Waiting for populated research views")}
+        ${summary
+          ? renderBacktestMetric("Bearish Call Accuracy", percentValue(summary.bearish_call_accuracy_pct), "When the USD agent called bearish, how often was DXY down?")
+          : renderUnavailableMetric("Bearish Call Accuracy", "Waiting for populated research views")}
+        ${summary
+          ? renderBacktestMetric("Flat / No-Move Accuracy", percentValue(summary.flat_no_move_accuracy_pct), "How often was the 24H call flat or no move?")
+          : renderUnavailableMetric("Flat / No-Move Accuracy", "Waiting for populated research views")}
+        ${summary
+          ? renderBacktestMetric("24H Evaluated Calls", String(summary.evaluated_calls ?? "--"), "CORRECT, WRONG, or FLAT DXY outcomes only")
+          : renderUnavailableMetric("24H Evaluated Calls", "Waiting for populated research views")}
+        ${summary
+          ? renderBacktestMetric("24H Wins / Losses / Flats", `${summary.wins ?? "--"} / ${summary.losses ?? "--"} / ${summary.flats ?? "--"}`, "Simple 24H benchmark record")
+          : renderUnavailableMetric("24H Wins / Losses / Flats", "Waiting for populated research views")}
+      </section>
+    </section>
+  `;
+}
+
 function renderResearchAccuracy(data = {}) {
   const overall = data.accuracy?.overall || null;
+  const summary24h = data.accuracy?.summary_24h || null;
   const timeframe = data.accuracy?.by_timeframe || [];
   const conviction = data.accuracy?.by_conviction_bucket || [];
   const weekday = data.accuracy?.by_weekday || [];
@@ -2023,6 +2058,7 @@ function renderResearchAccuracy(data = {}) {
 
   return `
     ${renderResearchStatusHeader(data)}
+    ${renderResearch24hSummary(summary24h)}
 
     <section class="research-section">
       <div class="research-section-head">
@@ -2514,6 +2550,7 @@ async function fetchResearchView(viewName, options = {}) {
 async function fetchResearchDashboardData() {
   const [
     overallRows,
+    summary24hRows,
     timeframeRows,
     convictionRows,
     weekdayRows,
@@ -2525,6 +2562,7 @@ async function fetchResearchDashboardData() {
     infrastructureRows
   ] = await Promise.all([
     fetchResearchView("research_overall_win_rate"),
+    fetchResearchView("research_usd_24h_direction_accuracy"),
     fetchResearchView("research_win_rate_by_timeframe", { order: "timeframe.asc" }),
     fetchResearchView("research_win_rate_by_conviction_bucket"),
     fetchResearchView("research_win_rate_by_weekday"),
@@ -2553,6 +2591,7 @@ async function fetchResearchDashboardData() {
     },
     accuracy: {
       overall: overallRows[0] || null,
+      summary_24h: summary24hRows[0] || null,
       by_timeframe: timeframeRows,
       by_conviction_bucket: convictionRows,
       by_weekday: weekdayRows,

@@ -81,45 +81,156 @@ join research_observations ro
 ;
 
 comment on view research_prediction_primary_summary is
-'Primary-market combined research scoring layer. One row represents one prediction summarized across its primary evaluation markets, which prevents USD multi-market rows from double-counting win-rate analysis.';
+'Primary-market combined research scoring layer. One row represents one prediction summarized across its primary evaluation markets. For USD Phase 2 this basket summary is diagnostic only and is not the headline benchmark accuracy surface.';
+
+create or replace view research_prediction_usd_benchmark_summary as
+select
+  e.prediction_id,
+  e.observation_id,
+  e.verdict_id,
+  e.asset_code,
+  e.timeframe,
+  e.call_date,
+  e.call_day_of_week,
+  e.call_time_et,
+  e.conviction_bucket,
+  e.move_magnitude_bucket,
+  e.agent_conviction,
+  e.open_price,
+  e.close_price,
+  e.pct_change,
+  e.abs_pct_change,
+  e.market_outcome_direction,
+  e.agent_direction,
+  e.result as combined_result,
+  e.result_reason,
+  e.evaluated_market as benchmark_market,
+  e.market_relationship,
+  e.evaluation_mode,
+  ro.snapshot_date,
+  tp.predicted_direction,
+  tp.predicted_conviction,
+  tp.verdict_strength,
+  coalesce(ro.market_regime ->> 'equities_regime', ro.market_snapshot ->> 'equities_regime') as equities_regime,
+  coalesce(ro.market_regime ->> 'fed_bias', ro.market_snapshot ->> 'fed_bias') as fed_bias,
+  case when e.result = 'CORRECT' then 1 else 0 end as is_win,
+  case when e.result = 'WRONG' then 1 else 0 end as is_loss
+from research_prediction_evaluations e
+join research_timeframe_predictions tp
+  on tp.id = e.prediction_id
+join research_observations ro
+  on ro.id = e.observation_id
+where
+  ro.agent_name = 'USD'
+  and ro.asset_code = 'USD'
+  and e.evaluation_mode = 'primary'
+  and e.evaluated_market = 'DXY'
+;
+
+comment on view research_prediction_usd_benchmark_summary is
+'USD Phase 2 benchmark-accuracy surface. One row represents one USD timeframe prediction evaluated only against the direct DXY benchmark. Basket and translation outcomes remain available elsewhere for diagnostics only.';
+
+create or replace view research_usd_24h_direction_accuracy as
+with benchmark_24h as (
+  select *
+  from research_prediction_usd_benchmark_summary
+  where timeframe = 'following 24hrs'
+),
+evaluated_24h as (
+  select *
+  from benchmark_24h
+  where combined_result in ('CORRECT', 'WRONG', 'FLAT')
+),
+bullish_directional as (
+  select *
+  from evaluated_24h
+  where agent_direction = 'BULLISH'
+    and combined_result in ('CORRECT', 'WRONG')
+),
+bearish_directional as (
+  select *
+  from evaluated_24h
+  where agent_direction = 'BEARISH'
+    and combined_result in ('CORRECT', 'WRONG')
+)
+select
+  'DXY'::text as benchmark_market,
+  count(*) as evaluated_calls,
+  count(*) filter (where combined_result = 'CORRECT') as wins,
+  count(*) filter (where combined_result = 'WRONG') as losses,
+  count(*) filter (where combined_result = 'FLAT') as flats,
+  (select count(*) from benchmark_24h where combined_result = 'NOT_EVALUABLE') as not_evaluable,
+  count(*) filter (where agent_direction = 'BULLISH' and combined_result in ('CORRECT', 'WRONG', 'FLAT')) as bullish_calls,
+  count(*) filter (where agent_direction = 'BEARISH' and combined_result in ('CORRECT', 'WRONG', 'FLAT')) as bearish_calls,
+  count(*) filter (where agent_direction = 'BULLISH' and combined_result = 'CORRECT') as bullish_wins,
+  count(*) filter (where agent_direction = 'BULLISH' and combined_result = 'WRONG') as bullish_losses,
+  count(*) filter (where agent_direction = 'BULLISH' and combined_result = 'FLAT') as bullish_flats,
+  count(*) filter (where agent_direction = 'BEARISH' and combined_result = 'CORRECT') as bearish_wins,
+  count(*) filter (where agent_direction = 'BEARISH' and combined_result = 'WRONG') as bearish_losses,
+  count(*) filter (where agent_direction = 'BEARISH' and combined_result = 'FLAT') as bearish_flats,
+  round(
+    100.0 * count(*) filter (where combined_result = 'CORRECT')
+    / nullif(count(*), 0),
+    2
+  ) as overall_accuracy_pct,
+  round(
+    100.0 * (select count(*) from bullish_directional where combined_result = 'CORRECT')
+    / nullif((select count(*) from bullish_directional), 0),
+    2
+  ) as bullish_call_accuracy_pct,
+  round(
+    100.0 * (select count(*) from bearish_directional where combined_result = 'CORRECT')
+    / nullif((select count(*) from bearish_directional), 0),
+    2
+  ) as bearish_call_accuracy_pct,
+  round(
+    100.0 * count(*) filter (where combined_result = 'FLAT')
+    / nullif(count(*), 0),
+    2
+  ) as flat_no_move_accuracy_pct
+from evaluated_24h
+;
+
+comment on view research_usd_24h_direction_accuracy is
+'Single-row USD following-24hrs benchmark summary. Uses DXY-only benchmark accuracy, excludes MIXED and NOT_EVALUABLE from the evaluated denominator, and provides simple bullish, bearish, and flat/no-move accuracy splits for the dashboard.';
 
 create or replace view research_overall_win_rate as
 select
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED');
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT');
 
 create or replace view research_win_rate_by_timeframe as
 select
   timeframe,
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by timeframe
 order by timeframe;
 
 create or replace view research_win_rate_by_conviction_bucket as
 select
   coalesce(conviction_bucket, 'UNKNOWN') as conviction_bucket,
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
@@ -130,11 +241,11 @@ select
   ) as avg_conviction,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by coalesce(conviction_bucket, 'UNKNOWN')
 order by
   case coalesce(conviction_bucket, 'UNKNOWN')
@@ -148,18 +259,18 @@ order by
 create or replace view research_win_rate_by_weekday as
 select
   call_day_of_week,
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by call_day_of_week
 order by
   case call_day_of_week
@@ -176,22 +287,22 @@ order by
 create or replace view research_win_rate_by_magnitude_bucket as
 select
   coalesce(move_magnitude_bucket, 'UNKNOWN') as move_magnitude_bucket,
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
-    avg(avg_abs_pct_change)::numeric,
+    avg(abs_pct_change)::numeric,
     4
   ) as avg_abs_move_pct,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by coalesce(move_magnitude_bucket, 'UNKNOWN')
 order by
   case coalesce(move_magnitude_bucket, 'UNKNOWN')
@@ -206,18 +317,18 @@ create or replace view research_win_rate_by_market_regime as
 select
   coalesce(equities_regime, 'UNKNOWN') as equities_regime,
   coalesce(fed_bias, 'UNKNOWN') as fed_bias,
-  count(*) as evaluated_predictions,
+  count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')) as evaluated_predictions,
   count(*) filter (where combined_result = 'CORRECT') as wins,
   count(*) filter (where combined_result = 'WRONG') as losses,
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
     100.0 * count(*) filter (where combined_result = 'CORRECT')
-    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
-from research_prediction_primary_summary
-where combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+from research_prediction_usd_benchmark_summary
+where combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by
   coalesce(equities_regime, 'UNKNOWN'),
   coalesce(fed_bias, 'UNKNOWN')
@@ -237,15 +348,15 @@ select
   round(avg(fo.factor_weight)::numeric, 2) as avg_factor_weight,
   round(
     100.0 * count(*) filter (where ps.combined_result = 'CORRECT')
-    / nullif(count(*) filter (where ps.combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where ps.combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
 from research_factor_observations fo
-join research_prediction_primary_summary ps
+join research_prediction_usd_benchmark_summary ps
   on ps.prediction_id = fo.timeframe_prediction_id
 where
   fo.factor_signal in ('BULLISH', 'BEARISH')
-  and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+  and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by
   fo.factor_key,
   fo.factor_name,
@@ -272,11 +383,11 @@ select
     else 0.0
   end)::numeric, 4) as weighted_contribution_score
 from research_factor_observations fo
-join research_prediction_primary_summary ps
+join research_prediction_usd_benchmark_summary ps
   on ps.prediction_id = fo.timeframe_prediction_id
 where
   fo.factor_signal in ('BULLISH', 'BEARISH')
-  and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+  and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT')
 group by
   fo.factor_key,
   fo.factor_name,
@@ -292,11 +403,11 @@ with directional_factors as (
     fo.factor_signal,
     fo.factor_weight
   from research_factor_observations fo
-  join research_prediction_primary_summary ps
+  join research_prediction_usd_benchmark_summary ps
     on ps.prediction_id = fo.timeframe_prediction_id
   where
     fo.factor_signal in ('BULLISH', 'BEARISH')
-    and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')
+    and ps.combined_result in ('CORRECT', 'WRONG', 'FLAT')
 ),
 factor_pairs as (
   select
@@ -327,11 +438,11 @@ select
   round(avg(fp.factor_weight_1 + fp.factor_weight_2)::numeric, 2) as avg_combined_weight,
   round(
     100.0 * count(*) filter (where ps.combined_result = 'CORRECT')
-    / nullif(count(*) filter (where ps.combined_result in ('CORRECT', 'WRONG', 'FLAT', 'MIXED')), 0),
+    / nullif(count(*) filter (where ps.combined_result in ('CORRECT', 'WRONG', 'FLAT')), 0),
     2
   ) as win_rate_pct
 from factor_pairs fp
-join research_prediction_primary_summary ps
+join research_prediction_usd_benchmark_summary ps
   on ps.prediction_id = fp.timeframe_prediction_id
 group by
   fp.timeframe,
