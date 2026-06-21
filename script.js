@@ -1892,10 +1892,13 @@ function renderUnavailableMetric(label, detail) {
   return renderBacktestMetric(label, "Not yet available", detail);
 }
 
-function renderResearchBreakdownTable(title, subtitle, rows, columns) {
+function renderResearchBreakdownTable(title, subtitle, rows, columns, options = {}) {
+  const panelClass = ["detail-panel", "research-table-panel", options.panelClass || ""].filter(Boolean).join(" ");
+  const tableClass = ["dashboard-table", "research-table", options.tableClass || ""].filter(Boolean).join(" ");
+
   if (!rows.length) {
     return `
-      <article class="detail-panel">
+      <article class="${panelClass}">
         <div class="panel-head">
           <p class="eyebrow">${escapeHtml(subtitle)}</p>
           <h3>${escapeHtml(title)}</h3>
@@ -1906,13 +1909,14 @@ function renderResearchBreakdownTable(title, subtitle, rows, columns) {
   }
 
   return `
-    <article class="detail-panel">
+    <article class="${panelClass}">
       <div class="panel-head">
         <p class="eyebrow">${escapeHtml(subtitle)}</p>
         <h3>${escapeHtml(title)}</h3>
       </div>
-      <div class="table-scroll">
-        <table class="dashboard-table">
+      ${options.description ? `<p class="research-panel-copy">${escapeHtml(options.description)}</p>` : ""}
+      <div class="table-scroll research-table-scroll">
+        <table class="${tableClass}">
           <thead>
             <tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join("")}</tr>
           </thead>
@@ -1927,6 +1931,83 @@ function renderResearchBreakdownTable(title, subtitle, rows, columns) {
   `;
 }
 
+function researchDataCell(primary, secondary = "") {
+  return `
+    <div class="research-cell">
+      <strong>${escapeHtml(metricAvailable(primary) ? String(primary) : "Not yet available")}</strong>
+      ${secondary ? `<span>${escapeHtml(secondary)}</span>` : ""}
+    </div>
+  `;
+}
+
+function researchPairCell(primary, secondary) {
+  return `
+    <div class="research-cell">
+      <strong>${escapeHtml(primary || "Unknown")}</strong>
+      <span>${escapeHtml(secondary || "Unknown")}</span>
+    </div>
+  `;
+}
+
+function computeResearchNotEvaluable(overall = {}, infrastructure = {}) {
+  const predictionCount = numberOrNull(infrastructure.prediction_count);
+  const evaluated = numberOrNull(overall.evaluated_predictions);
+  if (predictionCount === null || evaluated === null) return null;
+  return Math.max(0, predictionCount - evaluated);
+}
+
+function renderResearchStatusHeader(data = {}) {
+  const overall = data.accuracy?.overall || {};
+  const infrastructure = data.infrastructure || {};
+  const lastSynced = data.meta?.error ? "Unavailable" : formatDashboardTime(data.meta?.last_updated);
+  const replayCoverage = infrastructure.replay_coverage || "Not yet available";
+  const evaluatedRows = metricAvailable(overall.evaluated_predictions) ? String(overall.evaluated_predictions) : "Not yet available";
+
+  return `
+    <section class="research-status-hero">
+      <article class="detail-panel wide-panel explanation-card research-status-card">
+        <div class="research-status-copy">
+          <div>
+            <p class="eyebrow">Research Status</p>
+            <h3>USD historical benchmark dashboard</h3>
+          </div>
+          <p class="research-panel-copy">Read-only research metrics sourced from Supabase views. Headline performance is measured against DXY only. Basket and translation outcomes remain diagnostic and are not included in headline accuracy.</p>
+        </div>
+        <div class="research-status-grid">
+          ${renderProgressPill("Last Synced", lastSynced)}
+          ${renderProgressPill("Benchmark Market", "DXY")}
+          ${renderProgressPill("Replay Coverage", replayCoverage)}
+          ${renderProgressPill("Rows Evaluated", evaluatedRows)}
+          ${renderProgressPill("Research Mode", "Read-only")}
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function renderResearchInfrastructureSummary(data = {}) {
+  const infrastructure = data.infrastructure || {};
+
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Infrastructure</p>
+          <h3>Pipeline status</h3>
+        </div>
+        <p class="research-panel-copy">The research warehouse, replay engine, and evaluation pipeline feed this page. This section stays secondary to the headline USD benchmark result.</p>
+      </div>
+      <section class="backtest-metric-grid research-progress-grid research-infra-grid">
+        ${renderBacktestMetric("Historical Warehouse", infrastructure.historical_warehouse_status || "Not yet available", "Historical source tables populated")}
+        ${renderBacktestMetric("Snapshot Builder", infrastructure.snapshot_builder_status || "Not yet available", "Historical USD market snapshots available")}
+        ${renderBacktestMetric("Replay Engine", infrastructure.replay_engine_status || "Not yet available", "Research observations and predictions written")}
+        ${renderBacktestMetric("Outcome Evaluation", infrastructure.outcome_evaluation_status || "Not yet available", "Predictions evaluated against realised outcomes")}
+        ${renderBacktestMetric("Research SQL", infrastructure.research_sql_status || "Not yet available", "Dashboard reads research views only")}
+      </section>
+    </section>
+  `;
+}
+
 function renderResearchAccuracy(data = {}) {
   const overall = data.accuracy?.overall || null;
   const timeframe = data.accuracy?.by_timeframe || [];
@@ -1937,103 +2018,146 @@ function renderResearchAccuracy(data = {}) {
   const factorReliability = data.accuracy?.top_factor_reliability || [];
   const factorContribution = data.accuracy?.top_factor_contribution || [];
   const bestCombos = data.accuracy?.best_factor_combinations || [];
-  const asCell = value => escapeHtml(metricAvailable(value) ? String(value) : "Not yet available");
+  const infrastructure = data.infrastructure || {};
+  const notEvaluable = computeResearchNotEvaluable(overall || {}, infrastructure);
 
   return `
-    <article class="detail-panel wide-panel explanation-card">
-      <p class="eyebrow">Research Accuracy</p>
-      <h3>Real historical metrics from Supabase research views</h3>
-      <p>This section is read-only. It reads downstream research outputs only and does not influence live Layer 1 agents or workflow decisions.</p>
-    </article>
+    ${renderResearchStatusHeader(data)}
 
-    <section class="backtest-metric-grid">
-      ${overall
-        ? renderBacktestMetric("Overall Evaluated Predictions", String(overall.evaluated_predictions ?? "--"), "Primary-summary predictions with real outcome scoring")
-        : renderUnavailableMetric("Overall Evaluated Predictions", "Waiting for populated research views")}
-      ${overall
-        ? renderBacktestMetric("Overall Win Rate", percentValue(overall.win_rate_pct), "Real combined-result win rate from the research layer")
-        : renderUnavailableMetric("Overall Win Rate", "Waiting for populated research views")}
-      ${overall
-        ? renderBacktestMetric("Wins", String(overall.wins ?? "--"), "Combined-result CORRECT rows")
-        : renderUnavailableMetric("Wins", "Waiting for populated research views")}
-      ${overall
-        ? renderBacktestMetric("Losses", String(overall.losses ?? "--"), "Combined-result WRONG rows")
-        : renderUnavailableMetric("Losses", "Waiting for populated research views")}
-      ${overall
-        ? renderBacktestMetric("Flats", String(overall.flats ?? "--"), "Combined-result FLAT rows")
-        : renderUnavailableMetric("Flats", "Waiting for populated research views")}
-      ${overall
-        ? renderBacktestMetric("Mixed", String(overall.mixed ?? "--"), "Multi-market mixed USD outcomes")
-        : renderUnavailableMetric("Mixed", "Waiting for populated research views")}
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">USD Benchmark Accuracy</p>
+          <h3>Headline result</h3>
+        </div>
+        <p class="research-panel-copy">This is the number to read first. It measures whether USD directional calls matched the realised DXY move, with tiny moves classified as flat.</p>
+      </div>
+      <section class="backtest-metric-grid research-summary-grid">
+        ${overall
+          ? renderBacktestMetric("Overall Win Rate", percentValue(overall.win_rate_pct), "USD benchmark win rate from DXY-only research scoring")
+          : renderUnavailableMetric("Overall Win Rate", "Waiting for populated research views")}
+        ${overall
+          ? renderBacktestMetric("Evaluated Predictions", String(overall.evaluated_predictions ?? "--"), "CORRECT, WRONG, or FLAT DXY outcomes only")
+          : renderUnavailableMetric("Evaluated Predictions", "Waiting for populated research views")}
+        ${overall
+          ? renderBacktestMetric("Wins", String(overall.wins ?? "--"), "USD calls correct versus DXY")
+          : renderUnavailableMetric("Wins", "Waiting for populated research views")}
+        ${overall
+          ? renderBacktestMetric("Losses", String(overall.losses ?? "--"), "USD calls wrong versus DXY")
+          : renderUnavailableMetric("Losses", "Waiting for populated research views")}
+        ${overall
+          ? renderBacktestMetric("Flats", String(overall.flats ?? "--"), "DXY moved inside the flat threshold")
+          : renderUnavailableMetric("Flats", "Waiting for populated research views")}
+        ${renderBacktestMetric("Not Evaluable", metricAvailable(notEvaluable) ? String(notEvaluable) : "Not yet available", "Predictions not counted in headline accuracy")}
+        ${renderBacktestMetric("Benchmark Market", "DXY", "Basket and translation outcomes stay diagnostic only")}
+      </section>
     </section>
 
-    <section class="backtest-grid two-column">
-      ${renderResearchBreakdownTable("Win Rate by Timeframe", "Breakdown", timeframe, [
-        { label: "Timeframe", render: row => asCell(row.timeframe) },
-        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
-        { label: "Wins", render: row => asCell(row.wins) },
-        { label: "Mixed", render: row => asCell(row.mixed) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
-      ${renderResearchBreakdownTable("Win Rate by Conviction Bucket", "Breakdown", conviction, [
-        { label: "Conviction Bucket", render: row => asCell(row.conviction_bucket) },
-        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
-        { label: "Avg Conviction", render: row => percentValue(row.avg_conviction) },
-        { label: "Mixed", render: row => asCell(row.mixed) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
+    ${renderResearchInfrastructureSummary(data)}
+
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Accuracy Breakdowns</p>
+          <h3>Where performance changes</h3>
+        </div>
+        <p class="research-panel-copy">Use these breakdowns to see whether the benchmark win rate changes by horizon, conviction, timing, move size, or regime.</p>
+      </div>
+      <section class="backtest-grid two-column research-breakdown-grid">
+        ${renderResearchBreakdownTable("By Timeframe", "Benchmark Accuracy", timeframe, [
+          { label: "Timeframe", render: row => researchDataCell(row.timeframe, `${row.evaluated_predictions} evaluated`) },
+          { label: "Record", render: row => researchDataCell(`${row.wins} / ${row.losses}`, `${row.flats} flat`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), "DXY benchmark") }
+        ], {
+          description: "Headline benchmark accuracy by replay horizon."
+        })}
+        ${renderResearchBreakdownTable("By Conviction Bucket", "Benchmark Accuracy", conviction, [
+          { label: "Bucket", render: row => researchDataCell(row.conviction_bucket, percentValue(row.avg_conviction)) },
+          { label: "Evaluated", render: row => researchDataCell(row.evaluated_predictions, `${row.wins} wins`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.losses} losses`) }
+        ], {
+          description: "Benchmark accuracy split by conviction strength."
+        })}
+        ${renderResearchBreakdownTable("By Weekday", "Benchmark Accuracy", weekday, [
+          { label: "Weekday", render: row => researchDataCell(row.call_day_of_week, `${row.evaluated_predictions} evaluated`) },
+          { label: "Record", render: row => researchDataCell(`${row.wins} / ${row.losses}`, `${row.flats} flat`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), "DXY benchmark") }
+        ], {
+          description: "Benchmark accuracy by original call day."
+        })}
+        ${renderResearchBreakdownTable("By Magnitude", "Benchmark Accuracy", magnitude, [
+          { label: "Magnitude", render: row => researchDataCell(row.move_magnitude_bucket, `${row.evaluated_predictions} evaluated`) },
+          { label: "Avg Abs Move", render: row => researchDataCell(metricAvailable(row.avg_abs_move_pct) ? `${row.avg_abs_move_pct}%` : "Not yet available", `${row.flats} flat`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.wins} wins`) }
+        ], {
+          description: "DXY-only magnitude buckets and absolute move averages."
+        })}
+      </section>
+      <section class="backtest-grid research-regime-grid">
+        ${renderResearchBreakdownTable("By Market Regime", "Benchmark Accuracy", regime, [
+          { label: "Regime", render: row => researchPairCell(row.equities_regime, row.fed_bias) },
+          { label: "Evaluated", render: row => researchDataCell(row.evaluated_predictions, `${row.wins} wins / ${row.losses} losses`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.flats} flat`) }
+        ], {
+          description: "Benchmark accuracy split by equities regime and Fed bias."
+        })}
+      </section>
     </section>
 
-    <section class="backtest-grid two-column">
-      ${renderResearchBreakdownTable("Win Rate by Weekday", "Breakdown", weekday, [
-        { label: "Weekday", render: row => asCell(row.call_day_of_week) },
-        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
-        { label: "Wins", render: row => asCell(row.wins) },
-        { label: "Mixed", render: row => asCell(row.mixed) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
-      ${renderResearchBreakdownTable("Win Rate by Magnitude Bucket", "Breakdown", magnitude, [
-        { label: "Magnitude Bucket", render: row => asCell(row.move_magnitude_bucket) },
-        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
-        { label: "Avg Abs Move", render: row => metricAvailable(row.avg_abs_move_pct) ? `${escapeHtml(String(row.avg_abs_move_pct))}%` : "Not yet available" },
-        { label: "Mixed", render: row => asCell(row.mixed) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
+    <section class="research-section research-secondary-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Factor Research</p>
+          <h3>Secondary diagnostics</h3>
+        </div>
+        <p class="research-panel-copy">Useful for deeper research, but visually de-emphasized until headline USD benchmark accuracy is stable.</p>
+      </div>
+      <section class="backtest-grid two-column research-factor-grid">
+        ${renderResearchBreakdownTable("Factor Reliability", "Research Factors", factorReliability, [
+          { label: "Factor", render: row => researchDataCell(row.factor_name || row.factor_key, `${row.factor_signal} • ${row.timeframe}`) },
+          { label: "Occurrences", render: row => researchDataCell(row.factor_occurrences, `${row.wins} wins / ${row.losses} losses`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `Avg weight ${row.avg_factor_weight}`) }
+        ], {
+          panelClass: "research-secondary-panel",
+          description: "How often a directional factor appears and how often DXY confirms the associated USD call."
+        })}
+        ${renderResearchBreakdownTable("Factor Contribution", "Research Factors", factorContribution, [
+          { label: "Factor", render: row => researchDataCell(row.factor_name || row.factor_key, `${row.factor_signal} • ${row.timeframe}`) },
+          { label: "Contribution", render: row => researchDataCell(row.contribution_score, "Unweighted score") },
+          { label: "Weighted", render: row => researchDataCell(row.weighted_contribution_score, `${row.factor_occurrences} observations`) }
+        ], {
+          panelClass: "research-secondary-panel",
+          description: "Directional contribution metrics using DXY-only benchmark correctness."
+        })}
+      </section>
+      <section class="backtest-grid research-combo-grid">
+        ${renderResearchBreakdownTable("Factor Combinations", "Research Factors", bestCombos, [
+          { label: "Combination", render: row => researchDataCell(`${row.factor_key_1} + ${row.factor_key_2}`, `${row.factor_signal_1} / ${row.factor_signal_2}`) },
+          { label: "Timeframe", render: row => researchDataCell(row.timeframe, `${row.combo_occurrences} occurrences`) },
+          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `Avg weight ${row.avg_combined_weight}`) }
+        ], {
+          panelClass: "research-secondary-panel",
+          description: "Best-performing factor pairs under the USD-vs-DXY benchmark definition."
+        })}
+      </section>
     </section>
 
-    <section class="backtest-grid">
-      ${renderResearchBreakdownTable("Win Rate by Market Regime", "Breakdown", regime, [
-        { label: "Equities Regime", render: row => asCell(row.equities_regime) },
-        { label: "Fed Bias", render: row => asCell(row.fed_bias) },
-        { label: "Evaluated", render: row => asCell(row.evaluated_predictions) },
-        { label: "Mixed", render: row => asCell(row.mixed) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
-    </section>
-
-    <section class="backtest-grid three-column">
-      ${renderResearchBreakdownTable("Top Factor Reliability", "Research Factors", factorReliability, [
-        { label: "Factor", render: row => asCell(row.factor_name || row.factor_key) },
-        { label: "Signal", render: row => asCell(row.factor_signal) },
-        { label: "Timeframe", render: row => asCell(row.timeframe) },
-        { label: "Occurrences", render: row => asCell(row.factor_occurrences) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
-      ${renderResearchBreakdownTable("Top Factor Contribution", "Research Factors", factorContribution, [
-        { label: "Factor", render: row => asCell(row.factor_name || row.factor_key) },
-        { label: "Signal", render: row => asCell(row.factor_signal) },
-        { label: "Timeframe", render: row => asCell(row.timeframe) },
-        { label: "Contribution", render: row => asCell(row.contribution_score) },
-        { label: "Weighted", render: row => asCell(row.weighted_contribution_score) }
-      ])}
-      ${renderResearchBreakdownTable("Best Factor Combinations", "Research Factors", bestCombos, [
-        { label: "Timeframe", render: row => asCell(row.timeframe) },
-        { label: "Factor 1", render: row => asCell(`${row.factor_key_1} (${row.factor_signal_1})`) },
-        { label: "Factor 2", render: row => asCell(`${row.factor_key_2} (${row.factor_signal_2})`) },
-        { label: "Occurrences", render: row => asCell(row.combo_occurrences) },
-        { label: "Win Rate", render: row => percentValue(row.win_rate_pct) }
-      ])}
-    </section>
+    <details class="research-diagnostics">
+      <summary>Diagnostics and secondary notes</summary>
+      <div class="research-diagnostics-body">
+        <article class="detail-panel research-secondary-panel">
+          <div class="panel-head">
+            <p class="eyebrow">Diagnostics</p>
+            <h3>Interpretation notes</h3>
+          </div>
+          <ul class="read-only-list">
+            <li>Headline accuracy excludes basket or translation outcomes.</li>
+            <li>MIXED and NOT_EVALUABLE rows do not enter the headline win-rate denominator.</li>
+            <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
+          </ul>
+        </article>
+      </div>
+    </details>
   `;
 }
 
