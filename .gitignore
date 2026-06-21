@@ -4,3 +4,7 @@ dist/
 *.env
 *API KEY*.txt
 *api key*.txt
+Keys/
+.tmp-supabase-home/
+backtester/tmp/
+supabase/.temp/
