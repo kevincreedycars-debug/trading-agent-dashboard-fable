@@ -5,11 +5,17 @@
 ### Added
 
 - Added `docs/CORE_RESEARCH_PHILOSOPHY.md` as the authoritative guiding document for research/backtesting principles.
+- Added `docs/PHASE3_HISTORICAL_EXPANSION_REPORT.md` to record the first USD historical expansion attempt and its evidence summary.
+- Added `docs/PHASE3_HISTORICAL_WEAKNESSES.md` to capture warehouse and evaluator issues discovered during Phase 3 evidence collection.
+- Added `docs/HISTORICAL_DATA_INVENTORY.md` as the warehouse-completeness source of truth for USD replay inputs through end-2024.
 
 ### Changed
 
 - Updated backtester and project-memory documentation to reference the new core research philosophy and reinforce that measurement comes before optimization.
 - Corrected stale hosting references where documentation still conflicted with the current GitHub Pages deployment model.
+- Corrected the historical evaluator so missing or zero close prices are now treated as `NOT_EVALUABLE` instead of false `-100%` benchmark wins.
+- Attempted expansion of the USD replay window to `2024-05-31`, confirmed the frozen research framework still runs end-to-end, and documented that the warehouse currently only supports the continuous January 2024 USD window.
+- Shifted Phase 3A focus onto historical warehouse completion planning instead of replay or metric changes.
 
 ## 2026-06-21
 
