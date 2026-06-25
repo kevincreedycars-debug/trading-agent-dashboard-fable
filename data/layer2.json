@@ -1,27 +1,27 @@
 {
   "dashboard_meta": {
-    "last_updated_et": "2026-06-24T06:25:44.516Z",
+    "last_updated_et": "2026-06-25T06:41:44.983Z",
     "source": "layer_2_trade_selection_agent"
   },
   "trade_opportunities": [
+    {
+      "instrument": "NQ/USD",
+      "direction": "SELL",
+      "confidence": 98,
+      "reason": "USD is independently bullish while NQ is independently bearish during today's session.",
+      "rank": 1
+    },
     {
       "instrument": "EUR/USD",
       "direction": "SELL",
       "confidence": 95,
       "reason": "USD is independently bullish while EUR is independently bearish during today's session.",
-      "rank": 1
-    },
-    {
-      "instrument": "NQ/USD",
-      "direction": "SELL",
-      "confidence": 93,
-      "reason": "USD is independently bullish while NQ is independently bearish during today's session.",
       "rank": 2
     },
     {
       "instrument": "BTC/USD",
       "direction": "SELL",
-      "confidence": 89,
+      "confidence": 92,
       "reason": "USD is independently bullish while BTC is independently bearish during today's session.",
       "rank": 3
     },
