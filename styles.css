@@ -1819,6 +1819,32 @@ h3 {
   min-height: 0;
 }
 
+.backtest-report .matrix-summary-grid-compact {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.backtest-report .matrix-summary-grid-compact .backtest-metric-card {
+  min-height: 98px;
+  padding: 12px 12px 11px;
+  gap: 6px;
+}
+
+.backtest-report .matrix-summary-grid-compact .eyebrow {
+  margin-bottom: 2px;
+  font-size: 10px;
+}
+
+.backtest-report .matrix-summary-grid-compact h3 {
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.15;
+}
+
+.backtest-report .matrix-summary-grid-compact span {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .backtest-report .table-scroll,
 .backtest-report .research-table-scroll,
 .backtest-report .research-matrix-scroll {

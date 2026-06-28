@@ -2907,19 +2907,19 @@ function renderMatrixSummary(rows = [], options = {}) {
           <p class="eyebrow">Matrix Summary</p>
           <h3>24H totals derived from the matrix rows</h3>
         </div>
-        <p class="research-panel-copy">These totals use the same evaluated USD 24H benchmark rows as the matrix above. No standalone percentage is shown without its numerator and denominator.</p>
+        <p class="research-panel-copy">Compact totals from the same evaluated USD 24H matrix rows above.</p>
       </div>
-      <section class="backtest-metric-grid research-summary-grid matrix-summary-grid">
-        ${renderBacktestMetric("Total Evaluated Calls", String(resultTotals.evaluated), "All CORRECT, WRONG, or FLAT USD 24H benchmark rows included in the matrix")}
-        ${renderBacktestMetric("Total Correct", String(resultTotals.correct), "Rows counted as correct by the same matrix logic")}
-        ${renderBacktestMetric("Total Wrong", String(resultTotals.wrong), "Rows with WRONG benchmark outcomes")}
-        ${renderBacktestMetric("Total Flat / Neutral Outcomes", String(resultTotals.flat), "Rows where the realised benchmark outcome was FLAT")}
-        ${renderBacktestMetric("Accuracy Including Flat", overall.includingFlat, "Correct divided by all included matrix rows, including FLAT benchmark outcomes.")}
-        ${renderBacktestMetric("Decision Win Rate Ex-Flat", overall.exFlat, "Correct divided by directional evaluated outcomes only. FLAT benchmark outcomes are excluded from this rate.")}
-        ${renderBacktestMetric("Flat Outcomes", overall.flat, "Share of included matrix rows where the realised benchmark outcome was FLAT.")}
-        ${renderBacktestMetric("Bullish Calls", bullish.includingFlat, `${bullish.exFlat} • ${bullish.flat}`)}
-        ${renderBacktestMetric("Bearish Calls", bearish.includingFlat, `${bearish.exFlat} • ${bearish.flat}`)}
-        ${renderBacktestMetric("Neutral / Flat Calls", neutral.includingFlat, `${neutral.exFlat} • ${neutral.flat}`)}
+      <section class="backtest-metric-grid research-summary-grid matrix-summary-grid matrix-summary-grid-compact">
+        ${renderBacktestMetric("Total Evaluated", String(resultTotals.evaluated), "Included matrix rows")}
+        ${renderBacktestMetric("Correct", String(resultTotals.correct), "Directional wins")}
+        ${renderBacktestMetric("Wrong", String(resultTotals.wrong), "Directional misses")}
+        ${renderBacktestMetric("Flat", String(resultTotals.flat), "Flat benchmark outcomes")}
+        ${renderBacktestMetric("Accuracy Including Flat", overall.includingFlat, "Correct / included rows")}
+        ${renderBacktestMetric("Decision Win Rate Ex-Flat", overall.exFlat, "Correct / (correct + wrong)")}
+        ${renderBacktestMetric("Flat Outcomes", overall.flat, "Flat / included rows")}
+        ${renderBacktestMetric("Bullish", bullish.includingFlat, `${bullish.exFlat} | ${bullish.flat}`)}
+        ${renderBacktestMetric("Bearish", bearish.includingFlat, `${bearish.exFlat} | ${bearish.flat}`)}
+        ${renderBacktestMetric("Neutral", neutral.includingFlat, `${neutral.exFlat} | ${neutral.flat}`)}
       </section>
     </section>
   `;
@@ -2933,7 +2933,7 @@ function renderResearchDefinitions() {
           <p class="eyebrow">Research Notes</p>
           <h3>Definitions and strength mapping</h3>
         </div>
-        <p class="research-panel-copy">Conviction and strength are related but not interchangeable. The research layer keeps each prediction's original conviction %, then groups it into a historical strength bucket for accuracy analysis.</p>
+        <p class="research-panel-copy">Conviction and strength are related but not interchangeable. This matrix keeps each prediction's stored headline confidence %, then groups rows using the same live dashboard confidence-band thresholds the production UI uses.</p>
       </div>
       <article class="detail-panel wide-panel research-secondary-panel research-notes-panel">
         <div class="research-definition-list">
@@ -2943,7 +2943,7 @@ function renderResearchDefinitions() {
           </div>
           <div class="research-definition-item">
             <strong>Strength Bucket</strong>
-            <p>The historical grouping derived from the same live dashboard confidence % thresholds used for call strength labels. Historical accuracy is measured using these buckets.</p>
+            <p>The grouping derived from the same live dashboard confidence % thresholds used for production call strength labels. Historical accuracy is measured using those live-style bands, not legacy replay-only strength labels.</p>
           </div>
         </div>
         <div class="research-threshold-list">
@@ -2958,7 +2958,8 @@ function renderResearchDefinitions() {
         <ul class="read-only-list">
           <li>Each historical prediction retains its original conviction percentage.</li>
           <li>The prediction is then grouped into the appropriate live confidence strength bucket for historical accuracy analysis.</li>
-          <li>The matrix uses the same confidence-band logic as the live dashboard call labels.</li>
+          <li>The matrix uses the same headline confidence-band logic as the live dashboard call labels.</li>
+          <li>If many rows cluster at 50%, that indicates the replay engine may still be using a legacy confidence floor and should be checked in the Backtester Checker.</li>
           <li>NOT_EVALUABLE, MIXED, NO_CALL, and unsupported strength labels do not create fake matrix accuracy.</li>
           <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
         </ul>
@@ -2991,7 +2992,7 @@ function renderResearch24hAccuracyMatrix(rows = [], options = {}) {
           <p class="eyebrow">24H Accuracy Matrix</p>
           <h3>${escapeHtml(assetLabel)} ${escapeHtml(timeframeLabel)} direction by strength</h3>
         </div>
-        <p class="research-panel-copy">Each historical prediction retains its original conviction percentage, then the research layer groups it into the appropriate strength bucket for historical accuracy analysis. Each cell uses live research rows only.</p>
+        <p class="research-panel-copy">Each historical prediction retains its original conviction percentage, then the matrix groups it using the same headline confidence-band thresholds as the live dashboard so each row is judged the way a live-style agent output would be displayed. Each cell uses live research rows only.</p>
       </div>
       <article class="detail-panel wide-panel research-matrix-panel">
         <div class="research-matrix-meta">
