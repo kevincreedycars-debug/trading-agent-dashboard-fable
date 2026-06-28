@@ -2450,7 +2450,7 @@ function renderMatrixSummary(rows = [], options = {}) {
         </div>
         <p class="research-panel-copy">These totals use the same evaluated USD 24H benchmark rows as the matrix above. No standalone percentage is shown without its numerator and denominator.</p>
       </div>
-      <section class="backtest-metric-grid research-summary-grid">
+      <section class="backtest-metric-grid research-summary-grid matrix-summary-grid">
         ${renderBacktestMetric("Total Evaluated Calls", String(resultTotals.evaluated), "All CORRECT, WRONG, or FLAT USD 24H benchmark rows included in the matrix")}
         ${renderBacktestMetric("Total Correct", String(resultTotals.correct), "Rows counted as correct by the same matrix logic")}
         ${renderBacktestMetric("Total Wrong", String(resultTotals.wrong), "Rows with WRONG benchmark outcomes")}

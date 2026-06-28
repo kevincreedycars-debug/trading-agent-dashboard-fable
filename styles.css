@@ -1601,6 +1601,10 @@ h3 {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.backtest-report .matrix-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
 .backtest-report .research-status-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
@@ -1744,6 +1748,10 @@ h3 {
 
   .research-status-strip,
   .backtest-report .research-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .backtest-report .matrix-summary-grid {
     grid-template-columns: 1fr;
   }
 
