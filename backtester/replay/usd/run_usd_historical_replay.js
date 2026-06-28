@@ -10,7 +10,7 @@ const {
   requireEnv
 } = require("../../lib/historical_common");
 
-const REPLAY_VERSION = "usd_historical_replay_v1";
+const REPLAY_VERSION = "usd_historical_replay_v2";
 const SOURCE_WORKFLOW = "usd_historical_replay";
 const LOGIC_DOCUMENT = "agent_usd_direction.md";
 
@@ -432,6 +432,89 @@ function convictionStrengthLabel(conviction) {
   return "Very Strong";
 }
 
+function deriveLiveConfidenceStrength(confidence, netEdge, participation, direction) {
+  if (direction === "NO_CALL" || direction === "NO 24H CALL") return "NO_CALL";
+  if (confidence === null || confidence === undefined) return "PENDING";
+
+  const edge = Math.abs(Number(netEdge) || 0);
+  const active = Number(participation) || 0;
+
+  if (confidence >= 80 && edge >= 25 && active >= 50) return "VERY_STRONG";
+  if (confidence >= 65 && edge >= 18 && active >= 35) return "STRONG";
+  if (confidence >= 50 && edge >= 10 && active >= 25) return "MODERATE";
+  if (confidence > 0) return "WEAK";
+  return "NO_CALL";
+}
+
+function computeLiveHeadlineConfidence({
+  bullCase,
+  bearCase,
+  participation,
+  netEdge,
+  direction,
+  warnings = [],
+  missingInputs = [],
+  weeklyCandleStatus = ""
+}) {
+  const safeBullCase = toNumber(bullCase);
+  const safeBearCase = toNumber(bearCase);
+  const safeParticipation = toNumber(participation);
+  const safeNetEdge = toNumber(netEdge);
+
+  if ([safeBullCase, safeBearCase, safeParticipation, safeNetEdge].some((value) => value === null)) {
+    return {
+      value: null,
+      strength: deriveLiveConfidenceStrength(null, safeNetEdge, safeParticipation, direction)
+    };
+  }
+
+  let confidence =
+    ((Math.max(safeBullCase, safeBearCase) / 100) * 0.45) +
+    ((safeParticipation / 100) * 0.35) +
+    ((Math.abs(safeNetEdge) / 100) * 0.20);
+
+  if (safeParticipation < 40) confidence -= 0.10;
+  if (safeParticipation < 25) confidence -= 0.20;
+  if (Math.abs(safeNetEdge) < 20) confidence -= 0.10;
+
+  const missingCount = asArray(missingInputs).filter(Boolean).length;
+  if (missingCount >= 3) confidence -= 0.05;
+  if (missingCount >= 6) confidence -= 0.10;
+
+  const flagText = asArray(warnings).join(" ").toLowerCase();
+  const weeklyStatus = String(weeklyCandleStatus || "").toLowerCase();
+
+  if (
+    flagText.includes("event risk") ||
+    flagText.includes("high impact event") ||
+    flagText.includes("tier 1 event")
+  ) {
+    confidence -= 0.10;
+  }
+
+  if (weeklyStatus === "consolidating" || flagText.includes("weekly consolidation")) {
+    confidence -= 0.05;
+  }
+
+  if (
+    flagText.includes("conviction audit") ||
+    flagText.includes("audit flag") ||
+    flagText.includes("audit warning")
+  ) {
+    confidence -= 0.05;
+  }
+
+  if (flagText.includes("o layer")) confidence -= 0.05;
+  if (flagText.includes("adr warning") || flagText.includes("session warning")) confidence -= 0.05;
+
+  const finalConfidence = Math.round(clamp(confidence, 0, 1) * 100);
+
+  return {
+    value: finalConfidence,
+    strength: deriveLiveConfidenceStrength(finalConfidence, safeNetEdge, safeParticipation, direction)
+  };
+}
+
 function computeConviction(snapshot, timeframeKey, weighted, factors, directionInfo, missingInputs) {
   const primaryKeys = [
     "F2 US 2Y Yield Delta",
@@ -537,7 +620,7 @@ function buildPrediction(snapshot, timeframeKey, logicDocumentVersion) {
   const { factors, warnings, missingInputs } = factorSignal(snapshot, timeframeKey);
   const weighted = computeWeightedSummary(factors);
   const directionInfo = determineDirection(snapshot, timeframeKey, weighted, factors);
-  const convictionModel = computeConviction(snapshot, timeframeKey, weighted, factors, directionInfo, missingInputs);
+  const legacyConvictionModel = computeConviction(snapshot, timeframeKey, weighted, factors, directionInfo, missingInputs);
 
   let direction = directionInfo.direction;
   const needsLean = (
@@ -545,9 +628,9 @@ function buildPrediction(snapshot, timeframeKey, logicDocumentVersion) {
   ) && (
     weighted.active_weight < 50 ||
     weighted.weight_margin < 15 ||
-    convictionModel.primary_conflict ||
+    legacyConvictionModel.primary_conflict ||
     directionInfo.via_tiebreak ||
-    convictionModel.final_conviction < 65 ||
+    legacyConvictionModel.final_conviction < 65 ||
     missingInputs.length > 0
   );
 
@@ -559,26 +642,42 @@ function buildPrediction(snapshot, timeframeKey, logicDocumentVersion) {
   const bearCase = weighted.bearish_weight;
   const neutralPct = 100 - weighted.active_weight;
   const netEdge = weighted.bullish_weight - weighted.bearish_weight;
+  const liveConfidence = computeLiveHeadlineConfidence({
+    bullCase,
+    bearCase,
+    participation: weighted.active_weight,
+    netEdge,
+    direction,
+    warnings,
+    missingInputs,
+    weeklyCandleStatus: snapshot.weekly_candle_status || null
+  });
 
   return {
     timeframe: TIMEFRAME_CONFIG[timeframeKey].timeframe,
     legacy_timeframe_key: TIMEFRAME_CONFIG[timeframeKey].legacy_timeframe_key,
     predicted_direction: direction,
-    predicted_conviction: convictionModel.final_conviction,
+    predicted_conviction: liveConfidence.value,
     bull_case_pct: bullCase,
     bear_case_pct: bearCase,
     net_edge_pct: netEdge,
     participation_pct: weighted.active_weight,
     neutral_pct: neutralPct,
-    verdict_strength: convictionModel.confidence_strength,
+    verdict_strength: liveConfidence.strength,
     reason_text: `${direction} from weighted USD factor scoring on ${snapshot.snapshot_date}.`,
     weighted_score: weighted,
     conviction_model: {
-      ...convictionModel,
+      ...legacyConvictionModel,
       bullish_argument_pct: bullCase,
       bearish_argument_pct: bearCase,
       net_edge_pct: netEdge,
-      directional_participation_pct: weighted.active_weight
+      directional_participation_pct: weighted.active_weight,
+      active_participation_pct: weighted.active_weight,
+      final_confidence: liveConfidence.value,
+      confidence_strength: liveConfidence.strength,
+      legacy_floor_conviction: legacyConvictionModel.final_conviction,
+      legacy_floor_strength: legacyConvictionModel.confidence_strength,
+      confidence_model_source: "live_dashboard_confidence_v1"
     },
     factor_breakdown: factors,
     warnings,
@@ -872,7 +971,7 @@ async function run() {
         },
         prompt_version: null,
         weight_model_version: "usd_weighted_logic_v1",
-        conviction_model_version: "usd_conviction_logic_v1",
+        conviction_model_version: "usd_conviction_logic_v2",
         workflow_version_id: REPLAY_VERSION,
         repo_commit_sha: null,
         notes: "Historical USD replay generated inside /backtester."
