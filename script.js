@@ -2008,40 +2008,6 @@ function renderResearchInfrastructureSummary(data = {}) {
   `;
 }
 
-function renderResearch24hSummary(summary = null) {
-  return `
-    <section class="research-section">
-      <div class="research-section-head">
-        <div>
-          <p class="eyebrow">24H USD Direction Accuracy</p>
-          <h3>Short-horizon benchmark summary</h3>
-        </div>
-        <p class="research-panel-copy">A simplified DXY-only read of the following 24hrs horizon. This answers the basic question first: when the USD agent called up or down, what did DXY actually do?</p>
-      </div>
-      <section class="backtest-metric-grid research-summary-grid research-24h-grid">
-        ${summary
-          ? renderBacktestMetric("Overall 24H Accuracy", percentValue(summary.overall_accuracy_pct), "USD vs DXY, following 24hrs only")
-          : renderUnavailableMetric("Overall 24H Accuracy", "Waiting for populated research views")}
-        ${summary
-          ? renderBacktestMetric("Bullish Call Accuracy", percentValue(summary.bullish_call_accuracy_pct), "When the USD agent called bullish, how often was DXY up?")
-          : renderUnavailableMetric("Bullish Call Accuracy", "Waiting for populated research views")}
-        ${summary
-          ? renderBacktestMetric("Bearish Call Accuracy", percentValue(summary.bearish_call_accuracy_pct), "When the USD agent called bearish, how often was DXY down?")
-          : renderUnavailableMetric("Bearish Call Accuracy", "Waiting for populated research views")}
-        ${summary
-          ? renderBacktestMetric("Flat / No-Move Accuracy", percentValue(summary.flat_no_move_accuracy_pct), "How often was the 24H call flat or no move?")
-          : renderUnavailableMetric("Flat / No-Move Accuracy", "Waiting for populated research views")}
-        ${summary
-          ? renderBacktestMetric("24H Evaluated Calls", String(summary.evaluated_calls ?? "--"), "CORRECT, WRONG, or FLAT DXY outcomes only")
-          : renderUnavailableMetric("24H Evaluated Calls", "Waiting for populated research views")}
-        ${summary
-          ? renderBacktestMetric("24H Wins / Losses / Flats", `${summary.wins ?? "--"} / ${summary.losses ?? "--"} / ${summary.flats ?? "--"}`, "Simple 24H benchmark record")
-          : renderUnavailableMetric("24H Wins / Losses / Flats", "Waiting for populated research views")}
-      </section>
-    </section>
-  `;
-}
-
 const matrixStrengthBuckets = [
   {
     key: "weak",
@@ -2247,6 +2213,12 @@ function formatProductionStrength(value = "") {
   return titleCaseWords(normalized);
 }
 
+function formatBenchmarkPrice(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "&mdash;";
+  return String(roundTo(numeric, 4));
+}
+
 function computeMatrixTotals(matrix = {}) {
   let evaluatedCalls = 0;
   let correctCalls = 0;
@@ -2260,6 +2232,61 @@ function computeMatrixTotals(matrix = {}) {
   });
 
   return { evaluatedCalls, correctCalls };
+}
+
+function computeMatrixSummary(rows = [], options = {}) {
+  const assetCode = options.assetCode || "USD";
+  const timeframe = options.timeframe || "following 24hrs";
+  const directionTotals = {
+    bullish: { total: 0, correct: 0 },
+    bearish: { total: 0, correct: 0 },
+    neutral: { total: 0, correct: 0 }
+  };
+  const resultTotals = {
+    evaluated: 0,
+    correct: 0,
+    wrong: 0,
+    flat: 0
+  };
+
+  normaliseResearchRows(rows)
+    .filter(row =>
+      (!assetCode || row.asset_code === assetCode) &&
+      (!timeframe || row.timeframe === timeframe)
+    )
+    .forEach(row => {
+      const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
+      const strengthKey = normalizeResearchMatrixStrength(row.verdict_strength);
+      const result = String(row.combined_result || "").trim().toUpperCase();
+
+      if (!directionKey || !strengthKey) return;
+      if (!["CORRECT", "WRONG", "FLAT"].includes(result)) return;
+
+      resultTotals.evaluated += 1;
+      if (result === "CORRECT") resultTotals.correct += 1;
+      if (result === "WRONG") resultTotals.wrong += 1;
+      if (result === "FLAT") resultTotals.flat += 1;
+
+      const bucket = directionTotals[directionKey];
+      bucket.total += 1;
+      if (directionKey === "neutral") {
+        if (result === "FLAT") bucket.correct += 1;
+      } else if (result === "CORRECT") {
+        bucket.correct += 1;
+      }
+    });
+
+  return { directionTotals, resultTotals };
+}
+
+function formatAccuracyWithCounts(correct, total) {
+  const safeCorrect = Number(correct || 0);
+  const safeTotal = Number(total || 0);
+  const accuracyPct = safeTotal ? roundTo((safeCorrect / safeTotal) * 100, 1) : null;
+  return {
+    countLine: `${safeCorrect} / ${safeTotal} correct`,
+    accuracyLine: metricAvailable(accuracyPct) ? `${formatMatrixAccuracy(accuracyPct)}` : "&mdash; accuracy"
+  };
 }
 
 function buildResearchEvidenceRows(rows = [], options = {}) {
@@ -2283,8 +2310,10 @@ function buildResearchEvidenceRows(rows = [], options = {}) {
         convictionPct: formatConvictionPercent(row.agent_conviction ?? row.predicted_conviction),
         strengthBucket: formatProductionStrength(row.verdict_strength),
         benchmark: row.benchmark_market || "Unknown",
+        startPrice: formatBenchmarkPrice(row.open_price),
+        endPrice: formatBenchmarkPrice(row.close_price),
         benchmarkMove: formatBenchmarkMove(row.pct_change),
-        evaluationResult: formatEvaluationResult(row.combined_result),
+        result: formatEvaluationResult(row.combined_result),
         matrixCell: directionKey && strengthKey
           ? `${matrixDirectionLabel(directionKey)} / ${matrixStrengthLabel(strengthKey)}`
           : "Unmapped"
@@ -2334,8 +2363,10 @@ function renderResearchEvidenceAudit(rows = [], totals = {}, sourceView = "resea
         { label: "Conviction %", render: row => researchDataCell(row.convictionPct) },
         { label: "Strength Bucket", render: row => researchDataCell(row.strengthBucket) },
         { label: "Benchmark", render: row => researchDataCell(row.benchmark) },
-        { label: "Benchmark Move", render: row => researchDataCell(row.benchmarkMove) },
-        { label: "Evaluation Result", render: row => researchDataCell(row.evaluationResult) },
+        { label: "Start", render: row => researchDataCell(row.startPrice) },
+        { label: "End", render: row => researchDataCell(row.endPrice) },
+        { label: "Move", render: row => researchDataCell(row.benchmarkMove) },
+        { label: "Result", render: row => researchDataCell(row.result) },
         { label: "Matrix Cell", render: row => researchDataCell(row.matrixCell) }
       ], {
         description: "Latest evaluated USD following-24hrs rows only. Conviction % is the original recorded confidence score. Matrix Cell uses the same direction and strength mapping as the table above.",
@@ -2379,6 +2410,51 @@ function renderResearch24hEvidenceSummary(summary = null, data = {}) {
         ${summary
           ? renderBacktestMetric("Wins / Losses / Flats", `${summary.wins ?? "--"} / ${summary.losses ?? "--"} / ${summary.flats ?? "--"}`, "Benchmark record behind the 24H matrix")
           : renderUnavailableMetric("Wins / Losses / Flats", "Waiting for populated research views")}
+      </section>
+    </section>
+  `;
+}
+
+function renderResearchDataChecker(data = {}) {
+  const matrix24hRows = data.accuracy?.matrix_24h_rows || [];
+  const { matrix } = computeResearchMatrix(matrix24hRows, {
+    assetCode: "USD",
+    timeframe: "following 24hrs"
+  });
+  const totals = computeMatrixTotals(matrix);
+
+  return `
+    <div class="backtest-report">
+      ${renderResearchEvidenceAudit(matrix24hRows, totals)}
+    </div>
+  `;
+}
+
+function renderMatrixSummary(rows = [], options = {}) {
+  const { directionTotals, resultTotals } = computeMatrixSummary(rows, options);
+  const overall = formatAccuracyWithCounts(resultTotals.correct, resultTotals.evaluated);
+  const bullish = formatAccuracyWithCounts(directionTotals.bullish.correct, directionTotals.bullish.total);
+  const bearish = formatAccuracyWithCounts(directionTotals.bearish.correct, directionTotals.bearish.total);
+  const neutral = formatAccuracyWithCounts(directionTotals.neutral.correct, directionTotals.neutral.total);
+
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Matrix Summary</p>
+          <h3>24H totals derived from the matrix rows</h3>
+        </div>
+        <p class="research-panel-copy">These totals use the same evaluated USD 24H benchmark rows as the matrix above. No standalone percentage is shown without its numerator and denominator.</p>
+      </div>
+      <section class="backtest-metric-grid research-summary-grid">
+        ${renderBacktestMetric("Total Evaluated Calls", String(resultTotals.evaluated), "All CORRECT, WRONG, or FLAT USD 24H benchmark rows included in the matrix")}
+        ${renderBacktestMetric("Total Correct", String(resultTotals.correct), "Rows counted as correct by the same matrix logic")}
+        ${renderBacktestMetric("Total Wrong", String(resultTotals.wrong), "Rows with WRONG benchmark outcomes")}
+        ${renderBacktestMetric("Total Flat / Neutral Outcomes", String(resultTotals.flat), "Rows where the realised benchmark outcome was FLAT")}
+        ${renderBacktestMetric("Overall Accuracy", overall.countLine, overall.accuracyLine)}
+        ${renderBacktestMetric("Bullish Calls", bullish.countLine, bullish.accuracyLine)}
+        ${renderBacktestMetric("Bearish Calls", bearish.countLine, bearish.accuracyLine)}
+        ${renderBacktestMetric("Neutral / Flat Calls", neutral.countLine, neutral.accuracyLine)}
       </section>
     </section>
   `;
@@ -2600,9 +2676,10 @@ function renderResearchAccuracy(data = {}) {
         timeframe: "following 24hrs",
         timeframeLabel: "24H"
       })}
-      ${renderResearch24hSummary(summary24h)}
-      ${renderResearch24hEvidenceSummary(summary24h, data)}
-      ${renderResearchEvidenceAudit(matrix24hRows, totals)}
+      ${renderMatrixSummary(matrix24hRows, {
+        assetCode: "USD",
+        timeframe: "following 24hrs"
+      })}
       ${renderResearchDefinitions()}
     </div>
   `;
@@ -2645,9 +2722,9 @@ function renderBacktest(data = {}) {
   const panel = document.getElementById("backtestPanel");
   if (!panel) return;
   try {
-    panel.innerHTML = activeBacktestTab === "correlation"
+    panel.innerHTML = activeBacktestTab === "infrastructure"
       ? renderResearchInfrastructure(data)
-      : renderResearchAccuracy(data);
+      : (activeBacktestTab === "checker" ? renderResearchDataChecker(data) : renderResearchAccuracy(data));
   } catch (err) {
     console.error("Backtest render failed", err);
     panel.innerHTML = `
