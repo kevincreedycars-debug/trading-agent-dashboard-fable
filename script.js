@@ -2042,6 +2042,159 @@ function renderResearch24hSummary(summary = null) {
   `;
 }
 
+const matrixStrengthBuckets = [
+  { key: "weak", label: "Weak" },
+  { key: "moderate", label: "Moderate" },
+  { key: "strong", label: "Strong" },
+  { key: "very_strong", label: "Very Strong" }
+];
+
+const matrixDirectionBuckets = [
+  { key: "bullish", label: "Bullish" },
+  { key: "bearish", label: "Bearish" },
+  { key: "neutral", label: "Neutral / Flat" }
+];
+
+function normalizeResearchMatrixDirection(value = "") {
+  const normalized = String(value || "").trim().toUpperCase();
+
+  if (normalized.startsWith("BULLISH")) return "bullish";
+  if (normalized.startsWith("BEARISH")) return "bearish";
+  if (["NO_CLEAR_BIAS", "NO CALL", "NO_CALL", "NEUTRAL", "FLAT"].includes(normalized)) return "neutral";
+  return null;
+}
+
+function normalizeResearchMatrixStrength(value = "") {
+  const normalized = String(value || "").trim().toUpperCase();
+
+  if (normalized === "VERY_STRONG") return "very_strong";
+  if (normalized === "STRONG") return "strong";
+  if (normalized === "MODERATE") return "moderate";
+  if (normalized === "WEAK" || normalized === "VERY_WEAK") return "weak";
+  return null;
+}
+
+function computeResearchMatrix(rows = [], options = {}) {
+  const assetCode = options.assetCode || "USD";
+  const timeframe = options.timeframe || "following 24hrs";
+  const matrix = {};
+
+  matrixDirectionBuckets.forEach(direction => {
+    matrix[direction.key] = {};
+    matrixStrengthBuckets.forEach(strength => {
+      matrix[direction.key][strength.key] = {
+        callCount: 0,
+        accurateCount: 0,
+        accuracyPct: null
+      };
+    });
+  });
+
+  rows
+    .filter(row =>
+      (!assetCode || row.asset_code === assetCode) &&
+      (!timeframe || row.timeframe === timeframe)
+    )
+    .forEach(row => {
+      const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
+      const strengthKey = normalizeResearchMatrixStrength(row.verdict_strength);
+      const result = String(row.combined_result || "").trim().toUpperCase();
+
+      if (!directionKey || !strengthKey) return;
+      if (!["CORRECT", "WRONG", "FLAT"].includes(result)) return;
+
+      const bucket = matrix[directionKey][strengthKey];
+      bucket.callCount += 1;
+
+      if (directionKey === "neutral") {
+        if (result === "FLAT") bucket.accurateCount += 1;
+      } else if (result === "CORRECT") {
+        bucket.accurateCount += 1;
+      }
+    });
+
+  matrixDirectionBuckets.forEach(direction => {
+    matrixStrengthBuckets.forEach(strength => {
+      const bucket = matrix[direction.key][strength.key];
+      bucket.accuracyPct = bucket.callCount
+        ? round((bucket.accurateCount / bucket.callCount) * 100, 1)
+        : null;
+    });
+  });
+
+  return matrix;
+}
+
+function formatMatrixAccuracy(value) {
+  if (!metricAvailable(value)) return "&mdash; accuracy";
+  const numeric = Number(value);
+  const rounded = Math.abs(numeric - Math.round(numeric)) < 0.05
+    ? Math.round(numeric)
+    : round(numeric, 1);
+  return `${rounded}% accuracy`;
+}
+
+function matrixCellTone(callCount, accuracyPct) {
+  if (!callCount || !metricAvailable(accuracyPct)) return "empty";
+  if (accuracyPct >= 65) return "high";
+  if (accuracyPct >= 50) return "medium";
+  return "low";
+}
+
+function renderResearch24hAccuracyMatrix(rows = [], options = {}) {
+  const assetLabel = options.assetLabel || "USD";
+  const timeframeLabel = options.timeframeLabel || "24H";
+  const matrix = computeResearchMatrix(rows, options);
+
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">24H Accuracy Matrix</p>
+          <h3>${escapeHtml(assetLabel)} ${escapeHtml(timeframeLabel)} direction by strength</h3>
+        </div>
+        <p class="research-panel-copy">Each cell uses live research rows only. Call count is the number of evaluated predictions in that direction and strength bucket. Accuracy shows where the realised result actually confirmed the call.</p>
+      </div>
+      <article class="detail-panel wide-panel research-matrix-panel">
+        <div class="research-matrix-meta">
+          <span><strong>Asset:</strong> ${escapeHtml(assetLabel)}</span>
+          <span><strong>Timeframe:</strong> ${escapeHtml(timeframeLabel)}</span>
+        </div>
+        <div class="research-table-scroll research-matrix-scroll">
+          <table class="dashboard-table research-matrix-table">
+            <thead>
+              <tr>
+                <th>Direction</th>
+                ${matrixStrengthBuckets.map(strength => `<th>${escapeHtml(strength.label)}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>
+              ${matrixDirectionBuckets.map(direction => `
+                <tr>
+                  <th>${escapeHtml(direction.label)}</th>
+                  ${matrixStrengthBuckets.map(strength => {
+                    const cell = matrix[direction.key][strength.key];
+                    const tone = matrixCellTone(cell.callCount, cell.accuracyPct);
+                    return `
+                      <td>
+                        <div class="research-matrix-cell ${tone}">
+                          <strong>${cell.callCount} calls</strong>
+                          <span>${formatMatrixAccuracy(cell.accuracyPct)}</span>
+                        </div>
+                      </td>
+                    `;
+                  }).join("")}
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+        <p class="research-matrix-note">Empty buckets stay empty. No mock accuracy is shown when the live research layer has no evaluated calls for that bucket.</p>
+      </article>
+    </section>
+  `;
+}
+
 function renderResearchVerdictQuality(data = {}) {
   const byVerdictStrength = data.accuracy?.by_verdict_strength || [];
   const byConfidenceBucket = data.accuracy?.by_confidence_bucket || [];
@@ -2123,154 +2276,28 @@ function renderResearchTradeQuality(data = {}) {
 }
 
 function renderResearchAccuracy(data = {}) {
-  const overall = data.accuracy?.overall || null;
   const summary24h = data.accuracy?.summary_24h || null;
-  const timeframe = data.accuracy?.by_timeframe || [];
-  const conviction = data.accuracy?.by_conviction_bucket || [];
-  const weekday = data.accuracy?.by_weekday || [];
-  const magnitude = data.accuracy?.by_magnitude_bucket || [];
-  const regime = data.accuracy?.by_market_regime || [];
-  const factorReliability = data.accuracy?.top_factor_reliability || [];
-  const factorContribution = data.accuracy?.top_factor_contribution || [];
-  const bestCombos = data.accuracy?.best_factor_combinations || [];
-  const infrastructure = data.infrastructure || {};
-  const notEvaluable = computeResearchNotEvaluable(overall || {}, infrastructure);
+  const matrix24hRows = data.accuracy?.matrix_24h_rows || [];
 
   return `
     ${renderResearchStatusHeader(data)}
+    ${renderResearch24hAccuracyMatrix(matrix24hRows, {
+      assetCode: "USD",
+      assetLabel: "USD",
+      timeframe: "following 24hrs",
+      timeframeLabel: "24H"
+    })}
     ${renderResearch24hSummary(summary24h)}
-    ${renderResearchVerdictQuality(data)}
-    ${renderResearchTradeQuality(data)}
-
-    <section class="research-section">
-      <div class="research-section-head">
-        <div>
-          <p class="eyebrow">USD Benchmark Accuracy</p>
-          <h3>Headline result</h3>
-        </div>
-        <p class="research-panel-copy">This is the number to read first. It measures whether USD directional calls matched the realised DXY move, with tiny moves classified as flat.</p>
-      </div>
-      <section class="backtest-metric-grid research-summary-grid">
-        ${overall
-          ? renderBacktestMetric("Overall Win Rate", percentValue(overall.win_rate_pct), "USD benchmark win rate from DXY-only research scoring")
-          : renderUnavailableMetric("Overall Win Rate", "Waiting for populated research views")}
-        ${overall
-          ? renderBacktestMetric("Evaluated Predictions", String(overall.evaluated_predictions ?? "--"), "CORRECT, WRONG, or FLAT DXY outcomes only")
-          : renderUnavailableMetric("Evaluated Predictions", "Waiting for populated research views")}
-        ${overall
-          ? renderBacktestMetric("Wins", String(overall.wins ?? "--"), "USD calls correct versus DXY")
-          : renderUnavailableMetric("Wins", "Waiting for populated research views")}
-        ${overall
-          ? renderBacktestMetric("Losses", String(overall.losses ?? "--"), "USD calls wrong versus DXY")
-          : renderUnavailableMetric("Losses", "Waiting for populated research views")}
-        ${overall
-          ? renderBacktestMetric("Flats", String(overall.flats ?? "--"), "DXY moved inside the flat threshold")
-          : renderUnavailableMetric("Flats", "Waiting for populated research views")}
-        ${renderBacktestMetric("Not Evaluable", metricAvailable(notEvaluable) ? String(notEvaluable) : "Not yet available", "Predictions not counted in headline accuracy")}
-        ${renderBacktestMetric("Benchmark Market", "DXY", "Basket and translation outcomes stay diagnostic only")}
-      </section>
-    </section>
-
-    ${renderResearchInfrastructureSummary(data)}
-
-    <section class="research-section">
-      <div class="research-section-head">
-        <div>
-          <p class="eyebrow">Accuracy Breakdowns</p>
-          <h3>Where performance changes</h3>
-        </div>
-        <p class="research-panel-copy">Use these breakdowns to see whether the benchmark win rate changes by horizon, conviction, timing, move size, or regime.</p>
-      </div>
-      <section class="backtest-grid two-column research-breakdown-grid">
-        ${renderResearchBreakdownTable("By Timeframe", "Benchmark Accuracy", timeframe, [
-          { label: "Timeframe", render: row => researchDataCell(row.timeframe, `${row.evaluated_predictions} evaluated`) },
-          { label: "Record", render: row => researchDataCell(`${row.wins} / ${row.losses}`, `${row.flats} flat`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), "DXY benchmark") }
-        ], {
-          description: "Headline benchmark accuracy by replay horizon."
-        })}
-        ${renderResearchBreakdownTable("By Conviction Bucket", "Benchmark Accuracy", conviction, [
-          { label: "Bucket", render: row => researchDataCell(row.conviction_bucket, percentValue(row.avg_conviction)) },
-          { label: "Evaluated", render: row => researchDataCell(row.evaluated_predictions, `${row.wins} wins`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.losses} losses`) }
-        ], {
-          description: "Benchmark accuracy split by conviction strength."
-        })}
-        ${renderResearchBreakdownTable("By Weekday", "Benchmark Accuracy", weekday, [
-          { label: "Weekday", render: row => researchDataCell(row.call_day_of_week, `${row.evaluated_predictions} evaluated`) },
-          { label: "Record", render: row => researchDataCell(`${row.wins} / ${row.losses}`, `${row.flats} flat`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), "DXY benchmark") }
-        ], {
-          description: "Benchmark accuracy by original call day."
-        })}
-        ${renderResearchBreakdownTable("By Magnitude", "Benchmark Accuracy", magnitude, [
-          { label: "Magnitude", render: row => researchDataCell(row.move_magnitude_bucket, `${row.evaluated_predictions} evaluated`) },
-          { label: "Avg Abs Move", render: row => researchDataCell(metricAvailable(row.avg_abs_move_pct) ? `${row.avg_abs_move_pct}%` : "Not yet available", `${row.flats} flat`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.wins} wins`) }
-        ], {
-          description: "DXY-only magnitude buckets and absolute move averages."
-        })}
-      </section>
-      <section class="backtest-grid research-regime-grid">
-        ${renderResearchBreakdownTable("By Market Regime", "Benchmark Accuracy", regime, [
-          { label: "Regime", render: row => researchPairCell(row.equities_regime, row.fed_bias) },
-          { label: "Evaluated", render: row => researchDataCell(row.evaluated_predictions, `${row.wins} wins / ${row.losses} losses`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `${row.flats} flat`) }
-        ], {
-          description: "Benchmark accuracy split by equities regime and Fed bias."
-        })}
-      </section>
-    </section>
-
-    <section class="research-section research-secondary-section">
-      <div class="research-section-head">
-        <div>
-          <p class="eyebrow">Factor Research</p>
-          <h3>Secondary diagnostics</h3>
-        </div>
-        <p class="research-panel-copy">Useful for deeper research, but visually de-emphasized until headline USD benchmark accuracy is stable.</p>
-      </div>
-      <section class="backtest-grid two-column research-factor-grid">
-        ${renderResearchBreakdownTable("Factor Reliability", "Research Factors", factorReliability, [
-          { label: "Factor", render: row => researchDataCell(row.factor_name || row.factor_key, `${row.factor_signal} • ${row.timeframe}`) },
-          { label: "Occurrences", render: row => researchDataCell(row.factor_occurrences, `${row.wins} wins / ${row.losses} losses`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `Avg weight ${row.avg_factor_weight}`) }
-        ], {
-          panelClass: "research-secondary-panel",
-          description: "How often a directional factor appears and how often DXY confirms the associated USD call."
-        })}
-        ${renderResearchBreakdownTable("Factor Contribution", "Research Factors", factorContribution, [
-          { label: "Factor", render: row => researchDataCell(row.factor_name || row.factor_key, `${row.factor_signal} • ${row.timeframe}`) },
-          { label: "Contribution", render: row => researchDataCell(row.contribution_score, "Unweighted score") },
-          { label: "Weighted", render: row => researchDataCell(row.weighted_contribution_score, `${row.factor_occurrences} observations`) }
-        ], {
-          panelClass: "research-secondary-panel",
-          description: "Directional contribution metrics using DXY-only benchmark correctness."
-        })}
-      </section>
-      <section class="backtest-grid research-combo-grid">
-        ${renderResearchBreakdownTable("Factor Combinations", "Research Factors", bestCombos, [
-          { label: "Combination", render: row => researchDataCell(`${row.factor_key_1} + ${row.factor_key_2}`, `${row.factor_signal_1} / ${row.factor_signal_2}`) },
-          { label: "Timeframe", render: row => researchDataCell(row.timeframe, `${row.combo_occurrences} occurrences`) },
-          { label: "Win Rate", render: row => researchDataCell(percentValue(row.win_rate_pct), `Avg weight ${row.avg_combined_weight}`) }
-        ], {
-          panelClass: "research-secondary-panel",
-          description: "Best-performing factor pairs under the USD-vs-DXY benchmark definition."
-        })}
-      </section>
-    </section>
 
     <details class="research-diagnostics">
-      <summary>Diagnostics and secondary notes</summary>
+      <summary>Research notes</summary>
       <div class="research-diagnostics-body">
         <article class="detail-panel research-secondary-panel">
-          <div class="panel-head">
-            <p class="eyebrow">Diagnostics</p>
-            <h3>Interpretation notes</h3>
-          </div>
           <ul class="read-only-list">
-            <li>Headline accuracy excludes basket or translation outcomes.</li>
-            <li>MIXED and NOT_EVALUABLE rows do not enter the headline win-rate denominator.</li>
+            <li>The matrix is limited to USD and the existing following-24hrs research rows.</li>
+            <li>Bullish and Bearish cells count CORRECT, WRONG, and FLAT rows as evaluated calls, with accuracy based on CORRECT results only.</li>
+            <li>Neutral / Flat cells count evaluated rows in neutral-call buckets, with accuracy based on realised FLAT outcomes.</li>
+            <li>NOT_EVALUABLE, MIXED, NO_CALL, and unsupported strength labels do not create fake matrix accuracy.</li>
             <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
           </ul>
         </article>
@@ -2613,6 +2640,13 @@ async function fetchResearchView(viewName, options = {}) {
 
   if (options.order) url.searchParams.set("order", options.order);
   if (metricAvailable(options.limit)) url.searchParams.set("limit", String(options.limit));
+  if (options.filters) {
+    Object.entries(options.filters).forEach(([field, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(field, value);
+      }
+    });
+  }
 
   const response = await fetch(url.toString(), {
     cache: "no-store",
@@ -2630,9 +2664,21 @@ async function fetchResearchView(viewName, options = {}) {
 }
 
 async function fetchResearchDashboardData() {
+  const matrix24hRowsPromise = fetchResearchView("research_prediction_usd_benchmark_summary", {
+    select: "asset_code,timeframe,predicted_direction,agent_direction,verdict_strength,combined_result",
+    order: "timeframe.asc,predicted_direction.asc,verdict_strength.asc",
+    filters: {
+      timeframe: "eq.following 24hrs"
+    }
+  }).catch(err => {
+    console.warn("Could not load 24H benchmark matrix rows", err);
+    return [];
+  });
+
   const [
     overallRows,
     summary24hRows,
+    matrix24hRows,
     verdictStrengthRows,
     confidenceBucketRows,
     tradeQualityRows,
@@ -2648,6 +2694,7 @@ async function fetchResearchDashboardData() {
   ] = await Promise.all([
     fetchResearchView("research_overall_win_rate"),
     fetchResearchView("research_usd_24h_direction_accuracy"),
+    matrix24hRowsPromise,
     fetchResearchView("research_accuracy_by_verdict_strength", { order: "timeframe.asc,strength_rank.asc" }),
     fetchResearchView("research_accuracy_by_confidence_bucket", { order: "timeframe.asc,confidence_bucket_rank.asc" }),
     fetchResearchView("research_trade_quality_thresholds", { order: "timeframe.asc,threshold_rank.asc" }),
@@ -2680,6 +2727,7 @@ async function fetchResearchDashboardData() {
     accuracy: {
       overall: overallRows[0] || null,
       summary_24h: summary24hRows[0] || null,
+      matrix_24h_rows: matrix24hRows,
       by_verdict_strength: verdictStrengthRows,
       by_confidence_bucket: confidenceBucketRows,
       trade_quality: tradeQualityRows,
