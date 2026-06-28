@@ -1965,13 +1965,10 @@ function renderResearchStatusHeader(data = {}) {
 
   return `
     <section class="research-status-hero">
-      <article class="detail-panel wide-panel explanation-card research-status-card">
-        <div class="research-status-copy">
-          <div>
-            <p class="eyebrow">Research Status</p>
-            <h3>USD historical benchmark dashboard</h3>
-          </div>
-          <p class="research-panel-copy">Read-only research metrics sourced from Supabase views. Headline performance is measured against DXY only. Basket and translation outcomes remain diagnostic and are not included in headline accuracy.</p>
+      <article class="detail-panel wide-panel research-status-strip">
+        <div class="research-status-label">
+          <p class="eyebrow">Research Status</p>
+          <strong>USD historical benchmark dashboard</strong>
         </div>
         <div class="research-status-grid">
           ${renderProgressPill("Last Synced", lastSynced)}
