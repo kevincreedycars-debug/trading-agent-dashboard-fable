@@ -2010,10 +2010,16 @@ function renderResearchInfrastructureSummary(data = {}) {
 
 const matrixStrengthBuckets = [
   {
+    key: "very_weak",
+    label: "Very Weak",
+    rangeLabel: "50-55%",
+    definition: "Production Very Weak label."
+  },
+  {
     key: "weak",
     label: "Weak",
-    rangeLabel: "50-64%",
-    definition: "Matrix Weak combines production Very Weak (50-55%) and Weak (56-64%) labels."
+    rangeLabel: "56-64%",
+    definition: "Production Weak label."
   },
   {
     key: "moderate",
@@ -2059,7 +2065,8 @@ function normalizeResearchMatrixStrength(value = "") {
   if (normalized === "VERY_STRONG") return "very_strong";
   if (normalized === "STRONG") return "strong";
   if (normalized === "MODERATE") return "moderate";
-  if (normalized === "WEAK" || normalized === "VERY_WEAK") return "weak";
+  if (normalized === "WEAK") return "weak";
+  if (normalized === "VERY_WEAK") return "very_weak";
   return null;
 }
 
@@ -2493,7 +2500,7 @@ function renderResearchDefinitions() {
         <ul class="read-only-list">
           <li>Each historical prediction retains its original conviction percentage.</li>
           <li>The prediction is then grouped into the appropriate strength bucket for historical accuracy analysis.</li>
-          <li>The Weak matrix column intentionally combines production Very Weak and Weak rows to preserve the requested four-column layout.</li>
+          <li>The matrix preserves the production strength buckets exactly.</li>
           <li>NOT_EVALUABLE, MIXED, NO_CALL, and unsupported strength labels do not create fake matrix accuracy.</li>
           <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
         </ul>
