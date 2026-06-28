@@ -2254,6 +2254,23 @@ function computeResearchMatrix(rows = [], options = {}) {
   };
 }
 
+function getResearchRowIdentifier(row = {}) {
+  return row.prediction_id || row.research_id || row.id || row.prediction_uuid || null;
+}
+
+function getResearchRowExclusionReason(row = {}) {
+  const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
+  const confidencePct = normalizeConfidencePercent(row);
+  const strengthKey = confidenceBandStrengthKey(confidencePct);
+  const result = String(row.combined_result || "").trim().toUpperCase();
+
+  if (!["CORRECT", "WRONG", "FLAT"].includes(result)) return "unsupported_result";
+  if (!directionKey) return "unsupported_direction";
+  if (!metricAvailable(confidencePct)) return "missing_confidence";
+  if (!strengthKey) return "unsupported_confidence_band";
+  return null;
+}
+
 function formatMatrixAccuracy(value) {
   if (!metricAvailable(value)) return "&mdash; accuracy";
   const numeric = Number(value);
@@ -2339,6 +2356,115 @@ function formatBenchmarkPrice(value) {
   return String(roundTo(numeric, 4));
 }
 
+function formatFallbackCell(value) {
+  if (value === null || value === undefined) return "&mdash;";
+  const text = String(value).trim();
+  return text ? escapeHtml(text) : "&mdash;";
+}
+
+function buildResearchEvidenceAudit(rows = [], options = {}) {
+  const assetCode = options.assetCode || "USD";
+  const timeframe = options.timeframe || "following 24hrs";
+  const sourceView = options.sourceView || "research_prediction_usd_benchmark_summary";
+  const filteredRows = normaliseResearchRows(rows).filter(row =>
+    (!assetCode || row.asset_code === assetCode) &&
+    (!timeframe || row.timeframe === timeframe)
+  );
+
+  const matrixComputation = computeResearchMatrix(filteredRows, {
+    assetCode: "",
+    timeframe: ""
+  });
+  const includedRows = [];
+  const excludedRows = [];
+  const directionCounts = {};
+  const strengthCounts = {};
+  const matrixCellCounts = {};
+  const resultCounts = {
+    correct: 0,
+    wrong: 0,
+    flat: 0
+  };
+
+  filteredRows.forEach(row => {
+    const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
+    const confidencePct = normalizeConfidencePercent(row);
+    const strengthKey = confidenceBandStrengthKey(confidencePct);
+    const resultRaw = String(row.combined_result || "").trim().toUpperCase();
+    const exclusionReason = getResearchRowExclusionReason(row);
+    const rowEvidence = {
+      snapshotDate: row.snapshot_date || row.call_date || "",
+      assetCode: row.asset_code || assetCode || "",
+      timeframe: formatResearchTimeframeLabel(row.timeframe),
+      directionKey,
+      directionLabel: directionKey ? matrixDirectionLabel(directionKey) : titleCaseWords(normaliseDirection(row.agent_direction || row.predicted_direction || "Unknown")),
+      convictionPctValue: confidencePct,
+      convictionPct: formatConvictionPercent(confidencePct),
+      strengthKey,
+      strengthBucket: strengthKey ? matrixStrengthLabel(strengthKey) : "Unknown",
+      benchmark: row.benchmark_market || "",
+      startPrice: formatBenchmarkPrice(row.open_price),
+      endPrice: formatBenchmarkPrice(row.close_price),
+      benchmarkMove: formatBenchmarkMove(row.pct_change),
+      resultKey: resultRaw,
+      result: formatEvaluationResult(resultRaw),
+      matrixCell: directionKey && strengthKey
+        ? `${matrixDirectionLabel(directionKey)} / ${matrixStrengthLabel(strengthKey)}`
+        : "Unmapped",
+      matrixCellKey: directionKey && strengthKey ? `${directionKey}__${strengthKey}` : "unmapped",
+      predictionId: getResearchRowIdentifier(row),
+      predictionIdDisplay: getResearchRowIdentifier(row) ? escapeHtml(String(getResearchRowIdentifier(row))) : "&mdash;",
+      exclusionReasonKey: exclusionReason,
+      exclusionReason: exclusionReason ? titleCaseWords(exclusionReason) : "Included"
+    };
+
+    if (exclusionReason) {
+      excludedRows.push(rowEvidence);
+      return;
+    }
+
+    includedRows.push(rowEvidence);
+    directionCounts[directionKey] = (directionCounts[directionKey] || 0) + 1;
+    strengthCounts[strengthKey] = (strengthCounts[strengthKey] || 0) + 1;
+    matrixCellCounts[rowEvidence.matrixCell] = (matrixCellCounts[rowEvidence.matrixCell] || 0) + 1;
+    if (resultRaw === "CORRECT") resultCounts.correct += 1;
+    if (resultRaw === "WRONG") resultCounts.wrong += 1;
+    if (resultRaw === "FLAT") resultCounts.flat += 1;
+  });
+
+  includedRows.sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));
+  excludedRows.sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));
+
+  const totals = computeMatrixTotals(matrixComputation.matrix);
+  const evidenceRowsTotal = includedRows.length;
+  const matrixTotal = totals.evaluatedCalls;
+  const difference = matrixTotal - evidenceRowsTotal;
+  const overallAccuracyPct = evidenceRowsTotal
+    ? roundTo((totals.correctCalls / evidenceRowsTotal) * 100, 1)
+    : null;
+
+  return {
+    sourceView,
+    sourceRowCount: filteredRows.length,
+    includedRows,
+    excludedRows,
+    exclusionCounts: matrixComputation.exclusionCounts || {},
+    directionCounts,
+    strengthCounts,
+    matrixCellCounts,
+    resultCounts,
+    matrix: matrixComputation.matrix,
+    matrixTotal,
+    evidenceRowsTotal,
+    difference,
+    reconciliationPassed: difference === 0,
+    totalCorrect: totals.correctCalls,
+    totalWrong: resultCounts.wrong,
+    totalFlat: resultCounts.flat,
+    overallAccuracyPct
+  };
+}
+
 function computeMatrixTotals(matrix = {}) {
   let evaluatedCalls = 0;
   let correctCalls = 0;
@@ -2410,36 +2536,21 @@ function formatAccuracyWithCounts(correct, total) {
 }
 
 function buildResearchEvidenceRows(rows = [], options = {}) {
-  const assetCode = options.assetCode || "USD";
-  const timeframe = options.timeframe || "following 24hrs";
-
-  return normaliseResearchRows(rows)
-    .filter(row =>
-      (!assetCode || row.asset_code === assetCode) &&
-      (!timeframe || row.timeframe === timeframe) &&
-      ["CORRECT", "WRONG", "FLAT"].includes(String(row.combined_result || "").trim().toUpperCase())
-    )
-    .map(row => {
-      const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
-      const strengthKey = normalizeResearchMatrixStrength(row);
-      return {
-        snapshotDate: row.snapshot_date || row.call_date || "",
-        assetCode: row.asset_code || assetCode,
-        timeframe: formatResearchTimeframeLabel(row.timeframe),
-        direction: titleCaseWords(normaliseDirection(row.agent_direction || row.predicted_direction || "Unknown")),
-        convictionPct: formatConvictionPercent(normalizeConfidencePercent(row)),
-        strengthBucket: formatProductionStrength(normalizeConfidencePercent(row)),
-        benchmark: row.benchmark_market || "Unknown",
-        startPrice: formatBenchmarkPrice(row.open_price),
-        endPrice: formatBenchmarkPrice(row.close_price),
-        benchmarkMove: formatBenchmarkMove(row.pct_change),
-        result: formatEvaluationResult(row.combined_result),
-        matrixCell: directionKey && strengthKey
-          ? `${matrixDirectionLabel(directionKey)} / ${matrixStrengthLabel(strengthKey)}`
-          : "Unmapped"
-      };
-    })
-    .sort((a, b) => String(b.snapshotDate).localeCompare(String(a.snapshotDate)));
+  return buildResearchEvidenceAudit(rows, options).includedRows.map(row => ({
+    snapshotDate: row.snapshotDate,
+    assetCode: row.assetCode,
+    timeframe: row.timeframe,
+    direction: row.directionLabel,
+    convictionPct: row.convictionPct,
+    strengthBucket: row.strengthBucket,
+    benchmark: row.benchmark,
+    startPrice: row.startPrice,
+    endPrice: row.endPrice,
+    benchmarkMove: row.benchmarkMove,
+    result: row.result,
+    matrixCell: row.matrixCell,
+    predictionId: row.predictionId
+  }));
 }
 
 function renderResearch24hContext(summary = null) {
@@ -2456,6 +2567,192 @@ function renderResearch24hContext(summary = null) {
         <strong>Evaluation rule:</strong> USD bullish is correct when ${escapeHtml(benchmark)} rises over the following 24hrs; USD bearish is correct when ${escapeHtml(benchmark)} falls; neutral/flat is correct when ${escapeHtml(benchmark)} remains inside the flat threshold.
       </p>
     </article>
+  `;
+}
+
+function renderMatrixEvidenceCountItems(counts = {}, orderedLabels = []) {
+  const entries = orderedLabels.length
+    ? orderedLabels
+      .map(([key, label]) => [label, Number(counts[key] || 0)])
+      .filter(([, count]) => count > 0)
+    : Object.entries(counts)
+      .map(([label, count]) => [label, Number(count || 0)])
+      .filter(([, count]) => count > 0);
+
+  if (!entries.length) {
+    return `<span class="matrix-evidence-count empty">None</span>`;
+  }
+
+  return entries
+    .map(([label, count]) => `<span class="matrix-evidence-count"><strong>${count}</strong> ${escapeHtml(label)}</span>`)
+    .join("");
+}
+
+function renderMatrixEvidenceSummaryGrid(audit = {}) {
+  const exclusionReasonCounts = Object.fromEntries(
+    Object.entries(audit.exclusionCounts || {}).map(([key, count]) => [titleCaseWords(key), count])
+  );
+
+  return `
+    <div class="matrix-evidence-summary-grid">
+      <div class="matrix-evidence-summary-card">
+        <span>Source View</span>
+        <strong>${escapeHtml(audit.sourceView || "research_prediction_usd_benchmark_summary")}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Total Rows Fetched</span>
+        <strong>${audit.sourceRowCount ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Included In Matrix</span>
+        <strong>${audit.includedRows?.length ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Excluded</span>
+        <strong>${audit.excludedRows?.length ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Total Correct</span>
+        <strong>${audit.totalCorrect ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Total Wrong</span>
+        <strong>${audit.totalWrong ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Total Flat</span>
+        <strong>${audit.totalFlat ?? 0}</strong>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Included Accuracy</span>
+        <strong>${metricAvailable(audit.overallAccuracyPct) ? percentValue(audit.overallAccuracyPct) : "&mdash;"}</strong>
+      </div>
+    </div>
+    <div class="matrix-evidence-breakdown-grid">
+      <div class="matrix-evidence-breakdown-card">
+        <span>Exclusion Reasons</span>
+        <div class="matrix-evidence-count-list">${renderMatrixEvidenceCountItems(exclusionReasonCounts)}</div>
+      </div>
+      <div class="matrix-evidence-breakdown-card">
+        <span>Counts By Direction</span>
+        <div class="matrix-evidence-count-list">${renderMatrixEvidenceCountItems(audit.directionCounts, [
+          ["bullish", "Bullish"],
+          ["bearish", "Bearish"],
+          ["neutral", "Neutral / Flat"]
+        ])}</div>
+      </div>
+      <div class="matrix-evidence-breakdown-card">
+        <span>Counts By Strength Bucket</span>
+        <div class="matrix-evidence-count-list">${renderMatrixEvidenceCountItems(audit.strengthCounts, matrixStrengthBuckets.map(bucket => [bucket.key, bucket.label]))}</div>
+      </div>
+      <div class="matrix-evidence-breakdown-card matrix-evidence-breakdown-card-wide">
+        <span>Counts By Matrix Cell</span>
+        <div class="matrix-evidence-count-list">${renderMatrixEvidenceCountItems(audit.matrixCellCounts)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMatrixEvidenceRows(rows = [], kind = "included") {
+  if (!rows.length) {
+    return `<div class="empty-state matrix-evidence-empty">${kind === "excluded" ? "No excluded rows for this matrix." : "No evidence rows available for this matrix."}</div>`;
+  }
+
+  return `
+    <div class="matrix-evidence-table-scroll">
+      <table class="dashboard-table research-evidence-table matrix-evidence-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Asset</th>
+            <th>Timeframe</th>
+            <th>Direction</th>
+            <th>Conviction %</th>
+            <th>Strength Bucket</th>
+            <th>Benchmark</th>
+            <th>Benchmark Start</th>
+            <th>Benchmark End</th>
+            <th>Benchmark Move</th>
+            <th>Evaluation Result</th>
+            <th>Matrix Cell</th>
+            <th>Prediction / Research ID</th>
+            ${kind === "excluded" ? "<th>Exclusion Reason</th>" : ""}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr data-evidence-result="${escapeHtml((row.resultKey || "").toLowerCase())}" data-evidence-direction="${escapeHtml(row.directionKey || "")}" data-evidence-strength="${escapeHtml(row.strengthKey || "")}">
+              <td>${formatFallbackCell(row.snapshotDate)}</td>
+              <td>${formatFallbackCell(row.assetCode)}</td>
+              <td>${formatFallbackCell(row.timeframe)}</td>
+              <td>${formatFallbackCell(row.directionLabel)}</td>
+              <td>${row.convictionPct || "&mdash;"}</td>
+              <td>${formatFallbackCell(row.strengthBucket)}</td>
+              <td>${formatFallbackCell(row.benchmark)}</td>
+              <td>${row.startPrice || "&mdash;"}</td>
+              <td>${row.endPrice || "&mdash;"}</td>
+              <td>${row.benchmarkMove || "&mdash;"}</td>
+              <td>${formatFallbackCell(row.result)}</td>
+              <td>${formatFallbackCell(row.matrixCell)}</td>
+              <td>${row.predictionIdDisplay || "&mdash;"}</td>
+              ${kind === "excluded" ? `<td>${formatFallbackCell(row.exclusionReason)}</td>` : ""}
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderMatrixEvidenceAccordion(rows = [], options = {}) {
+  const audit = buildResearchEvidenceAudit(rows, options);
+  const filterButtons = [
+    { key: "all", label: "All" },
+    { key: "correct", label: "Correct" },
+    { key: "wrong", label: "Wrong" },
+    { key: "flat", label: "Flat" },
+    { key: "bullish", label: "Bullish" },
+    { key: "bearish", label: "Bearish" },
+    { key: "weak", label: "Weak" },
+    { key: "moderate", label: "Moderate" },
+    { key: "strong", label: "Strong" },
+    { key: "very_strong", label: "Very Strong" }
+  ];
+
+  return `
+    <details class="matrix-evidence-accordion">
+      <summary>Show rows behind this matrix</summary>
+      <div class="matrix-evidence-body">
+        <div class="matrix-evidence-reconciliation ${audit.reconciliationPassed ? "pass" : "fail"}">
+          <div class="matrix-evidence-reconciliation-grid">
+            <div><span>Matrix Total</span><strong>${audit.matrixTotal}</strong></div>
+            <div><span>Evidence Rows Total</span><strong>${audit.evidenceRowsTotal}</strong></div>
+            <div><span>Difference</span><strong>${audit.difference}</strong></div>
+            <div><span>Reconciliation</span><strong>${audit.reconciliationPassed ? "PASS" : "FAIL"}</strong></div>
+          </div>
+        </div>
+        ${renderMatrixEvidenceSummaryGrid(audit)}
+        <div class="matrix-evidence-toolbar">
+          <div class="matrix-evidence-filter-group" role="group" aria-label="Matrix evidence filters">
+            ${filterButtons.map(button => `
+              <button class="matrix-evidence-filter-button${button.key === "all" ? " active" : ""}" type="button" data-matrix-evidence-filter="${button.key}">
+                ${escapeHtml(button.label)}
+              </button>
+            `).join("")}
+          </div>
+          <button class="matrix-evidence-export-button" type="button" data-export-matrix-evidence="usd-24h">Export Matrix Evidence CSV</button>
+        </div>
+        <div class="matrix-evidence-table-wrap">
+          ${renderMatrixEvidenceRows(audit.includedRows, "included")}
+        </div>
+        ${audit.excludedRows.length ? `
+          <div class="matrix-evidence-excluded-block">
+            <p class="research-panel-copy">Excluded rows were fetched from the same source view but did not qualify for the matrix. They are listed here with the exclusion reason for auditability.</p>
+            ${renderMatrixEvidenceRows(audit.excludedRows, "excluded")}
+          </div>
+        ` : ""}
+      </div>
+    </details>
   `;
 }
 
@@ -2704,6 +3001,11 @@ function renderResearch24hAccuracyMatrix(rows = [], options = {}) {
         ` : ""}
         <p class="research-matrix-note">Empty buckets stay empty. No mock accuracy is shown when the live research layer has no evaluated calls for that bucket.</p>
       </article>
+      ${renderMatrixEvidenceAccordion(rows, {
+        assetCode: options.assetCode,
+        timeframe: options.timeframe,
+        sourceView: options.sourceView || "research_prediction_usd_benchmark_summary"
+      })}
     </section>
   `;
 }
@@ -2815,7 +3117,8 @@ function renderResearchAccuracy(data = {}) {
         assetCode: "USD",
         assetLabel: "USD",
         timeframe: "following 24hrs",
-        timeframeLabel: "24H"
+        timeframeLabel: "24H",
+        sourceView: "research_prediction_usd_benchmark_summary"
       })}
       ${renderMatrixSummary(matrix24hRows, {
         assetCode: "USD",
@@ -2866,6 +3169,7 @@ function renderBacktest(data = {}) {
     panel.innerHTML = activeBacktestTab === "infrastructure"
       ? renderResearchInfrastructure(data)
       : (activeBacktestTab === "checker" ? renderResearchDataChecker(data) : renderResearchAccuracy(data));
+    applyMatrixEvidenceFilter("all");
   } catch (err) {
     console.error("Backtest render failed", err);
     panel.innerHTML = `
@@ -2876,6 +3180,91 @@ function renderBacktest(data = {}) {
       </article>
     `;
   }
+}
+
+function applyMatrixEvidenceFilter(filterKey = "all") {
+  const panel = document.getElementById("backtestPanel");
+  if (!panel) return;
+
+  const normalizedFilter = String(filterKey || "all").trim().toLowerCase();
+  panel.querySelectorAll("[data-matrix-evidence-filter]").forEach(button => {
+    button.classList.toggle("active", button.dataset.matrixEvidenceFilter === normalizedFilter);
+  });
+
+  panel.querySelectorAll(".matrix-evidence-table-wrap tbody tr").forEach(row => {
+    const result = String(row.dataset.evidenceResult || "").toLowerCase();
+    const direction = String(row.dataset.evidenceDirection || "").toLowerCase();
+    const strength = String(row.dataset.evidenceStrength || "").toLowerCase();
+    const matches = normalizedFilter === "all"
+      || result === normalizedFilter
+      || direction === normalizedFilter
+      || strength === normalizedFilter;
+    row.hidden = !matches;
+  });
+}
+
+function escapeCsvCell(value) {
+  const text = value === null || value === undefined ? "" : String(value);
+  const escaped = text.replace(/"/g, "\"\"");
+  return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
+}
+
+function exportMatrixEvidenceCsv() {
+  const matrix24hRows = backtestData?.accuracy?.matrix_24h_rows || [];
+  const audit = buildResearchEvidenceAudit(matrix24hRows, {
+    assetCode: "USD",
+    timeframe: "following 24hrs",
+    sourceView: "research_prediction_usd_benchmark_summary"
+  });
+
+  if (!audit.includedRows.length) {
+    console.warn("No matrix evidence rows available to export");
+    return;
+  }
+
+  const headers = [
+    "Date",
+    "Asset",
+    "Timeframe",
+    "Direction",
+    "Conviction %",
+    "Strength Bucket",
+    "Benchmark",
+    "Benchmark Start",
+    "Benchmark End",
+    "Benchmark Move",
+    "Evaluation Result",
+    "Matrix Cell",
+    "Prediction / Research ID"
+  ];
+  const lines = [
+    headers.join(","),
+    ...audit.includedRows.map(row => [
+      row.snapshotDate || "",
+      row.assetCode || "",
+      row.timeframe || "",
+      row.directionLabel || "",
+      row.convictionPctValue ?? "",
+      row.strengthBucket || "",
+      row.benchmark || "",
+      row.startPrice === "&mdash;" ? "" : row.startPrice,
+      row.endPrice === "&mdash;" ? "" : row.endPrice,
+      row.benchmarkMove === "&mdash;" ? "" : row.benchmarkMove,
+      row.result || "",
+      row.matrixCell || "",
+      row.predictionId || ""
+    ].map(escapeCsvCell).join(","))
+  ];
+
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "usd-24h-matrix-evidence.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 function workflowErrorText(error) {
@@ -3177,6 +3566,24 @@ function setupTabs() {
   });
 }
 
+function setupBacktestEvidenceControls() {
+  const panel = document.getElementById("backtestPanel");
+  if (!panel) return;
+
+  panel.addEventListener("click", event => {
+    const filterButton = event.target.closest("[data-matrix-evidence-filter]");
+    if (filterButton) {
+      applyMatrixEvidenceFilter(filterButton.dataset.matrixEvidenceFilter || "all");
+      return;
+    }
+
+    const exportButton = event.target.closest("[data-export-matrix-evidence]");
+    if (exportButton) {
+      exportMatrixEvidenceCsv();
+    }
+  });
+}
+
 async function fetchResearchView(viewName, options = {}) {
   const url = new URL(`${researchSupabaseUrl}/${viewName}`);
   url.searchParams.set("select", options.select || "*");
@@ -3338,6 +3745,7 @@ async function loadDashboard() {
 }
 
 setupTabs();
+setupBacktestEvidenceControls();
 restoreNavigationState();
 setBacktestTab(activeBacktestTab, { skipRender: true });
 setTab(activeTab);
