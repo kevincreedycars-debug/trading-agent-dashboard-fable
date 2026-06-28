@@ -2007,34 +2007,28 @@ function renderResearchInfrastructureSummary(data = {}) {
 
 const matrixStrengthBuckets = [
   {
-    key: "very_weak",
-    label: "Very Weak",
-    rangeLabel: "50-55%",
-    definition: "Production Very Weak label."
-  },
-  {
     key: "weak",
     label: "Weak",
-    rangeLabel: "56-64%",
-    definition: "Production Weak label."
+    rangeLabel: "0-49%",
+    definition: "Live dashboard confidence band."
   },
   {
     key: "moderate",
     label: "Moderate",
-    rangeLabel: "65-74%",
-    definition: "Production Moderate label."
+    rangeLabel: "50-64%",
+    definition: "Live dashboard confidence band."
   },
   {
     key: "strong",
     label: "Strong",
-    rangeLabel: "75-84%",
-    definition: "Production Strong label."
+    rangeLabel: "65-79%",
+    definition: "Live dashboard confidence band."
   },
   {
     key: "very_strong",
     label: "Very Strong",
-    rangeLabel: "85-100%",
-    definition: "Production Very Strong label."
+    rangeLabel: "80-100%",
+    definition: "Live dashboard confidence band."
   }
 ];
 
@@ -2053,18 +2047,18 @@ function normalizeResearchMatrixDirection(value = "") {
   return null;
 }
 
-function normalizeResearchMatrixStrength(value = "") {
-  const normalized = String(value || "")
-    .trim()
-    .toUpperCase()
-    .replace(/[\s-]+/g, "_");
-
-  if (normalized === "VERY_STRONG") return "very_strong";
-  if (normalized === "STRONG") return "strong";
-  if (normalized === "MODERATE") return "moderate";
-  if (normalized === "WEAK") return "weak";
-  if (normalized === "VERY_WEAK") return "very_weak";
+function confidenceBandStrengthKey(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return null;
+  if (numeric >= 80) return "very_strong";
+  if (numeric >= 65) return "strong";
+  if (numeric >= 50) return "moderate";
+  if (numeric >= 0) return "weak";
   return null;
+}
+
+function normalizeResearchMatrixStrength(row = {}) {
+  return confidenceBandStrengthKey(row.agent_conviction ?? row.predicted_conviction);
 }
 
 function normaliseResearchRows(rows) {
@@ -2103,7 +2097,7 @@ function computeResearchMatrix(rows = [], options = {}) {
     )
     .forEach(row => {
       const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
-      const strengthKey = normalizeResearchMatrixStrength(row.verdict_strength);
+      const strengthKey = normalizeResearchMatrixStrength(row);
       const result = String(row.combined_result || "").trim().toUpperCase();
 
       if (!directionKey || !strengthKey) return;
@@ -2210,11 +2204,8 @@ function formatConvictionPercent(value) {
 }
 
 function formatProductionStrength(value = "") {
-  const normalized = String(value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
-  if (!normalized) return "Unknown";
-  if (normalized === "VERY_WEAK") return "Very Weak";
-  if (normalized === "VERY_STRONG") return "Very Strong";
-  return titleCaseWords(normalized);
+  const key = confidenceBandStrengthKey(value);
+  return key ? matrixStrengthLabel(key) : "Unknown";
 }
 
 function formatBenchmarkPrice(value) {
@@ -2260,7 +2251,7 @@ function computeMatrixSummary(rows = [], options = {}) {
     )
     .forEach(row => {
       const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
-      const strengthKey = normalizeResearchMatrixStrength(row.verdict_strength);
+      const strengthKey = normalizeResearchMatrixStrength(row);
       const result = String(row.combined_result || "").trim().toUpperCase();
 
       if (!directionKey || !strengthKey) return;
@@ -2305,14 +2296,14 @@ function buildResearchEvidenceRows(rows = [], options = {}) {
     )
     .map(row => {
       const directionKey = normalizeResearchMatrixDirection(row.predicted_direction || row.agent_direction);
-      const strengthKey = normalizeResearchMatrixStrength(row.verdict_strength);
+      const strengthKey = normalizeResearchMatrixStrength(row);
       return {
         snapshotDate: row.snapshot_date || row.call_date || "",
         assetCode: row.asset_code || assetCode,
         timeframe: formatResearchTimeframeLabel(row.timeframe),
         direction: titleCaseWords(normaliseDirection(row.agent_direction || row.predicted_direction || "Unknown")),
         convictionPct: formatConvictionPercent(row.agent_conviction ?? row.predicted_conviction),
-        strengthBucket: formatProductionStrength(row.verdict_strength),
+        strengthBucket: formatProductionStrength(row.agent_conviction ?? row.predicted_conviction),
         benchmark: row.benchmark_market || "Unknown",
         startPrice: formatBenchmarkPrice(row.open_price),
         endPrice: formatBenchmarkPrice(row.close_price),
@@ -2482,7 +2473,7 @@ function renderResearchDefinitions() {
           </div>
           <div class="research-definition-item">
             <strong>Strength Bucket</strong>
-            <p>The historical grouping derived from the production conviction thresholds. Historical accuracy is measured using these buckets.</p>
+            <p>The historical grouping derived from the same live dashboard confidence % thresholds used for call strength labels. Historical accuracy is measured using these buckets.</p>
           </div>
         </div>
         <div class="research-threshold-list">
@@ -2496,8 +2487,8 @@ function renderResearchDefinitions() {
         </div>
         <ul class="read-only-list">
           <li>Each historical prediction retains its original conviction percentage.</li>
-          <li>The prediction is then grouped into the appropriate strength bucket for historical accuracy analysis.</li>
-          <li>The matrix preserves the production strength buckets exactly.</li>
+          <li>The prediction is then grouped into the appropriate live confidence strength bucket for historical accuracy analysis.</li>
+          <li>The matrix uses the same confidence-band logic as the live dashboard call labels.</li>
           <li>NOT_EVALUABLE, MIXED, NO_CALL, and unsupported strength labels do not create fake matrix accuracy.</li>
           <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
         </ul>
