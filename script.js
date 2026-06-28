@@ -2081,6 +2081,13 @@ function normaliseResearchRows(rows) {
   return Array.isArray(rows) ? rows.filter(row => row && typeof row === "object") : [];
 }
 
+function roundTo(value, decimals = 0) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return null;
+  const factor = 10 ** Math.max(0, Number(decimals) || 0);
+  return Math.round(numeric * factor) / factor;
+}
+
 function computeResearchMatrix(rows = [], options = {}) {
   const assetCode = options.assetCode || "USD";
   const timeframe = options.timeframe || "following 24hrs";
@@ -2127,7 +2134,7 @@ function computeResearchMatrix(rows = [], options = {}) {
     matrixStrengthBuckets.forEach(strength => {
       const bucket = matrix[direction.key][strength.key];
       bucket.accuracyPct = bucket.callCount
-        ? round((bucket.accurateCount / bucket.callCount) * 100, 1)
+        ? roundTo((bucket.accurateCount / bucket.callCount) * 100, 1)
         : null;
     });
   });
@@ -2144,7 +2151,7 @@ function formatMatrixAccuracy(value) {
   const numeric = Number(value);
   const rounded = Math.abs(numeric - Math.round(numeric)) < 0.05
     ? Math.round(numeric)
-    : round(numeric, 1);
+    : roundTo(numeric, 1);
   return `${rounded}% accuracy`;
 }
 
