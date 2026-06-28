@@ -2439,9 +2439,10 @@ function buildResearchEvidenceAudit(rows = [], options = {}) {
   const evidenceRowsTotal = includedRows.length;
   const matrixTotal = totals.evaluatedCalls;
   const difference = matrixTotal - evidenceRowsTotal;
-  const overallAccuracyPct = evidenceRowsTotal
-    ? roundTo((totals.correctCalls / evidenceRowsTotal) * 100, 1)
-    : null;
+  const directionalDecisions = resultCounts.correct + resultCounts.wrong;
+  const overallAccuracyPct = evidenceRowsTotal ? roundTo((totals.correctCalls / evidenceRowsTotal) * 100, 1) : null;
+  const decisionWinRateExFlatPct = directionalDecisions ? roundTo((totals.correctCalls / directionalDecisions) * 100, 1) : null;
+  const flatOutcomePct = evidenceRowsTotal ? roundTo((resultCounts.flat / evidenceRowsTotal) * 100, 1) : null;
 
   return {
     sourceView,
@@ -2461,7 +2462,10 @@ function buildResearchEvidenceAudit(rows = [], options = {}) {
     totalCorrect: totals.correctCalls,
     totalWrong: resultCounts.wrong,
     totalFlat: resultCounts.flat,
-    overallAccuracyPct
+    overallAccuracyPct,
+    decisionWinRateExFlatPct,
+    flatOutcomePct,
+    directionalDecisions
   };
 }
 
@@ -2484,9 +2488,9 @@ function computeMatrixSummary(rows = [], options = {}) {
   const assetCode = options.assetCode || "USD";
   const timeframe = options.timeframe || "following 24hrs";
   const directionTotals = {
-    bullish: { total: 0, correct: 0 },
-    bearish: { total: 0, correct: 0 },
-    neutral: { total: 0, correct: 0 }
+    bullish: { total: 0, correct: 0, wrong: 0, flat: 0 },
+    bearish: { total: 0, correct: 0, wrong: 0, flat: 0 },
+    neutral: { total: 0, correct: 0, wrong: 0, flat: 0 }
   };
   const resultTotals = {
     evaluated: 0,
@@ -2515,6 +2519,8 @@ function computeMatrixSummary(rows = [], options = {}) {
 
       const bucket = directionTotals[directionKey];
       bucket.total += 1;
+      if (result === "WRONG") bucket.wrong += 1;
+      if (result === "FLAT") bucket.flat += 1;
       if (directionKey === "neutral") {
         if (result === "FLAT") bucket.correct += 1;
       } else if (result === "CORRECT") {
@@ -2532,6 +2538,28 @@ function formatAccuracyWithCounts(correct, total) {
   return {
     countLine: `${safeCorrect} / ${safeTotal} correct`,
     accuracyLine: metricAvailable(accuracyPct) ? `${formatMatrixAccuracy(accuracyPct)}` : "&mdash; accuracy"
+  };
+}
+
+function formatRateLine(numerator, denominator, label) {
+  const safeNumerator = Number(numerator || 0);
+  const safeDenominator = Number(denominator || 0);
+  if (!safeDenominator) return `${label}: &mdash;`;
+  const pct = roundTo((safeNumerator / safeDenominator) * 100, 1);
+  return `${label}: ${safeNumerator} / ${safeDenominator} = ${percentValue(pct)}`;
+}
+
+function formatMatrixRateBundle(correct, wrong, flat, total) {
+  const safeCorrect = Number(correct || 0);
+  const safeWrong = Number(wrong || 0);
+  const safeFlat = Number(flat || 0);
+  const safeTotal = Number(total || 0);
+  const exFlatDenominator = safeCorrect + safeWrong;
+
+  return {
+    includingFlat: formatRateLine(safeCorrect, safeTotal, "Accuracy Including Flat"),
+    exFlat: formatRateLine(safeCorrect, exFlatDenominator, "Decision Win Rate Ex-Flat"),
+    flat: formatRateLine(safeFlat, safeTotal, "Flat Outcomes")
   };
 }
 
@@ -2592,6 +2620,12 @@ function renderMatrixEvidenceSummaryGrid(audit = {}) {
   const exclusionReasonCounts = Object.fromEntries(
     Object.entries(audit.exclusionCounts || {}).map(([key, count]) => [titleCaseWords(key), count])
   );
+  const rateBundle = formatMatrixRateBundle(
+    audit.totalCorrect,
+    audit.totalWrong,
+    audit.totalFlat,
+    audit.includedRows?.length || 0
+  );
 
   return `
     <div class="matrix-evidence-summary-grid">
@@ -2624,10 +2658,22 @@ function renderMatrixEvidenceSummaryGrid(audit = {}) {
         <strong>${audit.totalFlat ?? 0}</strong>
       </div>
       <div class="matrix-evidence-summary-card">
-        <span>Included Accuracy</span>
+        <span>Accuracy Including Flat</span>
         <strong>${metricAvailable(audit.overallAccuracyPct) ? percentValue(audit.overallAccuracyPct) : "&mdash;"}</strong>
+        <small>${rateBundle.includingFlat}</small>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Decision Win Rate Ex-Flat</span>
+        <strong>${metricAvailable(audit.decisionWinRateExFlatPct) ? percentValue(audit.decisionWinRateExFlatPct) : "&mdash;"}</strong>
+        <small>${rateBundle.exFlat}</small>
+      </div>
+      <div class="matrix-evidence-summary-card">
+        <span>Flat Outcomes</span>
+        <strong>${metricAvailable(audit.flatOutcomePct) ? percentValue(audit.flatOutcomePct) : "&mdash;"}</strong>
+        <small>${rateBundle.flat}</small>
       </div>
     </div>
+    <p class="matrix-evidence-note">Flat outcomes are not counted as wins or losses in the ex-flat decision win rate. They remain visible as a separate bucket because they matter for evaluating whether the call produced tradable directional movement.</p>
     <div class="matrix-evidence-breakdown-grid">
       <div class="matrix-evidence-breakdown-card">
         <span>Exclusion Reasons</span>
@@ -2849,10 +2895,10 @@ function renderResearchDataChecker(data = {}) {
 
 function renderMatrixSummary(rows = [], options = {}) {
   const { directionTotals, resultTotals } = computeMatrixSummary(rows, options);
-  const overall = formatAccuracyWithCounts(resultTotals.correct, resultTotals.evaluated);
-  const bullish = formatAccuracyWithCounts(directionTotals.bullish.correct, directionTotals.bullish.total);
-  const bearish = formatAccuracyWithCounts(directionTotals.bearish.correct, directionTotals.bearish.total);
-  const neutral = formatAccuracyWithCounts(directionTotals.neutral.correct, directionTotals.neutral.total);
+  const overall = formatMatrixRateBundle(resultTotals.correct, resultTotals.wrong, resultTotals.flat, resultTotals.evaluated);
+  const bullish = formatMatrixRateBundle(directionTotals.bullish.correct, directionTotals.bullish.wrong, directionTotals.bullish.flat, directionTotals.bullish.total);
+  const bearish = formatMatrixRateBundle(directionTotals.bearish.correct, directionTotals.bearish.wrong, directionTotals.bearish.flat, directionTotals.bearish.total);
+  const neutral = formatMatrixRateBundle(directionTotals.neutral.correct, directionTotals.neutral.wrong, directionTotals.neutral.flat, directionTotals.neutral.total);
 
   return `
     <section class="research-section">
@@ -2868,10 +2914,12 @@ function renderMatrixSummary(rows = [], options = {}) {
         ${renderBacktestMetric("Total Correct", String(resultTotals.correct), "Rows counted as correct by the same matrix logic")}
         ${renderBacktestMetric("Total Wrong", String(resultTotals.wrong), "Rows with WRONG benchmark outcomes")}
         ${renderBacktestMetric("Total Flat / Neutral Outcomes", String(resultTotals.flat), "Rows where the realised benchmark outcome was FLAT")}
-        ${renderBacktestMetric("Overall Accuracy", overall.countLine, overall.accuracyLine)}
-        ${renderBacktestMetric("Bullish Calls", bullish.countLine, bullish.accuracyLine)}
-        ${renderBacktestMetric("Bearish Calls", bearish.countLine, bearish.accuracyLine)}
-        ${renderBacktestMetric("Neutral / Flat Calls", neutral.countLine, neutral.accuracyLine)}
+        ${renderBacktestMetric("Accuracy Including Flat", overall.includingFlat, "Correct divided by all included matrix rows, including FLAT benchmark outcomes.")}
+        ${renderBacktestMetric("Decision Win Rate Ex-Flat", overall.exFlat, "Correct divided by directional evaluated outcomes only. FLAT benchmark outcomes are excluded from this rate.")}
+        ${renderBacktestMetric("Flat Outcomes", overall.flat, "Share of included matrix rows where the realised benchmark outcome was FLAT.")}
+        ${renderBacktestMetric("Bullish Calls", bullish.includingFlat, `${bullish.exFlat} • ${bullish.flat}`)}
+        ${renderBacktestMetric("Bearish Calls", bearish.includingFlat, `${bearish.exFlat} • ${bearish.flat}`)}
+        ${renderBacktestMetric("Neutral / Flat Calls", neutral.includingFlat, `${neutral.exFlat} • ${neutral.flat}`)}
       </section>
     </section>
   `;

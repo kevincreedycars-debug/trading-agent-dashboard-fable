@@ -1573,6 +1573,21 @@ h3 {
   line-height: 1.2;
 }
 
+.matrix-evidence-summary-card small {
+  display: block;
+  margin-top: 6px;
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.matrix-evidence-note {
+  margin: -2px 0 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .matrix-evidence-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
