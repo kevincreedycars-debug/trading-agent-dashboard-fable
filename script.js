@@ -1,7 +1,7 @@
 const layer1Url = "./data/layer1.json";
 const layer2Url = "./data/layer2.json";
 const workflowControlUrl = "./data/workflow-control.json";
-const checkerDataUrl = "./data/backtester-checker-usd-24h-2024-01.json?v=20260629-usd-checker-604";
+const checkerDataUrl = "./data/backtester-checker-usd-24h-2024-01.json?v=20260629-usd-flatband-010";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 
@@ -2236,7 +2236,10 @@ function computeResearchMatrix(rows = [], options = {}) {
       matrix[direction.key][strength.key] = {
         callCount: 0,
         accurateCount: 0,
-        accuracyPct: null
+        wrongCount: 0,
+        flatCount: 0,
+        exFlatAccuracyPct: null,
+        flatRatePct: null
       };
     });
   });
@@ -2267,18 +2270,24 @@ function computeResearchMatrix(rows = [], options = {}) {
       usableRowCount += 1;
       bucket.callCount += 1;
 
-      if (directionKey === "neutral") {
-        if (result === "FLAT") bucket.accurateCount += 1;
-      } else if (result === "CORRECT") {
+      if (result === "CORRECT") {
         bucket.accurateCount += 1;
+      } else if (result === "WRONG") {
+        bucket.wrongCount += 1;
+      } else if (result === "FLAT") {
+        bucket.flatCount += 1;
       }
     });
 
   matrixDirectionBuckets.forEach(direction => {
     matrixStrengthBuckets.forEach(strength => {
       const bucket = matrix[direction.key][strength.key];
-      bucket.accuracyPct = bucket.callCount
-        ? roundTo((bucket.accurateCount / bucket.callCount) * 100, 1)
+      const exFlatCalls = bucket.accurateCount + bucket.wrongCount;
+      bucket.exFlatAccuracyPct = exFlatCalls
+        ? roundTo((bucket.accurateCount / exFlatCalls) * 100, 1)
+        : null;
+      bucket.flatRatePct = bucket.callCount
+        ? roundTo((bucket.flatCount / bucket.callCount) * 100, 1)
         : null;
     });
   });
@@ -2314,12 +2323,12 @@ function getResearchRowExclusionReason(row = {}) {
 }
 
 function formatMatrixAccuracy(value) {
-  if (!metricAvailable(value)) return `${displayDash()} accuracy`;
+  if (!metricAvailable(value)) return `${displayDash()} ex-flat`;
   const numeric = Number(value);
   const rounded = Math.abs(numeric - Math.round(numeric)) < 0.05
     ? Math.round(numeric)
     : roundTo(numeric, 1);
-  return `${rounded}% accuracy`;
+  return `${rounded}% ex-flat`;
 }
 
 function matrixCellTone(callCount, accuracyPct) {
@@ -2514,16 +2523,20 @@ function buildResearchEvidenceAudit(rows = [], options = {}) {
 function computeMatrixTotals(matrix = {}) {
   let evaluatedCalls = 0;
   let correctCalls = 0;
+  let wrongCalls = 0;
+  let flatCalls = 0;
 
   matrixDirectionBuckets.forEach(direction => {
     matrixStrengthBuckets.forEach(strength => {
       const cell = matrix?.[direction.key]?.[strength.key];
       evaluatedCalls += Number(cell?.callCount || 0);
       correctCalls += Number(cell?.accurateCount || 0);
+      wrongCalls += Number(cell?.wrongCount || 0);
+      flatCalls += Number(cell?.flatCount || 0);
     });
   });
 
-  return { evaluatedCalls, correctCalls };
+  return { evaluatedCalls, correctCalls, wrongCalls, flatCalls };
 }
 
 function computeMatrixSummary(rows = [], options = {}) {
@@ -2563,9 +2576,7 @@ function computeMatrixSummary(rows = [], options = {}) {
       bucket.total += 1;
       if (result === "WRONG") bucket.wrong += 1;
       if (result === "FLAT") bucket.flat += 1;
-      if (directionKey === "neutral") {
-        if (result === "FLAT") bucket.correct += 1;
-      } else if (result === "CORRECT") {
+      if (result === "CORRECT") {
         bucket.correct += 1;
       }
     });
@@ -2641,14 +2652,13 @@ function buildMatrixSummaryCards(directionTotals = {}, resultTotals = {}) {
   const overallFlat = formatCompactRateMetric(resultTotals.flat, resultTotals.evaluated);
 
   const buildDirectionCard = (label, totals) => {
-    const includingFlat = formatCompactRateMetric(totals.correct, totals.total);
     const exFlat = formatCompactRateMetric(totals.correct, totals.correct + totals.wrong, {
       emptyDetail: "Ex-flat: —"
     });
     return renderBacktestKpiMetric(
       label,
-      includingFlat.primary,
-      `${totals.correct} / ${totals.total}`,
+      exFlat.primary,
+      `${totals.correct} win / ${totals.wrong} loss / ${totals.flat} flat`,
       `Ex-flat: ${exFlat.primary} · Flat: ${totals.flat} / ${totals.total}`
     );
   };
@@ -2658,9 +2668,9 @@ function buildMatrixSummaryCards(directionTotals = {}, resultTotals = {}) {
     ${renderBacktestKpiMetric("Correct", String(resultTotals.correct), "Directional wins")}
     ${renderBacktestKpiMetric("Wrong", String(resultTotals.wrong), "Directional misses")}
     ${renderBacktestKpiMetric("Flat", String(resultTotals.flat), "Flat benchmark outcomes")}
-    ${renderBacktestKpiMetric("Accuracy (Incl. Flat)", overallIncludingFlat.primary, overallIncludingFlat.secondary)}
-    ${renderBacktestKpiMetric("Decision Win Rate", overallExFlat.primary, overallExFlat.secondary, overallExFlat.detail)}
-    ${renderBacktestKpiMetric("Flat Outcomes", overallFlat.primary, overallFlat.secondary)}
+    ${renderBacktestKpiMetric("Accuracy (Incl. Flat)", overallIncludingFlat.primary, overallIncludingFlat.secondary, "Secondary diagnostic only")}
+    ${renderBacktestKpiMetric("Decision Win Rate", overallExFlat.primary, overallExFlat.secondary, "Primary directional metric")}
+    ${renderBacktestKpiMetric("Flat Outcomes", overallFlat.primary, overallFlat.secondary, "Neutral market outcomes")}
     ${buildDirectionCard("Bullish", directionTotals.bullish)}
     ${buildDirectionCard("Bearish", directionTotals.bearish)}
     ${buildDirectionCard("Neutral", directionTotals.neutral)}
@@ -2696,7 +2706,7 @@ function renderResearch24hContext(summary = null) {
         <span><strong>Benchmark:</strong> ${escapeHtml(benchmark)}</span>
       </div>
       <p class="research-panel-copy research-matrix-rule">
-        <strong>Evaluation rule:</strong> USD bullish is correct when ${escapeHtml(benchmark)} rises over the following 24hrs; USD bearish is correct when ${escapeHtml(benchmark)} falls; neutral/flat is correct when ${escapeHtml(benchmark)} remains inside the flat threshold.
+        <strong>Evaluation rule:</strong> USD bullish is correct when ${escapeHtml(benchmark)} rises over the following 24hrs; USD bearish is correct when ${escapeHtml(benchmark)} falls; flat is a neutral market outcome when ${escapeHtml(benchmark)} remains inside the flat threshold.
       </p>
     </article>
   `;
@@ -2966,12 +2976,12 @@ function renderResearch24hEvidenceSummary(summary = null, data = {}) {
           <p class="eyebrow">Supporting Evidence</p>
           <h3>24H benchmark context</h3>
         </div>
-        <p class="research-panel-copy">The matrix is the headline view. These supporting cards show the current replay scope and the record behind the 24H result.</p>
+        <p class="research-panel-copy">The matrix is the headline view. These supporting cards show the current replay scope and the record behind the 24H result. Incl-flat accuracy is secondary context; ex-flat win rate is the main directional read.</p>
       </div>
       <section class="backtest-metric-grid research-summary-grid">
         ${summary
-          ? renderBacktestMetric("Overall 24H Accuracy", percentValue(summary.overall_accuracy_pct), "USD vs DXY over the following 24hrs")
-          : renderUnavailableMetric("Overall 24H Accuracy", "Waiting for populated research views")}
+          ? renderBacktestMetric("Overall 24H Accuracy (Incl. Flat)", percentValue(summary.overall_accuracy_pct), "Secondary diagnostic only; directional read should use ex-flat win rate")
+          : renderUnavailableMetric("Overall 24H Accuracy (Incl. Flat)", "Waiting for populated research views")}
         ${renderBacktestMetric("Replay Coverage", replayCoverage, "Current warehouse-backed USD replay window")}
         ${renderBacktestMetric("Rows Evaluated", evaluatedRows, "CORRECT, WRONG, or FLAT rows used in 24H benchmark totals")}
         ${summary
@@ -3491,7 +3501,7 @@ function renderMatrixSummary(rows = [], options = {}) {
           <p class="eyebrow">Matrix Summary</p>
           <h3>24H totals derived from the matrix rows</h3>
         </div>
-        <p class="research-panel-copy">Compact totals from the same evaluated USD 24H matrix rows above.</p>
+        <p class="research-panel-copy">Compact totals from the same evaluated USD 24H matrix rows above. Flat outcomes remain separate from directional wins and losses, so ex-flat win rate is the primary directional read.</p>
       </div>
       <section class="backtest-metric-grid research-summary-grid matrix-summary-grid matrix-summary-grid-compact">
         ${buildMatrixSummaryCards(directionTotals, resultTotals)}
@@ -3534,6 +3544,8 @@ function renderResearchDefinitions() {
           <li>Each historical prediction retains its original conviction percentage.</li>
           <li>The prediction is then grouped into the appropriate live confidence strength bucket for historical accuracy analysis.</li>
           <li>The matrix uses the same headline confidence-band logic as the live dashboard call labels.</li>
+          <li>Flat is a neutral benchmark outcome, not a directional win or loss.</li>
+          <li>Ex-flat win rate is the main directional accuracy metric. Incl-flat accuracy is secondary diagnostic context only.</li>
           <li>If many rows cluster at 50%, that indicates the replay engine may still be using a legacy confidence floor and should be checked in the Backtester Checker.</li>
           <li>NOT_EVALUABLE, MIXED, NO_CALL, and unsupported strength labels do not create fake matrix accuracy.</li>
           <li>Infrastructure details remain available in the separate Infrastructure Status tab.</li>
@@ -3567,7 +3579,7 @@ function renderResearch24hAccuracyMatrix(rows = [], options = {}) {
           <p class="eyebrow">24H Accuracy Matrix</p>
           <h3>${escapeHtml(assetLabel)} ${escapeHtml(timeframeLabel)} direction by strength</h3>
         </div>
-        <p class="research-panel-copy">Each historical prediction retains its original conviction percentage, then the matrix groups it using the same headline confidence-band thresholds as the live dashboard so each row is judged the way a live-style agent output would be displayed. Each cell uses live research rows only.</p>
+        <p class="research-panel-copy">Each historical prediction retains its original conviction percentage, then the matrix groups it using the same headline confidence-band thresholds as the live dashboard so each row is judged the way a live-style agent output would be displayed. Each cell uses live research rows only and shows directional wins/losses separately from flat neutral outcomes.</p>
       </div>
       <article class="detail-panel wide-panel research-matrix-panel">
         <div class="research-matrix-meta">
@@ -3595,13 +3607,14 @@ function renderResearch24hAccuracyMatrix(rows = [], options = {}) {
                   <th>${escapeHtml(direction.label)}</th>
                   ${matrixStrengthBuckets.map(strength => {
                     const cell = matrix[direction.key][strength.key];
-                    const tone = matrixCellTone(cell.callCount, cell.accuracyPct);
+                    const tone = matrixCellTone(cell.callCount, cell.exFlatAccuracyPct);
                     return `
                       <td>
                         <div class="research-matrix-cell ${tone}">
                           <strong>${cell.callCount} calls</strong>
-                          <span>${formatMatrixCorrectCount(cell.callCount ? `${cell.accurateCount} / ${cell.callCount}` : null)}</span>
-                          <span>${formatMatrixAccuracy(cell.accuracyPct)}</span>
+                          <span>${cell.accurateCount} win / ${cell.wrongCount} loss / ${cell.flatCount} flat</span>
+                          <span>${formatMatrixAccuracy(cell.exFlatAccuracyPct)}</span>
+                          <span>${metricAvailable(cell.flatRatePct) ? `${percentValue(cell.flatRatePct)} flat` : `${displayDash()} flat`}</span>
                         </div>
                       </td>
                     `;

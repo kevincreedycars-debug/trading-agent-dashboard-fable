@@ -1,5 +1,5 @@
 const MARKET_FLAT_THRESHOLDS = Object.freeze({
-  DXY: 0.15,
+  DXY: 0.10,
   EURUSD: 0.20,
   XAUUSD: 0.30,
   QQQ_NQ_PROXY: 0.40,
