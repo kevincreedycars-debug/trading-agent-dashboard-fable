@@ -3040,7 +3040,7 @@ function checkerFilenameFromPath(value = "") {
   return parts[parts.length - 1] || text;
 }
 
-function checkerScopeLabel(checker = {}) {
+function checkerScopeLabelLegacy(checker = {}) {
   const asset = checker?.meta?.asset || "USD";
   const timeframe = checker?.meta?.timeframe === "following 24hrs" ? "24H" : (checker?.meta?.timeframe || "24H");
   const dateRange = checker?.meta?.date_range || {};
@@ -3050,6 +3050,18 @@ function checkerScopeLabel(checker = {}) {
   }
 
   return `${asset} • ${timeframe}`;
+}
+
+function checkerScopeLabel(checker = {}) {
+  const asset = checker?.meta?.asset || "USD";
+  const timeframe = checker?.meta?.timeframe === "following 24hrs" ? "24H" : (checker?.meta?.timeframe || "24H");
+  const dateRange = checker?.meta?.date_range || {};
+
+  if (dateRange.start === "2024-01-01" && dateRange.end === "2024-01-31") {
+    return `${asset} ${timeframe} January 2024`;
+  }
+
+  return `${asset} ${timeframe}`;
 }
 
 function checkerComparedFieldsLabel(fieldsCompared = []) {
@@ -3099,9 +3111,9 @@ function renderCheckerSummaryBlock(checker = {}, summary = {}, fieldsCompared = 
       <div class="checker-summary-card-grid">
         ${renderCheckerSummaryCard("Rows Checked", String(summary.rows_checked ?? 0))}
         ${renderCheckerSummaryCard("Pass", String(summary.pass ?? 0), "", { tone: "pass" })}
-        ${renderCheckerSummaryCard("Tolerance", String(summary.tolerance_pass ?? 0), "", { tone: "tolerance" })}
+        ${renderCheckerSummaryCard("Tolerance Pass", String(summary.tolerance_pass ?? 0), "", { tone: "tolerance" })}
         ${renderCheckerSummaryCard("Fail", String(summary.fail ?? 0), "", { tone: "fail" })}
-        ${renderCheckerSummaryCard("Missing", String(summary.missing_data ?? 0), "", { tone: "missing" })}
+        ${renderCheckerSummaryCard("Missing Data", String(summary.missing_data ?? 0), "", { tone: "missing" })}
         ${renderCheckerSummaryCard("Scope", checkerScopeLabel(checker))}
         ${renderCheckerSummaryCard("Generated", formatDashboardTime(checker.meta?.generated_at))}
         ${renderCheckerSummaryCard("Replay Core", checkerFilenameFromPath(checker.meta?.replay_logic_source), "", {
@@ -3203,6 +3215,21 @@ function renderCheckerComparisonTable(comparisons = []) {
   `;
 }
 
+function checkerDetailComparisons(row = {}) {
+  const comparisons = Array.isArray(row.differences) ? row.differences : [];
+  return comparisons.map((item) => {
+    if (item?.label !== "Headline Confidence %") {
+      return item;
+    }
+
+    return {
+      ...item,
+      stored: row?.stored?.headline_confidence_pct ?? null,
+      rerun: row?.checker?.headline_confidence_pct ?? null
+    };
+  });
+}
+
 function renderCheckerFactorTable(factorComparisons = []) {
   if (!factorComparisons.length) {
     return "";
@@ -3242,7 +3269,7 @@ function renderCheckerFactorTable(factorComparisons = []) {
   `;
 }
 
-function renderCheckerRowDetail(checker = null) {
+function renderCheckerRowDetailLegacy(checker = null) {
   const rows = checker?.rows || [];
   if (!rows.length) {
     return `
@@ -3294,7 +3321,7 @@ function renderCheckerRowDetail(checker = null) {
   `;
 }
 
-function renderResearchDataChecker(data = {}) {
+function renderResearchDataCheckerLegacy(data = {}) {
   const checker = data.checker || null;
   const summary = checker?.summary || null;
   const fieldsCompared = checker?.fields_compared || [];
@@ -3390,7 +3417,7 @@ function renderCheckerRowDetail(checker = null) {
           <span><strong>Evaluation Close Date:</strong> ${escapeHtml(String(selectedRow.evaluation_inputs?.close_date || displayDash()))}</span>
           <span><strong>Mismatch Count:</strong> ${escapeHtml(String(checkerMismatchCount(selectedRow)))}</span>
         </p>
-        ${renderCheckerComparisonTable(selectedRow.differences || [])}
+        ${renderCheckerComparisonTable(checkerDetailComparisons(selectedRow))}
         ${renderCheckerFactorTable(selectedRow.factor_comparisons || [])}
       </article>
     </section>
