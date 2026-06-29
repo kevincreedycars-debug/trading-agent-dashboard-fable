@@ -84,47 +84,121 @@ comment on view research_prediction_primary_summary is
 'Primary-market combined research scoring layer. One row represents one prediction summarized across its primary evaluation markets. For USD Phase 2 this basket summary is diagnostic only and is not the headline benchmark accuracy surface.';
 
 create or replace view research_prediction_usd_benchmark_summary as
+with base as (
+  select
+    e.prediction_id,
+    e.observation_id,
+    e.verdict_id,
+    e.asset_code,
+    e.timeframe,
+    e.call_date,
+    e.call_day_of_week,
+    e.call_time_et,
+    e.conviction_bucket,
+    e.move_magnitude_bucket,
+    e.agent_conviction,
+    e.open_price,
+    e.close_price,
+    e.pct_change,
+    e.abs_pct_change,
+    e.market_outcome_direction,
+    e.agent_direction,
+    e.result as combined_result,
+    e.result_reason,
+    e.evaluated_market as benchmark_market,
+    e.market_relationship,
+    e.evaluation_mode,
+    ro.snapshot_date,
+    tp.predicted_direction,
+    tp.predicted_conviction,
+    tp.verdict_strength,
+    coalesce(ro.market_regime ->> 'equities_regime', ro.market_snapshot ->> 'equities_regime') as equities_regime,
+    coalesce(ro.market_regime ->> 'fed_bias', ro.market_snapshot ->> 'fed_bias') as fed_bias,
+    tp.bull_case_pct,
+    tp.bear_case_pct,
+    tp.net_edge_pct,
+    tp.participation_pct
+  from research_prediction_evaluations e
+  join research_timeframe_predictions tp
+    on tp.id = e.prediction_id
+  join research_observations ro
+    on ro.id = e.observation_id
+  where
+    ro.agent_name = 'USD'
+    and ro.asset_code = 'USD'
+    and e.evaluation_mode = 'primary'
+    and e.evaluated_market = 'DXY'
+),
+scored as (
+  select
+    *,
+    case
+      when bull_case_pct is null or bear_case_pct is null or net_edge_pct is null or participation_pct is null then null
+      else round(
+        greatest(
+          0,
+          least(
+            100,
+            (
+              (greatest(bull_case_pct, bear_case_pct) * 0.45) +
+              (participation_pct * 0.35) +
+              (abs(net_edge_pct) * 0.20) -
+              (case when participation_pct < 25 then 30 when participation_pct < 40 then 10 else 0 end) -
+              (case when abs(net_edge_pct) < 20 then 10 else 0 end)
+            )
+          )
+        )::numeric,
+        0
+      )
+    end as headline_confidence_pct
+  from base
+)
 select
-  e.prediction_id,
-  e.observation_id,
-  e.verdict_id,
-  e.asset_code,
-  e.timeframe,
-  e.call_date,
-  e.call_day_of_week,
-  e.call_time_et,
-  e.conviction_bucket,
-  e.move_magnitude_bucket,
-  e.agent_conviction,
-  e.open_price,
-  e.close_price,
-  e.pct_change,
-  e.abs_pct_change,
-  e.market_outcome_direction,
-  e.agent_direction,
-  e.result as combined_result,
-  e.result_reason,
-  e.evaluated_market as benchmark_market,
-  e.market_relationship,
-  e.evaluation_mode,
-  ro.snapshot_date,
-  tp.predicted_direction,
-  tp.predicted_conviction,
-  tp.verdict_strength,
-  coalesce(ro.market_regime ->> 'equities_regime', ro.market_snapshot ->> 'equities_regime') as equities_regime,
-  coalesce(ro.market_regime ->> 'fed_bias', ro.market_snapshot ->> 'fed_bias') as fed_bias,
-  case when e.result = 'CORRECT' then 1 else 0 end as is_win,
-  case when e.result = 'WRONG' then 1 else 0 end as is_loss
-from research_prediction_evaluations e
-join research_timeframe_predictions tp
-  on tp.id = e.prediction_id
-join research_observations ro
-  on ro.id = e.observation_id
-where
-  ro.agent_name = 'USD'
-  and ro.asset_code = 'USD'
-  and e.evaluation_mode = 'primary'
-  and e.evaluated_market = 'DXY'
+  prediction_id,
+  observation_id,
+  verdict_id,
+  asset_code,
+  timeframe,
+  call_date,
+  call_day_of_week,
+  call_time_et,
+  conviction_bucket,
+  move_magnitude_bucket,
+  agent_conviction,
+  open_price,
+  close_price,
+  pct_change,
+  abs_pct_change,
+  market_outcome_direction,
+  agent_direction,
+  combined_result,
+  result_reason,
+  benchmark_market,
+  market_relationship,
+  evaluation_mode,
+  snapshot_date,
+  predicted_direction,
+  predicted_conviction,
+  verdict_strength,
+  equities_regime,
+  fed_bias,
+  case when combined_result = 'CORRECT' then 1 else 0 end as is_win,
+  case when combined_result = 'WRONG' then 1 else 0 end as is_loss,
+  case
+    when agent_direction = 'NO_CALL' or agent_direction = 'NO 24H CALL' then 'NO_CALL'
+    when headline_confidence_pct is null then 'PENDING'
+    when headline_confidence_pct >= 80 and abs(coalesce(net_edge_pct, 0)) >= 25 and coalesce(participation_pct, 0) >= 50 then 'VERY_STRONG'
+    when headline_confidence_pct >= 65 and abs(coalesce(net_edge_pct, 0)) >= 18 and coalesce(participation_pct, 0) >= 35 then 'STRONG'
+    when headline_confidence_pct >= 50 and abs(coalesce(net_edge_pct, 0)) >= 10 and coalesce(participation_pct, 0) >= 25 then 'MODERATE'
+    when headline_confidence_pct > 0 then 'WEAK'
+    else 'NO_CALL'
+  end as headline_confidence_strength,
+  bull_case_pct,
+  bear_case_pct,
+  net_edge_pct,
+  participation_pct,
+  headline_confidence_pct
+from scored
 ;
 
 comment on view research_prediction_usd_benchmark_summary is
@@ -225,7 +299,7 @@ select
     2
   ) as flat_no_move_pct,
   round(
-    avg(coalesce(agent_conviction, predicted_conviction)) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT'))::numeric,
+    avg(headline_confidence_pct) filter (where combined_result in ('CORRECT', 'WRONG', 'FLAT'))::numeric,
     2
   ) as avg_predicted_confidence,
   round(
@@ -251,33 +325,33 @@ with bucketed as (
     benchmark_market,
     combined_result,
     abs_pct_change,
-    coalesce(agent_conviction, predicted_conviction) as predicted_confidence,
+    headline_confidence_pct as predicted_confidence,
     case
-      when coalesce(agent_conviction, predicted_conviction) is null then 'UNKNOWN'
-      when coalesce(agent_conviction, predicted_conviction) < 50 then '<50'
-      when coalesce(agent_conviction, predicted_conviction) < 55 then '50-54'
-      when coalesce(agent_conviction, predicted_conviction) < 60 then '55-59'
-      when coalesce(agent_conviction, predicted_conviction) < 65 then '60-64'
-      when coalesce(agent_conviction, predicted_conviction) < 70 then '65-69'
-      when coalesce(agent_conviction, predicted_conviction) < 75 then '70-74'
-      when coalesce(agent_conviction, predicted_conviction) < 80 then '75-79'
-      when coalesce(agent_conviction, predicted_conviction) < 85 then '80-84'
-      when coalesce(agent_conviction, predicted_conviction) < 90 then '85-89'
-      when coalesce(agent_conviction, predicted_conviction) < 95 then '90-94'
+      when headline_confidence_pct is null then 'UNKNOWN'
+      when headline_confidence_pct < 50 then '<50'
+      when headline_confidence_pct < 55 then '50-54'
+      when headline_confidence_pct < 60 then '55-59'
+      when headline_confidence_pct < 65 then '60-64'
+      when headline_confidence_pct < 70 then '65-69'
+      when headline_confidence_pct < 75 then '70-74'
+      when headline_confidence_pct < 80 then '75-79'
+      when headline_confidence_pct < 85 then '80-84'
+      when headline_confidence_pct < 90 then '85-89'
+      when headline_confidence_pct < 95 then '90-94'
       else '95-100'
     end as confidence_bucket,
     case
-      when coalesce(agent_conviction, predicted_conviction) is null then 12
-      when coalesce(agent_conviction, predicted_conviction) < 50 then 1
-      when coalesce(agent_conviction, predicted_conviction) < 55 then 2
-      when coalesce(agent_conviction, predicted_conviction) < 60 then 3
-      when coalesce(agent_conviction, predicted_conviction) < 65 then 4
-      when coalesce(agent_conviction, predicted_conviction) < 70 then 5
-      when coalesce(agent_conviction, predicted_conviction) < 75 then 6
-      when coalesce(agent_conviction, predicted_conviction) < 80 then 7
-      when coalesce(agent_conviction, predicted_conviction) < 85 then 8
-      when coalesce(agent_conviction, predicted_conviction) < 90 then 9
-      when coalesce(agent_conviction, predicted_conviction) < 95 then 10
+      when headline_confidence_pct is null then 12
+      when headline_confidence_pct < 50 then 1
+      when headline_confidence_pct < 55 then 2
+      when headline_confidence_pct < 60 then 3
+      when headline_confidence_pct < 65 then 4
+      when headline_confidence_pct < 70 then 5
+      when headline_confidence_pct < 75 then 6
+      when headline_confidence_pct < 80 then 7
+      when headline_confidence_pct < 85 then 8
+      when headline_confidence_pct < 90 then 9
+      when headline_confidence_pct < 95 then 10
       else 11
     end as confidence_bucket_rank
   from research_prediction_usd_benchmark_summary
@@ -343,9 +417,9 @@ with base as (
     benchmark_market,
     combined_result,
     abs_pct_change,
-    coalesce(agent_conviction, predicted_conviction) as predicted_confidence,
-    coalesce(verdict_strength, 'UNKNOWN') as verdict_strength,
-    case coalesce(verdict_strength, 'UNKNOWN')
+    headline_confidence_pct as predicted_confidence,
+    coalesce(headline_confidence_strength, 'UNKNOWN') as verdict_strength,
+    case coalesce(headline_confidence_strength, 'UNKNOWN')
       when 'VERY_STRONG' then 1
       when 'STRONG' then 2
       when 'MODERATE' then 3
@@ -496,7 +570,7 @@ select
   count(*) filter (where combined_result = 'FLAT') as flats,
   count(*) filter (where combined_result = 'MIXED') as mixed,
   round(
-    avg(agent_conviction)::numeric,
+    avg(headline_confidence_pct)::numeric,
     2
   ) as avg_conviction,
   round(
@@ -631,7 +705,7 @@ select
   fo.factor_signal,
   count(*) as factor_occurrences,
   round(avg(fo.factor_weight)::numeric, 2) as avg_factor_weight,
-  round(avg(ps.agent_conviction)::numeric, 2) as avg_prediction_conviction,
+  round(avg(ps.headline_confidence_pct)::numeric, 2) as avg_prediction_conviction,
   round(avg(case
     when ps.combined_result = 'CORRECT' then 1.0
     when ps.combined_result = 'WRONG' then -1.0

@@ -2149,10 +2149,35 @@ function parseConfidenceCandidate(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+function deriveHeadlineConfidencePercent(source = {}) {
+  const bullCase = parseConfidenceCandidate(source.bull_case_pct ?? source.bullCase);
+  const bearCase = parseConfidenceCandidate(source.bear_case_pct ?? source.bearCase);
+  const participation = parseConfidenceCandidate(source.participation_pct ?? source.participation);
+  const netEdge = parseConfidenceCandidate(source.net_edge_pct ?? source.netEdge);
+
+  if (![bullCase, bearCase, participation, netEdge].every(Number.isFinite)) {
+    return null;
+  }
+
+  let confidence =
+    ((Math.max(bullCase, bearCase) / 100) * 0.45) +
+    ((participation / 100) * 0.35) +
+    ((Math.abs(netEdge) / 100) * 0.20);
+
+  if (participation < 40) confidence -= 0.10;
+  if (participation < 25) confidence -= 0.20;
+  if (Math.abs(netEdge) < 20) confidence -= 0.10;
+
+  return roundTo(clamp(confidence, 0, 1) * 100, 1);
+}
+
 function normalizeConfidencePercent(row = {}) {
+  const derivedHeadline = deriveHeadlineConfidencePercent(row);
   const candidates = [
-    row.agent_conviction,
+    row.headline_confidence_pct,
+    derivedHeadline,
     row.predicted_conviction,
+    row.agent_conviction,
     row.confidence,
     row.conviction
   ];
@@ -4237,7 +4262,7 @@ async function fetchResearchView(viewName, options = {}) {
 
 async function fetchResearchDashboardData() {
   const matrix24hRowsPromise = fetchResearchView("research_prediction_usd_benchmark_summary", {
-    select: "snapshot_date,asset_code,timeframe,predicted_direction,agent_direction,agent_conviction,predicted_conviction,verdict_strength,combined_result,benchmark_market,open_price,close_price,pct_change",
+    select: "snapshot_date,asset_code,timeframe,predicted_direction,agent_direction,agent_conviction,predicted_conviction,headline_confidence_pct,bull_case_pct,bear_case_pct,net_edge_pct,participation_pct,verdict_strength,combined_result,benchmark_market,open_price,close_price,pct_change",
     order: "timeframe.asc,predicted_direction.asc,verdict_strength.asc",
     filters: {
       timeframe: "eq.following 24hrs"

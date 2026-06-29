@@ -834,27 +834,37 @@ function buildLive24hPrediction(snapshot, logicDocumentVersion) {
         ? `${baseDirection}_LEAN`
         : baseDirection;
 
-  const conviction =
+  const winningSidePct =
     baseDirection === "BULLISH"
       ? bullishArgument
       : baseDirection === "BEARISH"
         ? bearishArgument
         : 0;
 
-  const strength = strengthFromLive24hNetEdge(netEdge);
+  const legacyStrength = strengthFromLive24hNetEdge(netEdge);
+  const liveConfidence = computeLiveHeadlineConfidence({
+    bullCase: bullishArgument,
+    bearCase: bearishArgument,
+    participation: active,
+    netEdge,
+    direction,
+    warnings,
+    missingInputs,
+    weeklyCandleStatus: snapshot.weekly_candle_status || null
+  });
   const reason = `24h deterministic score: bullish argument ${bullishArgument}%, bearish argument ${bearishArgument}%, neutral/inactive ${neutralPct}%, net edge ${netEdge > 0 ? "+" : ""}${netEdge} ${baseDirection.toLowerCase().replace("_", " ")}.`;
 
   return {
     timeframe: TIMEFRAME_CONFIG.following_24hrs.timeframe,
     legacy_timeframe_key: TIMEFRAME_CONFIG.following_24hrs.legacy_timeframe_key,
     predicted_direction: direction,
-    predicted_conviction: conviction,
+    predicted_conviction: liveConfidence.value,
     bull_case_pct: bullishArgument,
     bear_case_pct: bearishArgument,
     net_edge_pct: netEdge,
     participation_pct: active,
     neutral_pct: neutralPct,
-    verdict_strength: strength,
+    verdict_strength: liveConfidence.strength,
     reason_text: reason,
     weighted_score: weighted,
     conviction_model: {
@@ -864,19 +874,22 @@ function buildLive24hPrediction(snapshot, logicDocumentVersion) {
       active_participation_pct: active,
       directional_participation_pct: active,
       net_edge_pct: netEdge,
-      final_confidence: conviction,
-      final_conviction: conviction,
-      verdict_strength: strength,
-      confidence_strength: strength,
+      final_confidence: liveConfidence.value,
+      final_conviction: liveConfidence.value,
+      verdict_strength: liveConfidence.strength,
+      confidence_strength: liveConfidence.strength,
       final_conviction_logic: reason,
       weighted_edge: Math.abs(netEdge) / 100,
-      raw_conviction: conviction,
-      base_conviction: conviction,
+      raw_conviction: winningSidePct,
+      base_conviction: winningSidePct,
+      legacy_winning_side_conviction: winningSidePct,
       participation: active,
       participation_cap: active,
       conflict_penalty: 0,
       missing_input_penalty: 0,
-      agreement_boost: 0
+      agreement_boost: 0,
+      legacy_floor_strength: legacyStrength,
+      confidence_model_source: "live_dashboard_confidence_v1"
     },
     factor_breakdown: factors,
     warnings,

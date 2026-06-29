@@ -58,6 +58,37 @@ function toNumber(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function computeHeadlineConfidenceFromModel(convictionModel = {}) {
+  const bullCase = toNumber(convictionModel.bullish_argument_pct ?? convictionModel.alignment ?? null);
+  const bearCase = toNumber(convictionModel.bearish_argument_pct ?? null);
+  const participation = toNumber(
+    convictionModel.directional_participation_pct ??
+    convictionModel.active_participation_pct ??
+    convictionModel.participation ??
+    null
+  );
+  const netEdge = toNumber(convictionModel.net_edge_pct ?? null);
+
+  if ([bullCase, bearCase, participation, netEdge].some((value) => value === null)) {
+    return null;
+  }
+
+  let confidence =
+    ((Math.max(bullCase, bearCase) / 100) * 0.45) +
+    ((participation / 100) * 0.35) +
+    ((Math.abs(netEdge) / 100) * 0.20);
+
+  if (participation < 40) confidence -= 0.10;
+  if (participation < 25) confidence -= 0.20;
+  if (Math.abs(netEdge) < 20) confidence -= 0.10;
+
+  return Math.round(clamp(confidence, 0, 1) * 100);
+}
+
 function firstValue(source, keys) {
   for (const key of keys) {
     if (source && source[key] !== undefined && source[key] !== null && source[key] !== "") {
@@ -86,6 +117,7 @@ function buildTimeframePrediction(row, fullOutput, spec, observationRef) {
   const conviction = toNumber(firstValue(row, spec.convictionFields) ?? timeframeModel.conviction ?? null);
   const reason = firstValue(row, spec.reasonFields) || timeframeModel.reason || null;
   const convictionModel = timeframeModel.conviction_model || {};
+  const headlineConfidence = computeHeadlineConfidenceFromModel(convictionModel);
   const weightedScore = timeframeModel.weighted_score || {};
   const factorBreakdown = timeframeModel.factor_breakdown || fullOutput.factor_breakdown || {};
 
@@ -100,7 +132,7 @@ function buildTimeframePrediction(row, fullOutput, spec, observationRef) {
     mapping_status: mapping.mappingStatus,
     mapping_notes: mapping.notes,
     predicted_direction: direction,
-    predicted_conviction: conviction,
+    predicted_conviction: headlineConfidence ?? conviction,
     bull_case_pct: toNumber(
       convictionModel.bullish_argument_pct ?? convictionModel.alignment ?? null
     ),
