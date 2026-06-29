@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "last_run_started_at": "2026-06-29T05:38:24.372Z",
-  "last_run_finished_at": "2026-06-29T05:38:24.372Z",
+  "last_run_started_at": "2026-06-29T15:00:36.204Z",
+  "last_run_finished_at": "2026-06-29T15:00:36.205Z",
   "triggered_by": "dashboard_or_manual",
   "message": "Manual Refresh Complete",
   "failed_step": null,
