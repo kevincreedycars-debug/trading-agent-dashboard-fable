@@ -1,7 +1,7 @@
 const layer1Url = "./data/layer1.json";
 const layer2Url = "./data/layer2.json";
 const workflowControlUrl = "./data/workflow-control.json";
-const checkerDataUrl = "./data/backtester-checker-usd-24h-2024-01.json";
+const checkerDataUrl = "./data/backtester-checker-usd-24h-2024-01.json?v=20260629-usd-checker-604";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 
