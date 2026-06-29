@@ -1,6 +1,6 @@
 # Phase 3 Historical Expansion Report
 
-Last updated: 2026-06-22
+Last updated: 2026-06-29
 
 ## Scope
 
@@ -197,6 +197,52 @@ Corrected behavior:
 - invalid or zero market prices are now treated as `NOT_EVALUABLE`
 
 This correction reduced the headline benchmark accuracy and increased the `NOT_EVALUABLE` count, which is the correct outcome for evidence collection.
+
+## USD 24H Flat-Band Sensitivity
+
+The current USD 24H benchmark uses `DXY` as the primary realised-outcome market.
+
+The current 24H outcome window is:
+
+- call start: `09:30 ET` on the call date
+- evaluation close: `16:00 ET` on the next valid trading session day
+- evaluation shape: session-to-session window, not close-to-close
+
+The current fixed flat band is `+-0.15%`.
+
+Current visible 24H matrix flat rate:
+
+- `251 / 544 = 46.1%`
+
+Sensitivity of the visible matrix flat count under alternative fixed DXY bands:
+
+- `+-0.05% = 78 flat / 14.3%`
+- `+-0.10% = 172 flat / 31.6%`
+- `+-0.15% = 251 flat / 46.1%`
+- `+-0.20% = 323 flat / 59.4%`
+- `+-0.25% = 379 flat / 69.7%`
+- `+-0.30% = 413 flat / 75.9%`
+- `+-0.40% = 464 flat / 85.3%`
+- `+-0.50% = 496 flat / 91.2%`
+
+DXY realised absolute move statistics over the current rebuilt USD 24H sample:
+
+- median absolute move: `0.160842%`
+- average absolute move: `0.217023%`
+- 25th percentile absolute move: `0.083057%`
+- 75th percentile absolute move: `0.293234%`
+
+Interpretation:
+
+- the current `+-0.15%` flat band sits very close to the median absolute DXY move
+- that positioning explains why the visible USD 24H matrix currently records a high flat share
+- this is not, by itself, evidence that the current flat band should be tightened immediately
+
+Research conclusion for the next phase:
+
+- do not tighten the USD flat band immediately
+- do not blindly reuse fixed USD-style bands for EUR or the other assets
+- before finalising multi-asset evaluation, compare fixed bands against ATR- or volatility-normalised outcome bands
 
 ## Conclusion
 

@@ -1,6 +1,6 @@
 # Next Steps
 
-Last updated: 2026-06-20
+Last updated: 2026-06-29
 
 ## Priority 1 — Finish AI Development Environment
 
@@ -77,3 +77,13 @@ Layer 2 may read:
 - timing/catalyst risk
 
 Layer 2 must not contaminate Layer 1.
+
+## Priority 5 - Multi-Asset Research Rollout
+
+Before moving the historical research framework from USD to EUR and the other assets:
+
+1. Keep USD 24H benchmark evaluation documented as `DXY`, using the `09:30 ET` call-date to `16:00 ET` next-valid-session outcome window.
+2. Keep the current USD fixed flat band documented as `+-0.15%`, with the current visible matrix reading `251 / 544 = 46.1%`.
+3. Treat the USD flat-band result as a research warning, not an immediate production-threshold change.
+4. Compare fixed flat bands against ATR- or volatility-normalised outcome bands before finalising EUR or multi-asset benchmark evaluation.
+5. Do not blindly copy USD fixed-band settings into EUR, Gold, NQ, or BTC evaluation.
