@@ -3046,25 +3046,25 @@ function checkerScopeLabel(checker = {}) {
   const dateRange = checker?.meta?.date_range || {};
 
   if (dateRange.start === "2024-01-01" && dateRange.end === "2024-01-31") {
-    return `${asset} - ${timeframe} - Jan 2024`;
+    return `${asset} • ${timeframe} • January 2024`;
   }
 
-  return `${asset} - ${timeframe}`;
+  return `${asset} • ${timeframe}`;
 }
 
 function checkerComparedFieldsLabel(fieldsCompared = []) {
   const fieldMap = {
     direction: "direction",
-    headline_confidence_pct: "confidence",
-    strength_bucket: "strength",
-    bull_case_pct: "bull/bear",
-    bear_case_pct: null,
-    net_edge_pct: "net edge",
-    participation_pct: "participation",
-    active_directional_weight: "weights",
-    bull_weighted_total: null,
-    bear_weighted_total: null,
-    factor_scores: "factor scores",
+    headline_confidence_pct: "headline_confidence_pct",
+    strength_bucket: "strength_bucket",
+    bull_case_pct: "bull_case_pct",
+    bear_case_pct: "bear_case_pct",
+    net_edge_pct: "net_edge_pct",
+    participation_pct: "participation_pct",
+    active_directional_weight: "active_directional_weight",
+    bull_weighted_total: "bull_weighted_total",
+    bear_weighted_total: "bear_weighted_total",
+    factor_scores: "factor_scores",
     evaluation_result: "evaluation"
   };
 
@@ -3076,16 +3076,16 @@ function checkerComparedFieldsLabel(fieldsCompared = []) {
     }
   }
 
-  return labels.join("\n") || "None listed";
+  return labels.join(", ") || "None listed";
 }
 
 function renderCheckerSummaryCard(label, value, detail = "", options = {}) {
   const tone = options.tone ? ` ${options.tone}` : "";
   const wide = options.wide ? " wide" : "";
-  const preserveLines = options.preserveLines ? " preserve-lines" : "";
+  const compactValue = options.compactValue ? " compact-value" : "";
   const tooltip = options.tooltip ? ` title="${escapeHtml(options.tooltip)}"` : "";
   return `
-    <article class="checker-summary-card${tone}${wide}${preserveLines}"${tooltip}>
+    <article class="checker-summary-card${tone}${wide}${compactValue}"${tooltip}>
       <span>${escapeHtml(label)}</span>
       <strong>${escapeHtml(value)}</strong>
       ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
@@ -3112,7 +3112,7 @@ function renderCheckerSummaryBlock(checker = {}, summary = {}, fieldsCompared = 
         })}
         ${renderCheckerSummaryCard("Compared Fields", checkerComparedFieldsLabel(fieldsCompared), "", {
           wide: true,
-          preserveLines: true
+          compactValue: true
         })}
       </div>
     </article>

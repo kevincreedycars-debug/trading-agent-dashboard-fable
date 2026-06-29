@@ -1933,6 +1933,14 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.checker-summary-card.compact-value strong {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 700;
+  white-space: normal;
+}
+
 .checker-summary-card small {
   color: var(--ink-muted);
   font-size: 12px;
@@ -1958,13 +1966,6 @@ h3 {
 .checker-summary-card.missing {
   background: #f7f3ea;
   border-color: #ded7ca;
-}
-
-.checker-summary-card.preserve-lines strong {
-  white-space: pre-line;
-  font-family: var(--sans);
-  font-size: 15px;
-  line-height: 1.45;
 }
 
 .checker-meta-panel,
