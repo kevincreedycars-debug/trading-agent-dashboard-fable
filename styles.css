@@ -1897,6 +1897,71 @@ h3 {
   font-size: 12px;
 }
 
+.checker-summary-panel {
+  padding: 16px;
+}
+
+.checker-summary-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.checker-summary-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 15px;
+  border: 1px solid var(--cream-border);
+  border-radius: 10px;
+  background: #fff;
+  min-width: 0;
+}
+
+.checker-summary-card.wide {
+  grid-column: 1 / -1;
+}
+
+.checker-summary-card span {
+  color: var(--ink-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.checker-summary-card strong {
+  color: var(--ink-mid);
+  font-size: 16px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.checker-summary-card small {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.checker-summary-card.pass {
+  background: #f7fbf8;
+  border-color: #d9eadc;
+}
+
+.checker-summary-card.tolerance {
+  background: #fffaf0;
+  border-color: #ecd9b0;
+}
+
+.checker-summary-card.fail {
+  background: #fff4f1;
+  border-color: #efc0b3;
+}
+
+.checker-summary-card.missing {
+  background: #f7f3ea;
+  border-color: #ded7ca;
+}
+
 .checker-meta-panel,
 .checker-detail-panel {
   display: grid;

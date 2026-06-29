@@ -3043,6 +3043,36 @@ function renderCheckerWorkspaceHeader(checker = {}, summary = {}) {
   `;
 }
 
+function renderCheckerSummaryCard(label, value, detail = "", options = {}) {
+  const tone = options.tone ? ` ${options.tone}` : "";
+  const wide = options.wide ? " wide" : "";
+  return `
+    <article class="checker-summary-card${tone}${wide}">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
+      ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
+    </article>
+  `;
+}
+
+function renderCheckerSummaryBlock(checker = {}, summary = {}, fieldsCompared = []) {
+  return `
+    <article class="detail-panel wide-panel research-secondary-panel checker-summary-panel">
+      <div class="checker-summary-card-grid">
+        ${renderCheckerSummaryCard("Rows Checked", String(summary.rows_checked ?? 0), "USD 24H January 2024")}
+        ${renderCheckerSummaryCard("Pass", String(summary.pass ?? 0), "Exact matches", { tone: "pass" })}
+        ${renderCheckerSummaryCard("Tolerance Pass", String(summary.tolerance_pass ?? 0), `+/-${checker.meta?.tolerance_percentage_points ?? 0.5}pp numeric tolerance`, { tone: "tolerance" })}
+        ${renderCheckerSummaryCard("Fail", String(summary.fail ?? 0), "Mismatch requires investigation", { tone: "fail" })}
+        ${renderCheckerSummaryCard("Missing Data", String(summary.missing_data ?? 0), "Snapshot or evaluation missing", { tone: "missing" })}
+        ${renderCheckerSummaryCard("Generated", formatDashboardTime(checker.meta?.generated_at), "Checker artifact build time")}
+        ${renderCheckerSummaryCard("Replay Core", checker.meta?.replay_logic_source || "Unknown", "Fresh checker replay path")}
+        ${renderCheckerSummaryCard("Evaluator", checker.meta?.evaluation_logic_source || "Unknown", "Outcome evaluation path")}
+        ${renderCheckerSummaryCard("Compared Fields", fieldsCompared.join(", ") || "None listed", "Stored replay vs checker replay comparison set", { wide: true })}
+      </div>
+    </article>
+  `;
+}
+
 function renderCheckerTriageTable(checker = null, selectedRowId = null) {
   const rows = checker?.rows || [];
   if (!rows.length) {
@@ -3353,21 +3383,7 @@ function renderResearchDataChecker(data = {}) {
           </div>
           <p class="research-panel-copy">Phase 1 checker scope is USD only, 24H only, and January 2024 only. It loads stored replay rows, re-runs the same USD replay core from the historical snapshot, and compares stored vs checker output with exact and tolerance rules.</p>
         </div>
-        <section class="backtest-metric-grid research-summary-grid checker-summary-grid">
-          ${renderBacktestKpiMetric("Rows Checked", String(summary.rows_checked ?? 0), "USD 24H January 2024")}
-          ${renderBacktestKpiMetric("Pass", String(summary.pass ?? 0), "Exact matches")}
-          ${renderBacktestKpiMetric("Fail", String(summary.fail ?? 0), "Mismatch requires investigation")}
-          ${renderBacktestKpiMetric("Missing Data", String(summary.missing_data ?? 0), "Snapshot or evaluation missing")}
-          ${renderBacktestKpiMetric("Tolerance Pass", String(summary.tolerance_pass ?? 0), `+/-${checker.meta?.tolerance_percentage_points ?? 0.5}pp numeric tolerance`)}
-        </section>
-        <article class="detail-panel wide-panel research-secondary-panel checker-meta-panel">
-          <p class="research-audit-line">
-            <span><strong>Generated:</strong> ${escapeHtml(formatDashboardTime(checker.meta?.generated_at))}</span>
-            <span><strong>Replay Core:</strong> ${escapeHtml(checker.meta?.replay_logic_source || "Unknown")}</span>
-            <span><strong>Evaluator:</strong> ${escapeHtml(checker.meta?.evaluation_logic_source || "Unknown")}</span>
-          </p>
-          <p class="research-panel-copy">Compared fields: ${escapeHtml(fieldsCompared.join(", "))}.</p>
-        </article>
+        ${renderCheckerSummaryBlock(checker, summary, fieldsCompared)}
       </section>
       ${renderCheckerTriageTable(checker, selectedRowId)}
       ${renderCheckerRowDetail(checker)}
