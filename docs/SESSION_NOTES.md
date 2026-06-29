@@ -1,38 +1,35 @@
 # Session Notes
 
-Last updated: 2026-06-20
+Last updated: 2026-06-29
 
 ## Work Completed
 
-- Verified that commit `683f4cb` exists locally but had not been pushed to `origin/main`, so the public dashboard remained on an older deploy.
-- Confirmed the active public dashboard host is GitHub Pages, and that the published HTML still lacked the new confidence/legend changes at verification time.
-- Added shared Layer 1 normalization in the dashboard so loaded agent data derives `confidence`, overview diagnostics, and `seven_day_outlook` consistently even if upstream JSON is older.
-- Added a 7-day direction outlook section to the Overview tab.
-- Updated the current `data/layer1.json` snapshot to include `confidence` and `seven_day_outlook`.
-- Kept the shared navy strip styling in place.
-- Validated the updated front-end syntax with `node --check script.js`.
+- Reconciled project memory with current repository and runtime evidence.
+- Confirmed the active work is now USD historical replay and deterministic backtester checker validation.
+- Confirmed the latest completed milestone is the deterministic USD Backtester Checker in commit `e161994`.
+- Confirmed the current checker scope is USD 24H for January 2024.
+- Confirmed the current checker result is 22 checked / 22 pass / 0 fail / 0 missing.
+- Confirmed the Eco Events duplicate insert issue was fixed on 2026-06-21.
+- Confirmed the latest Master Orchestrator status artifact reports success on 2026-06-28.
 
 ## Unfinished Work
 
-- Push the updated commits to GitHub and verify the public GitHub Pages site updates.
-- Re-run the Master Orchestrator from the dashboard and verify the status/error report in the updated UI.
-- Fix EUR Layer 1 parser handling for OpenAI object|string output.
-- Fix Eco Events Collector duplicate insert handling.
-- Refine Master Orchestrator status parsing after observing real failure payloads.
+- Review the Data Checker UI for the current USD 24H January 2024 checker output.
+- After the UI review, expand the USD 24H checker scope to full-year 2024.
 
 ## Blockers
 
 - No repository-side blocker.
-- Runtime validation still depends on running the live n8n Master Orchestrator.
-- Any n8n API key previously exposed in chat should be revoked and replaced after setup is proven.
+- No immediate runtime blocker is preventing the current checker-review task.
+- Any n8n API key previously exposed in chat should still be treated as compromised and replaced if it has not already been rotated.
 
 ## Assumptions
 
 - Canonical memory documents live in `docs/`, with `CODEX_STARTUP.md` kept at the repository root.
 - `docs/ACTIVE_MILESTONE.md` is the current checkpoint only; completed milestone history belongs in `docs/CHANGELOG.md`.
-- GitHub remains the source of truth, n8n remains execution, Supabase remains data, and Netlify/dashboard remains presentation.
-- Existing uncommitted dashboard and design-reference changes are user work and should not be altered unless explicitly requested.
+- GitHub remains the source of truth, n8n remains execution, Supabase remains data, and GitHub Pages remains the active dashboard host.
+- Historical research work remains downstream-only and must not change production runtime behavior.
 
 ## Exact Next Task
 
-Push the updated commits to GitHub and verify the public GitHub Pages dashboard serves the new confidence and 7-day outlook UI.
+Review the Data Checker UI for the current USD 24H January 2024 checker output before adding any new checker functionality.

@@ -2,11 +2,11 @@
 
 ## Current Feature
 
-Dashboard confidence visibility and 7-day direction outlook
+USD historical replay and deterministic data checker validation
 
 ## Current Milestone
 
-Confidence data normalization, public deploy verification, and 7-day outlook
+Review deterministic USD Data Checker output before scope expansion
 
 ## Status
 
@@ -14,31 +14,24 @@ Testing
 
 ## Completed Work
 
-- Verified that commit `683f4cb` exists locally but was not pushed to `origin/main`, which explains why the public dashboard remained stale.
-- Confirmed the active public dashboard host is GitHub Pages rather than Netlify.
-- Added shared Layer 1 normalization so loaded dashboard data derives explicit confidence values and a 7-day outlook even when upstream JSON only contains conviction-era fields.
-- Added a 7-day direction outlook section on the Overview tab.
-- Updated the current `data/layer1.json` snapshot to include `confidence` and `seven_day_outlook`.
-- Confirmed the shared card top strip remains navy blue.
-- Validated front-end syntax with `node --check script.js`.
+- Deterministic USD Backtester Checker was added in commit `e161994`.
+- Current checker scope is USD 24H for January 2024.
+- Latest checker result is 22 checked / 22 pass / 0 fail / 0 missing.
+- Eco Events duplicate insert handling was fixed on 2026-06-21.
+- Latest `data/workflow-status.json` runtime evidence shows a successful Master Orchestrator run on 2026-06-28.
 
 ## Remaining Work
 
-- Push the updated commits to GitHub.
-- Verify the public GitHub Pages site serves the updated confidence and 7-day outlook UI after deployment.
-- Re-run the Master Orchestrator from the dashboard against the updated Overview UI.
-- Verify whether `data/workflow-status.json` receives a useful success or failure report.
-- Fix EUR Layer 1 parser handling for OpenAI object|string output if exposed during validation.
-- Fix Eco Events Collector duplicate insert handling if exposed during validation.
-- Refine Master Orchestrator status parsing after observing a real failed-run payload.
+- Review the current Data Checker UI for the committed USD 24H January 2024 checker output.
+- Confirm the UI clearly represents the deterministic 22/22 pass result.
+- After UI review, expand the USD 24H checker scope to full-year 2024.
 
 ## Current Files Being Modified
 
-- `data/layer1.json`
-- `index.html`
-- `script.js`
-- `styles.css`
+- `docs/CURRENT_STATE.md`
+- `docs/CURRENT_TASK.md`
 - `docs/ACTIVE_MILESTONE.md`
+- `docs/SESSION_NOTES.md`
 
 ## Blockers
 
@@ -46,8 +39,8 @@ None.
 
 ## Next Immediate Action
 
-Push the updated commits to GitHub and verify the public GitHub Pages dashboard serves the new confidence and 7-day outlook UI.
+Review the Data Checker UI for the current USD 24H January 2024 checker output.
 
 ## Last Updated
 
-2026-06-20 16:05 Europe/London
+2026-06-29 00:00 Europe/London

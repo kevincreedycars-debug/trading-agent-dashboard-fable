@@ -1,30 +1,28 @@
-# Current State — AI Trading Platform
+# Current State - AI Trading Platform
 
-Last updated: 2026-06-20
+Last updated: 2026-06-29
 
 ## Platform Status
 
-The Layer 1 trading-agent platform is largely complete. The project is now moving from individual agent construction into AI-assisted development, project memory, workflow orchestration, and direct integration between ChatGPT/Codex, GitHub, and n8n.
+The Layer 1 trading-agent platform remains operational, and the latest runtime evidence shows the Master Orchestrator completed successfully on 2026-06-28.
 
-The dashboard now distinguishes evidence split from headline call quality by deriving a separate confidence score from directional dominance, participation, and net edge, then applying penalties when the live data exposes missing-input or risk conditions.
+The active repository work has shifted away from dashboard deployment follow-up and into USD historical replay and backtester validation. The current focus is verifying the deterministic USD Data Checker and backtester path before expanding replay-check coverage.
 
-The Overview tab now also generates a lightweight 7-day direction outlook from the latest Layer 1 timeframe calls, with weekend no-call handling preserved for non-BTC markets.
-
-The historical research platform is now implemented end-to-end for USD only. The committed research path currently covers January 2024 replay and evaluation, with DXY-only headline benchmark scoring and 24H accuracy treated as the primary short-horizon metric.
+The historical research platform is implemented end-to-end for USD. The currently validated backtester-checker scope is USD 24H for January 2024, with deterministic checker output now committed and passing cleanly.
 
 ## Current Architecture
 
 ```text
 Market Collectors
-        ↓
+        ->
 Market Snapshot (Supabase)
-        ↓
+        ->
 Independent Layer 1 Agents
-        ↓
+        ->
 agent_outputs
-        ↓
+        ->
 Dashboard Writer
-        ↓
+        ->
 GitHub Pages Dashboard
 ```
 
@@ -69,59 +67,43 @@ Current intended execution order:
 
 ```text
 Manual Trigger
-        ↓
+        ->
 Eco Events Collector
-        ↓
+        ->
 USD Collector
-        ↓
+        ->
 EUR Collector
-        ↓
+        ->
 Gold Collector
-        ↓
+        ->
 NQ Collector
-        ↓
+        ->
 BTC Collector
-        ↓
+        ->
 USD Layer 1 Agent
-        ↓
+        ->
 EUR Layer 1 Agent
-        ↓
+        ->
 Gold Layer 1 Agent
-        ↓
+        ->
 NQ Layer 1 Agent
-        ↓
+        ->
 BTC Layer 1 Agent
-        ↓
+        ->
 Dashboard Writer
 ```
 
 Every workflow has been converted to use `Execute Sub-workflow Trigger`, allowing the master workflow to call workflows sequentially.
 
-Runtime evidence in `data/workflow-status.json` shows a successful Master Orchestrator run on 2026-06-20, so dashboard-side validation has at least one successful published status payload available.
+Runtime evidence in `data/workflow-status.json` shows a successful Master Orchestrator run on 2026-06-28, with every listed step marked successful and no reported error.
 
 ## Known Current Issues
 
 ### 1. Eco Events duplicate insert
 
-The Eco Events Collector currently fails when it tries to insert an event that already exists.
+This issue was fixed on 2026-06-21.
 
-Observed error:
-
-```text
-duplicate key value violates unique constraint
-
-economic_events_event_date_currency_event_name_event_time_t_key
-```
-
-This is an Eco Events Collector issue, not a Master Orchestrator issue.
-
-Preferred solution:
-
-- upsert, or
-- `ON CONFLICT DO NOTHING`, or
-- Supabase custom API/RPC call
-
-Avoid unnecessary Get → IF → Create logic unless no cleaner approach is available.
+The live `Eco Events Collector` was updated to dedupe incoming events, update existing rows, and create only unmatched rows. The previous duplicate-key failure is no longer an active known issue.
 
 ### 2. EUR Agent JSON parsing
 
@@ -133,52 +115,18 @@ Original parser assumed:
 JSON.parse(text)
 ```
 
-But after enabling OpenAI `Output Format: JSON Object`, the parser must support both:
+After enabling OpenAI `Output Format: JSON Object`, the parser must support both:
 
 - string output
 - object output
 
-Fix required: update the EUR parser to detect whether the OpenAI result is already an object before calling `JSON.parse`.
+This remains a known issue unless confirmed fixed in the live workflow.
 
 ### 3. Master workflow final status summary
 
-The Master Orchestrator currently needs a final success/failure summary output.
+The latest runtime artifact in `data/workflow-status.json` now provides a useful success payload, including a top-level message, per-step statuses, and no reported error for the latest run.
 
-Desired success format:
-
-```text
-Manual Refresh Complete
-
-SUCCESS
-
-Eco Events ✓
-USD Collector ✓
-EUR Collector ✓
-Gold Collector ✓
-NQ Collector ✓
-BTC Collector ✓
-
-USD Agent ✓
-EUR Agent ✓
-Gold Agent ✓
-NQ Agent ✓
-BTC Agent ✓
-
-Dashboard Writer ✓
-```
-
-Desired failure format:
-
-```text
-FAILED
-
-EUR Agent
-
-Reason:
-OpenAI invalid JSON
-```
-
-Eventually this status should also appear on the dashboard.
+Any further refinement should be driven by observed runtime gaps rather than by the older missing-summary assumption.
 
 ## Current Deployment State
 
@@ -188,17 +136,15 @@ The repository currently documents and exposes GitHub Pages as the active static
 https://kevincreedycars-debug.github.io/trading-agent-dashboard/
 ```
 
-Older architecture notes that refer to Netlify are currently stale and should be treated as historical context until explicitly reconciled.
+Older architecture notes that refer to Netlify are historical context and should not be treated as the current host model.
 
 ## Current Strategic Shift
 
-The project is transitioning from:
+The project has already established the AI-assisted development environment baseline and is now using that environment to validate and harden the historical research stack.
 
-> building trading agents
+The current repository priority is:
 
-into:
-
-> building an AI-assisted autonomous development environment for the trading platform
+> deterministic USD historical replay and checker validation
 
 GitHub is the source of truth. n8n remains the execution engine. Supabase remains the data layer. GitHub Pages is the active presentation host.
 
@@ -206,14 +152,12 @@ GitHub is the source of truth. n8n remains the execution engine. Supabase remain
 
 ```text
 ChatGPT / Codex
-        │
-        ├── GitHub repository
-        ├── n8n workflows
-        ├── Supabase data layer
-        └── Netlify dashboard
+        |
+        |-- GitHub repository
+        |-- n8n workflows
+        |-- Supabase data layer
+        `-- GitHub Pages dashboard
 ```
-
-The active dashboard host in this model is GitHub Pages, not Netlify.
 
 ChatGPT should handle architecture, debugging, reasoning, planning, and documentation.
 
@@ -256,8 +200,9 @@ Current implemented state:
 
 - USD-only historical replay is implemented end-to-end.
 - Current committed replay coverage is January 2024.
-- Current committed sample is approximately 22 observations, 88 predictions, and 440 evaluation rows.
-- Headline USD benchmark accuracy is DXY-only.
+- The current validated checker scope is USD 24H for January 2024.
+- The latest deterministic checker result is 22 checked, 22 pass, 0 fail, 0 missing.
+- Headline USD benchmark accuracy remains DXY-only.
 - Basket and translation markets remain diagnostic only.
-- 24H accuracy is the primary benchmark focus.
+- 24H remains the primary short-horizon benchmark focus.
 - Pair-specific benchmark architecture exists, but only USD is implemented end-to-end in committed code.

@@ -1,14 +1,14 @@
 # Current Task
 
-Last updated: 2026-06-20
+Last updated: 2026-06-29
 
 ## Task
 
-Build the AI-assisted development environment for the trading-agent platform.
+Validate the USD historical replay and deterministic backtester checker.
 
 ## Objective
 
-Allow ChatGPT and Codex to resume work from GitHub and, eventually, inspect and edit n8n workflows directly without manual copy/paste.
+Confirm that the USD Data Checker is producing reliable deterministic results before expanding its coverage window.
 
 ## Current Status
 
@@ -53,6 +53,11 @@ In progress.
 - Shared Layer 1 dashboard normalization now derives explicit `confidence` values and generates a 7-day direction outlook from the latest timeframe calls
 - `data/layer1.json` now carries `confidence` and `seven_day_outlook` in the current repository snapshot
 - Deployment verification confirmed the active public host is GitHub Pages, not Netlify, and that earlier local changes had not yet been pushed
+- Eco Events duplicate insert handling fixed in the live workflow on 2026-06-21
+- Master Orchestrator latest published status is successful as of 2026-06-28
+- Deterministic USD Backtester Checker added
+- Current checker scope verified for USD 24H January 2024
+- Latest checker result recorded as 22 checked / 22 pass / 0 fail / 0 missing
 
 ## n8n Workspace
 
@@ -70,16 +75,14 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Verify the pushed GitHub Pages site is serving the updated confidence and 7-day outlook UI after deployment catches up.
-2. Fix EUR parser.
-3. Fix Eco Events duplicate insert.
-4. Refine Master Orchestrator status parsing if needed after the next failed run payload is observed.
+1. Review the Data Checker UI for the current USD 24H January 2024 checker output.
+2. Expand the USD 24H checker scope to full-year 2024 after the UI review is complete.
 
 ## Current Blocker
 
 No current repository-side blocker.
 
-The next risk is runtime validation: another dashboard-triggered run may still expose workflow bugs, especially Eco Events duplicate inserts or EUR parser object/string handling.
+The immediate risk is making checker-scope changes before the current Data Checker UI has been reviewed against the committed deterministic January 2024 result.
 
 The n8n API key was supplied in chat and must not be committed to GitHub.
 
@@ -111,3 +114,7 @@ and then read:
 - `issues/active_bugs.md`
 
 before making any changes.
+
+The immediate working outcome for the current task is:
+
+> review the USD Data Checker UI for January 2024, then extend the USD 24H checker to full-year 2024 without changing runtime production behavior
