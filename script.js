@@ -2991,6 +2991,109 @@ function formatCheckerDifference(value) {
   return escapeHtml(String(value));
 }
 
+function displayDash() {
+  return "&mdash;";
+}
+
+function checkerRowItems(row = {}) {
+  return [
+    ...(Array.isArray(row.differences) ? row.differences : []),
+    ...(Array.isArray(row.factor_comparisons)
+      ? row.factor_comparisons.flatMap(item => [item.signal, item.weight].filter(Boolean))
+      : [])
+  ];
+}
+
+function checkerMismatchCount(row = {}) {
+  return checkerRowItems(row).filter(item => {
+    const status = String(item?.status || "").trim().toUpperCase();
+    return status && status !== "PASS";
+  }).length;
+}
+
+function checkerRowTone(status = "") {
+  const normalized = String(status || "").trim().toUpperCase();
+  if (normalized === "FAIL") return "fail";
+  if (normalized === "TOLERANCE_PASS") return "tolerance";
+  if (normalized === "MISSING_DATA") return "missing";
+  return "pass";
+}
+
+function renderCheckerWorkspaceHeader(checker = {}, summary = {}) {
+  const dateRange = checker?.meta?.date_range || {};
+  const rangeText = dateRange.start && dateRange.end
+    ? `${dateRange.start} to ${dateRange.end}`
+    : "January 2024";
+
+  return `
+    <section class="research-section">
+      <article class="detail-panel wide-panel research-secondary-panel checker-workspace-panel">
+        <div class="checker-workspace-copy">
+          <p class="eyebrow">Backtest Checker</p>
+          <h3>Backtest Checker Workspace</h3>
+          <p class="checker-status-line">Deterministic replay validation: stored replay vs fresh checker replay.</p>
+        </div>
+        <div class="checker-workspace-meta">
+          <span><strong>Scope:</strong> USD 24H ${escapeHtml(rangeText)}</span>
+          <span><strong>Rows:</strong> ${escapeHtml(String(summary.rows_checked ?? 0))}</span>
+          <span><strong>Tolerance:</strong> +/-${escapeHtml(String(checker.meta?.tolerance_percentage_points ?? 0.5))}pp</span>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function renderCheckerTriageTable(checker = null, selectedRowId = null) {
+  const rows = checker?.rows || [];
+  if (!rows.length) {
+    return "";
+  }
+
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Triage Queue</p>
+          <h3>Row-level mismatch triage</h3>
+        </div>
+        <p class="research-panel-copy">Scan every checked replay row before drilling into field-level or factor-level detail. Non-pass rows are intentionally louder than pass rows.</p>
+      </div>
+      <article class="detail-panel wide-panel research-secondary-panel checker-triage-panel">
+        <div class="table-scroll checker-table-scroll">
+          <table class="dashboard-table research-evidence-table checker-comparison-table checker-triage-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Stored Direction</th>
+                <th>Checker Direction</th>
+                <th>Evaluation Result</th>
+                <th>Mismatch Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => {
+                const isSelected = row.prediction_id === selectedRowId;
+                const tone = checkerRowTone(row.status);
+                return `
+                  <tr class="checker-triage-row ${tone}${isSelected ? " selected" : ""}" data-checker-row-id="${escapeHtml(row.prediction_id || "")}">
+                    <td>${formatFallbackCell(row.snapshot_date)}</td>
+                    <td>${checkerStatusBadge(row.status)}</td>
+                    <td>${formatFallbackCell(row.stored?.direction)}</td>
+                    <td>${formatFallbackCell(row.checker?.direction)}</td>
+                    <td>${formatFallbackCell(row.stored?.evaluation_result || row.checker?.evaluation_result)}</td>
+                    <td><strong class="checker-mismatch-count">${escapeHtml(String(checkerMismatchCount(row)))}</strong></td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
 function renderCheckerComparisonTable(comparisons = []) {
   if (!comparisons.length) {
     return `<div class="empty-state matrix-evidence-empty">No checker comparisons available.</div>`;
@@ -3158,6 +3261,115 @@ function renderResearchDataChecker(data = {}) {
           <p class="research-panel-copy">Compared fields: ${escapeHtml(fieldsCompared.join(", "))}.</p>
         </article>
       </section>
+      ${renderCheckerRowDetail(checker)}
+    </div>
+  `;
+}
+
+function renderCheckerRowDetail(checker = null) {
+  const rows = checker?.rows || [];
+  if (!rows.length) {
+    return `
+      <article class="detail-panel wide-panel research-secondary-panel">
+        <div class="empty-state matrix-evidence-empty">No checker rows available for USD 24H January 2024.</div>
+      </article>
+    `;
+  }
+
+  const selectedId = activeCheckerRowId && rows.some(row => row.prediction_id === activeCheckerRowId)
+    ? activeCheckerRowId
+    : (checker.selected_row_id || rows[0].prediction_id);
+  const selectedRow = rows.find(row => row.prediction_id === selectedId) || rows[0];
+  activeCheckerRowId = selectedRow.prediction_id;
+
+  const options = rows.map(row => `
+    <option value="${escapeHtml(row.prediction_id)}"${row.prediction_id === selectedRow.prediction_id ? " selected" : ""}>
+      ${escapeHtml(`${row.snapshot_date} - ${row.status}`)}
+    </option>
+  `).join("");
+
+  return `
+    <section class="research-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Checker Detail</p>
+          <h3>Stored vs checker re-run output</h3>
+        </div>
+        <p class="research-panel-copy">This panel independently re-runs the USD replay from the historical snapshot, then compares it against the stored 24H backtester output and stored DXY evaluation row.</p>
+      </div>
+      <article class="detail-panel wide-panel research-secondary-panel checker-detail-panel">
+        <div class="checker-toolbar">
+          <label class="checker-select-label" for="checkerRowSelect">Selected row</label>
+          <select id="checkerRowSelect" class="checker-row-select" data-checker-row-select>
+            ${options}
+          </select>
+          ${checkerStatusBadge(selectedRow.status)}
+        </div>
+        <p class="research-audit-line">
+          <span><strong>Date:</strong> ${escapeHtml(selectedRow.snapshot_date || "Unknown")}</span>
+          <span><strong>Prediction ID:</strong> ${escapeHtml(selectedRow.prediction_id || "Unknown")}</span>
+          <span><strong>Timeframe:</strong> ${escapeHtml(selectedRow.timeframe || "following 24hrs")}</span>
+          <span><strong>Evaluation Open:</strong> ${formatCheckerValue(selectedRow.evaluation_inputs?.open_price)}</span>
+          <span><strong>Evaluation Close:</strong> ${formatCheckerValue(selectedRow.evaluation_inputs?.close_price)}</span>
+          <span><strong>Evaluation Close Date:</strong> ${escapeHtml(String(selectedRow.evaluation_inputs?.close_date || displayDash()))}</span>
+          <span><strong>Mismatch Count:</strong> ${escapeHtml(String(checkerMismatchCount(selectedRow)))}</span>
+        </p>
+        ${renderCheckerComparisonTable(selectedRow.differences || [])}
+        ${renderCheckerFactorTable(selectedRow.factor_comparisons || [])}
+      </article>
+    </section>
+  `;
+}
+
+function renderResearchDataChecker(data = {}) {
+  const checker = data.checker || null;
+  const summary = checker?.summary || null;
+  const fieldsCompared = checker?.fields_compared || [];
+
+  if (!checker || !summary) {
+    return `
+      <div class="backtest-report">
+        <article class="detail-panel wide-panel research-secondary-panel">
+          <p class="eyebrow">Backtest Data Checker</p>
+          <h3>Checker data unavailable</h3>
+          <div class="empty-state matrix-evidence-empty">The generated checker artifact could not be loaded for this tab.</div>
+        </article>
+      </div>
+    `;
+  }
+
+  const selectedRowId = activeCheckerRowId && checker.rows.some(row => row.prediction_id === activeCheckerRowId)
+    ? activeCheckerRowId
+    : (checker.selected_row_id || checker.rows?.[0]?.prediction_id);
+
+  return `
+    <div class="backtest-report">
+      ${renderCheckerWorkspaceHeader(checker, summary)}
+      <section class="research-section">
+        <div class="research-section-head">
+          <div>
+            <p class="eyebrow">Checker Summary</p>
+            <h3>Independent replay reproducibility check</h3>
+          </div>
+          <p class="research-panel-copy">Phase 1 checker scope is USD only, 24H only, and January 2024 only. It loads stored replay rows, re-runs the same USD replay core from the historical snapshot, and compares stored vs checker output with exact and tolerance rules.</p>
+        </div>
+        <section class="backtest-metric-grid research-summary-grid checker-summary-grid">
+          ${renderBacktestKpiMetric("Rows Checked", String(summary.rows_checked ?? 0), "USD 24H January 2024")}
+          ${renderBacktestKpiMetric("Pass", String(summary.pass ?? 0), "Exact matches")}
+          ${renderBacktestKpiMetric("Fail", String(summary.fail ?? 0), "Mismatch requires investigation")}
+          ${renderBacktestKpiMetric("Missing Data", String(summary.missing_data ?? 0), "Snapshot or evaluation missing")}
+          ${renderBacktestKpiMetric("Tolerance Pass", String(summary.tolerance_pass ?? 0), `+/-${checker.meta?.tolerance_percentage_points ?? 0.5}pp numeric tolerance`)}
+        </section>
+        <article class="detail-panel wide-panel research-secondary-panel checker-meta-panel">
+          <p class="research-audit-line">
+            <span><strong>Generated:</strong> ${escapeHtml(formatDashboardTime(checker.meta?.generated_at))}</span>
+            <span><strong>Replay Core:</strong> ${escapeHtml(checker.meta?.replay_logic_source || "Unknown")}</span>
+            <span><strong>Evaluator:</strong> ${escapeHtml(checker.meta?.evaluation_logic_source || "Unknown")}</span>
+          </p>
+          <p class="research-panel-copy">Compared fields: ${escapeHtml(fieldsCompared.join(", "))}.</p>
+        </article>
+      </section>
+      ${renderCheckerTriageTable(checker, selectedRowId)}
       ${renderCheckerRowDetail(checker)}
     </div>
   `;
@@ -3876,6 +4088,13 @@ function setupBacktestEvidenceControls() {
   if (!panel) return;
 
   panel.addEventListener("click", event => {
+    const checkerRow = event.target.closest("[data-checker-row-id]");
+    if (checkerRow) {
+      activeCheckerRowId = checkerRow.dataset.checkerRowId || null;
+      renderBacktest(backtestData || {});
+      return;
+    }
+
     const filterButton = event.target.closest("[data-matrix-evidence-filter]");
     if (filterButton) {
       applyMatrixEvidenceFilter(filterButton.dataset.matrixEvidenceFilter || "all");
