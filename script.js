@@ -3017,7 +3017,7 @@ function formatCheckerDifference(value) {
 }
 
 function displayDash() {
-  return "&mdash;";
+  return "—";
 }
 
 function checkerRowItems(row = {}) {
