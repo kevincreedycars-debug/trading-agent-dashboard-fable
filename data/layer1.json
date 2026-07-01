@@ -2,7 +2,7 @@
   "dashboard_meta": {
     "system_timezone": "America/New_York",
     "execution_clock": "07:00 ET primary run",
-    "last_updated_et": "2026-07-01T13:42:50.456Z",
+    "last_updated_et": "2026-07-01T13:43:10.415Z",
     "architecture": "Layer 1 agents are sealed independent raw signal producers. No cross-agent communication.",
     "weekend_rule": "BTC remains open on weekends. USD, EUR, GOLD and NQ do not issue 24h calls on Saturday or Sunday.",
     "london_weekday": "Wednesday"
@@ -8732,7 +8732,7 @@
       "score_bullish": 4,
       "score_bearish": 1,
       "score_neutral": 5,
-      "non_neutral_count": 4,
+      "non_neutral_count": 5,
       "logic_document": "agent_btc_direction.md",
       "logic_document_version": "2.0_weighted_engine",
       "conviction_model": {
@@ -9377,7 +9377,7 @@
       "full_output": {
         "asset": "BTC",
         "layer": "layer_1_raw",
-        "created_at": "2026-07-01T13:42:42.918Z",
+        "created_at": "2026-07-01T13:43:04.288Z",
         "reason_24h": "24h BTC deterministic score: bull case 48 weight, bear case 16 weight, neutral evidence 36 weight. Winning side BULLISH, conviction 75%, net edge +50, directional participation 64%.",
         "risk_flags": [
           "WEEKEND_LIQUIDITY_RISK",
@@ -10097,7 +10097,7 @@
             }
           }
         },
-        "non_neutral_count": 4,
+        "non_neutral_count": 5,
         "reasoning_summary": "BTC weighted verdicts calculated deterministically by timeframe. 24h BULLISH 75%, 3d BULLISH 71%, current week BULLISH 72%, next week BEARISH 60%, current month BEARISH 60%.",
         "direction_next_week": "BEARISH",
         "reason_current_week": "current_week BTC deterministic score: bull case 38 weight, bear case 15 weight, neutral evidence 47 weight. Winning side BULLISH, conviction 72%, net edge +44, directional participation 53%.",
