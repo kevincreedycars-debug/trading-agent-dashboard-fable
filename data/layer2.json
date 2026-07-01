@@ -1,29 +1,32 @@
 {
   "dashboard_meta": {
-    "last_updated_et": "2026-07-01T04:18:12.215Z",
+    "last_updated_et": "2026-07-01T13:42:46.911Z",
     "source": "layer_2_trade_selection_agent"
   },
   "trade_opportunities": [
     {
+      "instrument": "EUR/USD",
+      "direction": "BUY",
+      "confidence": 93,
+      "reason": "EUR is independently bullish while USD is independently bearish during today's session.",
+      "rank": 1
+    },
+    {
       "instrument": "NQ/USD",
       "direction": "BUY",
-      "confidence": 88,
+      "confidence": 93,
       "reason": "NQ is independently bullish while USD is independently bearish during today's session.",
-      "rank": 1
+      "rank": 2
     },
     {
       "instrument": "BTC/USD",
       "direction": "BUY",
-      "confidence": 78,
+      "confidence": 88,
       "reason": "BTC is independently bullish while USD is independently bearish during today's session.",
-      "rank": 2
+      "rank": 3
     }
   ],
   "avoid_today": [
-    {
-      "instrument": "EUR/USD",
-      "reason": "Mixed or low conviction 24H signals."
-    },
     {
       "instrument": "XAU/USD",
       "reason": "Mixed or low conviction 24H signals."
