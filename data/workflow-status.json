@@ -1,7 +1,7 @@
 {
   "status": "failed",
-  "last_run_started_at": "2026-07-02T06:27:33.353Z",
-  "last_run_finished_at": "2026-07-02T06:27:33.353Z",
+  "last_run_started_at": "2026-07-02T10:28:03.972Z",
+  "last_run_finished_at": "2026-07-02T10:28:03.973Z",
   "triggered_by": "dashboard_or_manual",
   "message": "Master Orchestrator finished with errors.",
   "failed_step": "Call '1. Economic Events Collector'",
