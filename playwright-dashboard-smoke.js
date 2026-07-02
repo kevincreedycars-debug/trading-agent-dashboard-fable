@@ -109,6 +109,18 @@ async function run() {
       throw new Error(`USD weekday table unexpectedly included weekend columns.\n${usdWeekdayHeaders.join(" | ")}`);
     }
 
+    if (!weekdayText.includes("ex-flat")) {
+      throw new Error(`Weekday Breakdown did not render ex-flat rate copy.\n${weekdayText}`);
+    }
+
+    if (!weekdayText.includes("W /") || !weekdayText.includes("L /") || !weekdayText.includes("F /") || !weekdayText.includes("T")) {
+      throw new Error(`Weekday Breakdown did not render W/L/F/T count lines.\n${weekdayText}`);
+    }
+
+    if (!weekdayText.includes("Flat Rate") || !weekdayText.includes("Ex-Flat Win Rate")) {
+      throw new Error(`Weekday Breakdown summary totals did not render flat-aware metrics.\n${weekdayText}`);
+    }
+
     if (consoleErrors.length) {
       throw new Error(`Console errors were emitted during dashboard smoke.\n${consoleErrors.join("\n")}`);
     }

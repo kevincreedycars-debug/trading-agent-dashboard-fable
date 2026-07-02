@@ -2150,6 +2150,11 @@ h3 {
   vertical-align: middle;
 }
 
+.weekday-breakdown-table td {
+  white-space: pre-line;
+  line-height: 1.35;
+}
+
 .weekday-breakdown-table thead th {
   white-space: nowrap;
 }
@@ -2171,6 +2176,10 @@ h3 {
 .weekday-breakdown-total-cell {
   font-weight: 700;
   color: var(--navy);
+}
+
+.weekday-breakdown-summary-strip-strong {
+  font-weight: 600;
 }
 
 .backtest-report .research-matrix-table th,

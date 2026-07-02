@@ -3854,23 +3854,27 @@ function snapshotDateToWeekdayKey(snapshotDate = "") {
 function createWeekdayBreakdownCell() {
   return {
     total: 0,
-    correct: 0,
-    wrong: 0,
-    flat: 0,
-    other: 0
+    wins: 0,
+    losses: 0,
+    flats: 0
   };
 }
 
 function summarizeWeekdayBreakdownCell(cell = {}) {
   const total = Number(cell.total || 0);
-  const correct = Number(cell.correct || 0);
+  const wins = Number(cell.wins || 0);
+  const losses = Number(cell.losses || 0);
+  const flats = Number(cell.flats || 0);
+  const directionalTotal = wins + losses;
   return {
     total,
-    correct,
-    wrong: Number(cell.wrong || 0),
-    flat: Number(cell.flat || 0),
-    other: Number(cell.other || 0),
-    winRatePct: total ? roundTo((correct / total) * 100, 1) : null
+    wins,
+    losses,
+    flats,
+    directionalTotal,
+    flatOnly: !directionalTotal && flats > 0,
+    flatRatePct: total ? roundTo((flats / total) * 100, 1) : null,
+    exFlatWinRatePct: directionalTotal ? roundTo((wins / directionalTotal) * 100, 1) : null
   };
 }
 
@@ -3935,21 +3939,17 @@ function computeWeekdayBreakdownForChecker(checker = null) {
     totalRows += 1;
 
     if (result === "CORRECT") {
-      matrixCell.correct += 1;
-      bucketTotal.correct += 1;
-      weekdayTotal.correct += 1;
+      matrixCell.wins += 1;
+      bucketTotal.wins += 1;
+      weekdayTotal.wins += 1;
     } else if (result === "WRONG") {
-      matrixCell.wrong += 1;
-      bucketTotal.wrong += 1;
-      weekdayTotal.wrong += 1;
-    } else if (result === "FLAT") {
-      matrixCell.flat += 1;
-      bucketTotal.flat += 1;
-      weekdayTotal.flat += 1;
+      matrixCell.losses += 1;
+      bucketTotal.losses += 1;
+      weekdayTotal.losses += 1;
     } else {
-      matrixCell.other += 1;
-      bucketTotal.other += 1;
-      weekdayTotal.other += 1;
+      matrixCell.flats += 1;
+      bucketTotal.flats += 1;
+      weekdayTotal.flats += 1;
     }
   });
 
@@ -3969,16 +3969,27 @@ function computeWeekdayBreakdownForChecker(checker = null) {
   });
 
   const bestCombination = [...candidates].sort((a, b) => {
-    if ((b.winRatePct ?? -1) !== (a.winRatePct ?? -1)) return (b.winRatePct ?? -1) - (a.winRatePct ?? -1);
-    if (b.total !== a.total) return b.total - a.total;
+    if ((b.exFlatWinRatePct ?? -1) !== (a.exFlatWinRatePct ?? -1)) return (b.exFlatWinRatePct ?? -1) - (a.exFlatWinRatePct ?? -1);
+    if (b.directionalTotal !== a.directionalTotal) return b.directionalTotal - a.directionalTotal;
     return a.weekdayLabel.localeCompare(b.weekdayLabel);
   })[0] || null;
 
   const worstCombination = [...candidates].sort((a, b) => {
-    if ((a.winRatePct ?? 101) !== (b.winRatePct ?? 101)) return (a.winRatePct ?? 101) - (b.winRatePct ?? 101);
-    if (b.total !== a.total) return b.total - a.total;
+    if ((a.exFlatWinRatePct ?? 101) !== (b.exFlatWinRatePct ?? 101)) return (a.exFlatWinRatePct ?? 101) - (b.exFlatWinRatePct ?? 101);
+    if (b.directionalTotal !== a.directionalTotal) return b.directionalTotal - a.directionalTotal;
     return a.weekdayLabel.localeCompare(b.weekdayLabel);
   })[0] || null;
+
+  const assetTotals = summarizeWeekdayBreakdownCell(
+    weekdayKeys.reduce((aggregate, weekdayKey) => {
+      const weekdayTotal = weekdayTotals[weekdayKey];
+      aggregate.total += weekdayTotal.total || 0;
+      aggregate.wins += weekdayTotal.wins || 0;
+      aggregate.losses += weekdayTotal.losses || 0;
+      aggregate.flats += weekdayTotal.flats || 0;
+      return aggregate;
+    }, createWeekdayBreakdownCell())
+  );
 
   return {
     assetCode,
@@ -3988,6 +3999,7 @@ function computeWeekdayBreakdownForChecker(checker = null) {
     bucketTotals,
     weekdayTotals,
     totalRows,
+    assetTotals,
     bestCombination,
     worstCombination,
     unknownCounts,
@@ -3998,7 +4010,12 @@ function computeWeekdayBreakdownForChecker(checker = null) {
 function formatWeekdayBreakdownCell(cell = {}) {
   const summary = summarizeWeekdayBreakdownCell(cell);
   if (!summary.total) return displayDash();
-  return `${percentValue(summary.winRatePct)} (${summary.correct}/${summary.total})`;
+
+  if (!summary.directionalTotal && summary.flats > 0) {
+    return `Flat only\n0W / 0L / ${summary.flats}F / ${summary.total}T`;
+  }
+
+  return `${percentValue(summary.exFlatWinRatePct)} ex-flat\n${summary.wins}W / ${summary.losses}L / ${summary.flats}F / ${summary.total}T`;
 }
 
 function formatWeekdayBreakdownSummaryItem(item = null) {
@@ -4033,13 +4050,21 @@ function renderWeekdayBreakdownAsset(assetSummary = null) {
           <p class="eyebrow">Weekday Breakdown</p>
           <h3>${escapeHtml(assetLabel)} ${escapeHtml(assetSummary.timeframeLabel)} by confidence bucket and weekday</h3>
         </div>
-        <p class="research-panel-copy">Stored displayed headline confidence buckets from the checker artifact. Win rate is correct rows divided by total rows in each bucket/day cell; wrong, flat, no-call, and not-evaluable rows all stay in scope so the full checker row count reconciles cleanly.</p>
+        <p class="research-panel-copy">Stored displayed headline confidence buckets from the checker artifact. Directional win rate excludes flats, while the count line keeps wins, losses, and non-directional flat/neutral rows visible so every checker row still reconciles cleanly.</p>
       </div>
       <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-panel" data-weekday-breakdown-asset="${escapeHtml(assetLabel)}">
         <div class="weekday-breakdown-summary-strip">
           <span><strong>Best:</strong> ${escapeHtml(formatWeekdayBreakdownSummaryItem(assetSummary.bestCombination))}</span>
           <span><strong>Worst:</strong> ${escapeHtml(formatWeekdayBreakdownSummaryItem(assetSummary.worstCombination))}</span>
           <span><strong>Total Evaluated Rows:</strong> ${escapeHtml(String(assetSummary.totalRows))}</span>
+        </div>
+        <div class="weekday-breakdown-summary-strip weekday-breakdown-summary-strip-strong">
+          <span><strong>Wins:</strong> ${escapeHtml(String(assetSummary.assetTotals?.wins ?? 0))}</span>
+          <span><strong>Losses:</strong> ${escapeHtml(String(assetSummary.assetTotals?.losses ?? 0))}</span>
+          <span><strong>Flats:</strong> ${escapeHtml(String(assetSummary.assetTotals?.flats ?? 0))}</span>
+          <span><strong>Total Rows:</strong> ${escapeHtml(String(assetSummary.assetTotals?.total ?? 0))}</span>
+          <span><strong>Flat Rate:</strong> ${escapeHtml(metricAvailable(assetSummary.assetTotals?.flatRatePct) ? percentValue(assetSummary.assetTotals.flatRatePct) : displayDash())}</span>
+          <span><strong>Ex-Flat Win Rate:</strong> ${escapeHtml(metricAvailable(assetSummary.assetTotals?.exFlatWinRatePct) ? `${percentValue(assetSummary.assetTotals.exFlatWinRatePct)} ex-flat` : (assetSummary.assetTotals?.flats ? "Flat only" : displayDash()))}</span>
         </div>
         <div class="research-table-scroll weekday-breakdown-scroll">
           <table class="dashboard-table weekday-breakdown-table">
@@ -4083,14 +4108,14 @@ function renderResearchWeekdayBreakdown(data = {}) {
       ${renderResearchStatusHeader(data)}
       <section class="research-section">
         <div class="research-section-head">
-          <div>
-            <p class="eyebrow">Weekday Breakdown</p>
-            <h3>Day-of-week performance by displayed headline confidence</h3>
-          </div>
-          <p class="research-panel-copy">This view stays downstream of the deterministic checker artifacts. It uses each stored row's displayed headline confidence and evaluation result directly, without recalculating replay confidence or changing checker semantics.</p>
+        <div>
+          <p class="eyebrow">Weekday Breakdown</p>
+          <h3>Day-of-week performance by displayed headline confidence</h3>
         </div>
-        <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-intro-panel">
-          <p class="research-panel-copy">Confidence buckets are fixed to Weak 0-49, Moderate 50-64, Strong 65-79, and Very Strong 80-100. USD, EUR, Gold, and NQ stay Monday-Friday only. BTC extends the same table through Saturday and Sunday.</p>
+        <p class="research-panel-copy">This view stays downstream of the deterministic checker artifacts. It uses each stored row's displayed headline confidence and evaluation result directly, without recalculating replay confidence or changing checker semantics.</p>
+      </div>
+      <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-intro-panel">
+          <p class="research-panel-copy">Confidence buckets are fixed to Weak 0-49, Moderate 50-64, Strong 65-79, and Very Strong 80-100. Directional win rate is wins / (wins + losses), excluding flats. USD, EUR, Gold, and NQ stay Monday-Friday only. BTC extends the same table through Saturday and Sunday.</p>
         </article>
       </section>
       ${breakdowns.map(renderWeekdayBreakdownAsset).join("")}

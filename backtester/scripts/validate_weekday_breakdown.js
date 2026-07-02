@@ -84,24 +84,75 @@ function weekdayFromSnapshotDate(snapshotDate) {
   return WEEKDAY_LABELS[parsed.getUTCDay()] || null;
 }
 
-function buildEmptyCounts(keys) {
-  return Object.fromEntries(keys.map(key => [key, 0]));
+function createTotals() {
+  return {
+    total: 0,
+    wins: 0,
+    losses: 0,
+    flats: 0
+  };
+}
+
+function buildCounts(keys) {
+  return Object.fromEntries(keys.map(key => [key, createTotals()]));
+}
+
+function addRowToTotals(target, result) {
+  target.total += 1;
+  if (result === "CORRECT") {
+    target.wins += 1;
+  } else if (result === "WRONG") {
+    target.losses += 1;
+  } else {
+    target.flats += 1;
+  }
+}
+
+function sumTotals(collection) {
+  return Object.values(collection).reduce((aggregate, item) => {
+    aggregate.total += item.total;
+    aggregate.wins += item.wins;
+    aggregate.losses += item.losses;
+    aggregate.flats += item.flats;
+    return aggregate;
+  }, createTotals());
+}
+
+function exFlatWinRate(totals) {
+  const directionalTotal = totals.wins + totals.losses;
+  return directionalTotal ? totals.wins / directionalTotal : null;
+}
+
+function validateTotalsShape(label, totals, errors) {
+  if (totals.wins + totals.losses + totals.flats !== totals.total) {
+    errors.push(`${label}: wins + losses + flats did not equal total`);
+  }
+
+  const rate = exFlatWinRate(totals);
+  if (rate !== null && (!Number.isFinite(rate) || rate < 0 || rate > 1)) {
+    errors.push(`${label}: ex-flat directional win rate was out of range`);
+  }
 }
 
 function validateAsset(config) {
   const payload = JSON.parse(fs.readFileSync(config.input, "utf8"));
   const rows = Array.isArray(payload.rows) ? payload.rows : [];
   const summaryRowsChecked = Number(payload?.summary?.rows_checked || 0);
-  const weekdayCounts = buildEmptyCounts(config.weekdays);
-  const bucketCounts = buildEmptyCounts(BUCKETS.map(bucket => bucket.key));
+  const weekdayCounts = buildCounts(config.weekdays);
+  const bucketCounts = buildCounts(BUCKETS.map(bucket => bucket.key));
+  const cellCounts = {};
   const errors = [];
 
-  let totalRows = 0;
+  BUCKETS.forEach(bucket => {
+    cellCounts[bucket.key] = buildCounts(config.weekdays);
+  });
 
   rows.forEach((row, index) => {
     const weekday = weekdayFromSnapshotDate(row?.snapshot_date);
     const confidence = normalizeHeadlineConfidence(row);
     const bucketKey = bucketKeyFromConfidence(confidence);
+    const result = String(row?.stored?.evaluation_result || row?.checker?.evaluation_result || "").trim().toUpperCase();
+
     if (!weekday) {
       errors.push(`row ${index + 1}: missing weekday from snapshot_date`);
       return;
@@ -119,13 +170,27 @@ function validateAsset(config) {
       return;
     }
 
-    weekdayCounts[weekday] += 1;
-    bucketCounts[bucketKey] += 1;
-    totalRows += 1;
+    addRowToTotals(weekdayCounts[weekday], result);
+    addRowToTotals(bucketCounts[bucketKey], result);
+    addRowToTotals(cellCounts[bucketKey][weekday], result);
   });
 
-  const weekdayTotal = Object.values(weekdayCounts).reduce((sum, count) => sum + count, 0);
-  const bucketTotal = Object.values(bucketCounts).reduce((sum, count) => sum + count, 0);
+  Object.entries(weekdayCounts).forEach(([weekday, totals]) => {
+    validateTotalsShape(`weekday ${weekday}`, totals, errors);
+  });
+
+  Object.entries(bucketCounts).forEach(([bucket, totals]) => {
+    validateTotalsShape(`bucket ${bucket}`, totals, errors);
+  });
+
+  Object.entries(cellCounts).forEach(([bucket, weekdayMap]) => {
+    Object.entries(weekdayMap).forEach(([weekday, totals]) => {
+      validateTotalsShape(`cell ${bucket}/${weekday}`, totals, errors);
+    });
+  });
+
+  const weekdayRollup = sumTotals(weekdayCounts);
+  const bucketRollup = sumTotals(bucketCounts);
 
   if (rows.length !== config.expectedRows) {
     errors.push(`artifact row count ${rows.length} did not match expected ${config.expectedRows}`);
@@ -133,21 +198,23 @@ function validateAsset(config) {
   if (summaryRowsChecked !== config.expectedRows) {
     errors.push(`summary rows_checked ${summaryRowsChecked} did not match expected ${config.expectedRows}`);
   }
-  if (weekdayTotal !== config.expectedRows) {
-    errors.push(`weekday total ${weekdayTotal} did not match expected ${config.expectedRows}`);
+  if (weekdayRollup.total !== config.expectedRows) {
+    errors.push(`weekday total ${weekdayRollup.total} did not match expected ${config.expectedRows}`);
   }
-  if (bucketTotal !== config.expectedRows) {
-    errors.push(`bucket total ${bucketTotal} did not match expected ${config.expectedRows}`);
-  }
-  if (totalRows !== config.expectedRows) {
-    errors.push(`validated row total ${totalRows} did not match expected ${config.expectedRows}`);
+  if (bucketRollup.total !== config.expectedRows) {
+    errors.push(`bucket total ${bucketRollup.total} did not match expected ${config.expectedRows}`);
   }
 
-  const includesWeekend = Boolean((weekdayCounts.SATURDAY || 0) + (weekdayCounts.SUNDAY || 0));
-  if (config.code === "BTC" && !includesWeekend) {
+  validateTotalsShape("asset total", weekdayRollup, errors);
+  if (bucketRollup.total !== weekdayRollup.total || bucketRollup.wins !== weekdayRollup.wins || bucketRollup.losses !== weekdayRollup.losses || bucketRollup.flats !== weekdayRollup.flats) {
+    errors.push("bucket rollup did not match weekday rollup");
+  }
+
+  const weekendRows = (weekdayCounts.SATURDAY?.total || 0) + (weekdayCounts.SUNDAY?.total || 0);
+  if (config.code === "BTC" && !weekendRows) {
     errors.push("BTC weekday totals did not include any weekend rows");
   }
-  if (config.code !== "BTC" && includesWeekend) {
+  if (config.code !== "BTC" && weekendRows) {
     errors.push(`${config.code} unexpectedly included weekend rows`);
   }
 
@@ -157,11 +224,17 @@ function validateAsset(config) {
     expected_rows: config.expectedRows,
     rows_in_artifact: rows.length,
     summary_rows_checked: summaryRowsChecked,
-    weekday_total: weekdayTotal,
-    bucket_total: bucketTotal,
+    weekday_total: weekdayRollup.total,
+    bucket_total: bucketRollup.total,
     weekday_counts: weekdayCounts,
     bucket_counts: bucketCounts,
-    weekend_rows: (weekdayCounts.SATURDAY || 0) + (weekdayCounts.SUNDAY || 0),
+    total_wins: weekdayRollup.wins,
+    total_losses: weekdayRollup.losses,
+    total_flats: weekdayRollup.flats,
+    total_rows: weekdayRollup.total,
+    flat_rate_pct: weekdayRollup.total ? Number(((weekdayRollup.flats / weekdayRollup.total) * 100).toFixed(1)) : null,
+    ex_flat_directional_win_rate_pct: exFlatWinRate(weekdayRollup) !== null ? Number((exFlatWinRate(weekdayRollup) * 100).toFixed(1)) : null,
+    weekend_rows: weekendRows,
     status: errors.length ? "FAIL" : "PASS",
     errors
   };
