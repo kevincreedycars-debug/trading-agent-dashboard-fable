@@ -2022,6 +2022,7 @@ function renderUnavailableMetric(label, detail) {
 function renderResearchBreakdownTable(title, subtitle, rows, columns, options = {}) {
   const panelClass = ["detail-panel", "research-table-panel", options.panelClass || ""].filter(Boolean).join(" ");
   const tableClass = ["dashboard-table", "research-table", options.tableClass || ""].filter(Boolean).join(" ");
+  const scrollClass = ["table-scroll", "research-table-scroll", options.scrollClass || ""].filter(Boolean).join(" ");
 
   if (!rows.length) {
     return `
@@ -2042,14 +2043,14 @@ function renderResearchBreakdownTable(title, subtitle, rows, columns, options = 
         <h3>${escapeHtml(title)}</h3>
       </div>
       ${options.description ? `<p class="research-panel-copy">${escapeHtml(options.description)}</p>` : ""}
-      <div class="table-scroll research-table-scroll">
+      <div class="${scrollClass}">
         <table class="${tableClass}">
           <thead>
-            <tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join("")}</tr>
+            <tr>${columns.map(column => `<th${column.className ? ` class="${escapeHtml(column.className)}"` : ""}>${escapeHtml(column.label)}</th>`).join("")}</tr>
           </thead>
           <tbody>
             ${rows.map(row => `
-              <tr>${columns.map(column => `<td>${column.render(row)}</td>`).join("")}</tr>
+              <tr>${columns.map(column => `<td${column.className ? ` class="${escapeHtml(column.className)}"` : ""}>${column.render(row)}</td>`).join("")}</tr>
             `).join("")}
           </tbody>
         </table>
@@ -3904,6 +3905,18 @@ function summarizeWeekdayBreakdownCell(cell = {}) {
   };
 }
 
+function rollupWeekdayBreakdownCells(cells = []) {
+  return summarizeWeekdayBreakdownCell(
+    cells.reduce((aggregate, cell) => {
+      aggregate.total += Number(cell?.total || 0);
+      aggregate.wins += Number(cell?.wins || 0);
+      aggregate.losses += Number(cell?.losses || 0);
+      aggregate.flats += Number(cell?.flats || 0);
+      return aggregate;
+    }, createWeekdayBreakdownCell())
+  );
+}
+
 function computeWeekdayBreakdownForChecker(checker = null) {
   const assetCode = String(checker?.meta?.asset || "").trim().toUpperCase();
   const rows = Array.isArray(checker?.rows) ? checker.rows : [];
@@ -4047,6 +4060,34 @@ function formatWeekdayBreakdownCell(cell = {}) {
 function formatWeekdayBreakdownSummaryItem(item = null) {
   if (!item || !item.total) return displayDash();
   return `${item.weekdayLabel} / ${item.bucketLabel} ${formatWeekdayBreakdownCell(item)}`;
+}
+
+function formatPairTradeCountsCompact(cell = {}) {
+  const summary = summarizeWeekdayBreakdownCell(cell);
+  return `${summary.wins}W / ${summary.losses}L / ${summary.flats}F / ${summary.total}T`;
+}
+
+function formatPairTradeExFlatInline(cell = {}) {
+  const summary = summarizeWeekdayBreakdownCell(cell);
+  if (!summary.total) return displayDash();
+  if (!summary.directionalTotal && summary.flats > 0) return "Flat only";
+  return `${percentValue(summary.exFlatWinRatePct)} ex-flat`;
+}
+
+function formatPairTradeFlatRateInline(cell = {}) {
+  const summary = summarizeWeekdayBreakdownCell(cell);
+  if (!summary.total) return displayDash();
+  return `${percentValue(summary.flatRatePct)} flat`;
+}
+
+function renderPairTradeSummaryCell(primary = "", secondary = "", options = {}) {
+  const className = ["research-cell", "pair-summary-cell", options.className || ""].filter(Boolean).join(" ");
+  return `
+    <div class="${className}">
+      <strong>${escapeHtml(metricAvailable(primary) ? String(primary) : displayDash())}</strong>
+      ${secondary ? `<span>${escapeHtml(secondary)}</span>` : ""}
+    </div>
+  `;
 }
 
 function renderWeekdayBreakdownAsset(assetSummary = null) {
@@ -4333,6 +4374,20 @@ function buildPairTradeResearchForConfig(config = {}, checkers = {}) {
       sharePct: targetRows.length ? roundTo((count / targetRows.length) * 100, 1) : null
     }));
 
+  const strongPlusTotals = rollupWeekdayBreakdownCells([
+    bucketTotals.STRONG,
+    bucketTotals.VERY_STRONG
+  ]);
+  const layer2Summary = {
+    pairedRows: targetRows.length,
+    tradableSignals: tradableRows.length,
+    coveragePct: targetRows.length ? roundTo((tradableRows.length / targetRows.length) * 100, 1) : null,
+    allSignalTotals: assetTotals,
+    strongPlusSignals: strongPlusTotals.total,
+    strongPlusCoveragePct: targetRows.length ? roundTo((strongPlusTotals.total / targetRows.length) * 100, 1) : null,
+    strongPlusTotals
+  };
+
   return {
     ...config,
     targetRowsCount: targetRows.length,
@@ -4346,6 +4401,7 @@ function buildPairTradeResearchForConfig(config = {}, checkers = {}) {
     bucketTotals,
     weekdayTotals,
     assetTotals,
+    layer2Summary,
     bucketSummaryRows,
     conflictSummaryRows,
     tradableRows,
@@ -4353,26 +4409,75 @@ function buildPairTradeResearchForConfig(config = {}, checkers = {}) {
   };
 }
 
-function renderPairTradeCoverageSummary(pairResearch = null) {
+function renderPairTradeSummaryCards(pairResearch = null) {
   if (!pairResearch) return "";
   return `
-    <section class="backtest-metric-grid research-summary-grid pair-trade-kpi-grid">
+    <section class="backtest-metric-grid research-summary-grid pair-trade-kpi-grid pair-trade-card-grid" data-pair-trade-card-grid="${escapeHtml(pairResearch.pairCode)}">
       ${renderBacktestKpiMetric("Target Rows", String(pairResearch.targetRowsCount ?? 0), "Rows available from target checker")}
       ${renderBacktestKpiMetric("Matched USD Rows", String(pairResearch.matchedUsdRowsCount ?? 0), "Same-date USD rows")}
       ${renderBacktestKpiMetric("Tradable Pairs", String(pairResearch.tradableRowsCount ?? 0), "Opposite directional target/USD signals")}
       ${renderBacktestKpiMetric("No Trade", String(pairResearch.noTradeRowsCount ?? 0), "Missing USD or conflict/non-directional setup")}
-    </section>
-  `;
-}
-
-function renderPairTradeAccuracySummary(pairResearch = null) {
-  if (!pairResearch) return "";
-  return `
-    <section class="backtest-metric-grid research-summary-grid pair-trade-kpi-grid">
       ${renderBacktestKpiMetric("Wins", String(pairResearch.assetTotals?.wins ?? 0), "Tradable pair rows marked CORRECT")}
       ${renderBacktestKpiMetric("Losses", String(pairResearch.assetTotals?.losses ?? 0), "Tradable pair rows marked WRONG")}
       ${renderBacktestKpiMetric("Flats", String(pairResearch.assetTotals?.flats ?? 0), "Tradable pair rows marked FLAT / neutral")}
       ${renderBacktestKpiMetric("Ex-Flat Win Rate", metricAvailable(pairResearch.assetTotals?.exFlatWinRatePct) ? `${percentValue(pairResearch.assetTotals.exFlatWinRatePct)} ex-flat` : (pairResearch.assetTotals?.flats ? "Flat only" : displayDash()), `${pairResearch.assetTotals?.wins ?? 0}W / ${pairResearch.assetTotals?.losses ?? 0}L`)}
+    </section>
+  `;
+}
+
+function renderLayer2PairSummary(pairResearchRows = []) {
+  if (!pairResearchRows.length) return "";
+
+  const summaryRows = pairResearchRows.map((pairResearch) => {
+    const summary = pairResearch.layer2Summary || {};
+    return `
+      <tr data-layer2-pair-summary-row="${escapeHtml(pairResearch.pairCode)}">
+        <td>${renderPairTradeSummaryCell(pairResearch.pairLabel, `${pairResearch.targetAssetCode} paired with USD`)}</td>
+        <td>${renderPairTradeSummaryCell(String(summary.tradableSignals ?? 0), `${summary.pairedRows ?? 0} paired rows`)}</td>
+        <td>${renderPairTradeSummaryCell(metricAvailable(summary.coveragePct) ? percentValue(summary.coveragePct) : displayDash(), "Tradable / paired")}</td>
+        <td>${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.allSignalTotals), "All tradable rows", { className: "pair-summary-cell-nowrap" })}</td>
+        <td>${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.allSignalTotals), "Wins / losses / flats / total", { className: "pair-summary-cell-nowrap" })}</td>
+        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(String(summary.strongPlusSignals ?? 0), "Strong + Very Strong")}</td>
+        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(metricAvailable(summary.strongPlusCoveragePct) ? percentValue(summary.strongPlusCoveragePct) : displayDash(), "Strong+ tradable / paired")}</td>
+        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.strongPlusTotals), "Strong+ ex-flat WR", { className: "pair-summary-cell-nowrap" })}</td>
+        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.strongPlusTotals), "Strong+ W / L / F / T", { className: "pair-summary-cell-nowrap" })}</td>
+        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeFlatRateInline(summary.strongPlusTotals), "Strong+ flat rate", { className: "pair-summary-cell-nowrap" })}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <section class="research-section pair-trade-summary-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Layer 2 Pair Summary</p>
+          <h3>How accurate are our Layer 2 pair signals historically?</h3>
+        </div>
+        <p class="research-panel-copy">This summary stays downstream of the validated pair-analysis view. Coverage uses tradable signals divided by total paired rows, and Strong+ uses the combined confidence bands where target/USD headline confidence resolves to 65 or higher.</p>
+      </div>
+      <article class="detail-panel wide-panel research-secondary-panel research-table-panel">
+        <div class="table-scroll research-table-scroll pair-trade-table-scroll">
+          <table class="dashboard-table research-table layer2-pair-summary-table" data-layer2-pair-summary="true">
+            <thead>
+              <tr>
+                <th>Pair</th>
+                <th>Tradable Signals</th>
+                <th>Coverage %</th>
+                <th>All-Signal Ex-Flat Win Rate</th>
+                <th>All-Signal W / L / F / T</th>
+                <th class="pair-summary-strongplus">Strong+ Signals</th>
+                <th class="pair-summary-strongplus">Strong+ Coverage %</th>
+                <th class="pair-summary-strongplus">Strong+ Ex-Flat Win Rate</th>
+                <th class="pair-summary-strongplus">Strong+ W / L / F / T</th>
+                <th class="pair-summary-strongplus">Strong+ Flat Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${summaryRows}
+            </tbody>
+          </table>
+        </div>
+      </article>
     </section>
   `;
 }
@@ -4460,14 +4565,15 @@ function renderPairTradeResearchAsset(pairResearch = null) {
         </div>
         <p class="research-panel-copy">Pair trade research remains downstream-only. It uses same-date target and USD checker rows, requires opposite directional calls to form a tradable pair setup, and uses the target asset's stored evaluation result as the realized pair outcome proxy.</p>
       </div>
-      ${renderPairTradeCoverageSummary(pairResearch)}
-      ${renderPairTradeAccuracySummary(pairResearch)}
+      ${renderPairTradeSummaryCards(pairResearch)}
       ${renderResearchBreakdownTable(`${pairResearch.pairLabel} confidence buckets`, "Confidence Bucket Table", pairResearch.bucketSummaryRows, [
-        { label: "Bucket", render: row => researchDataCell(row.bucketLabel, `${row.combinedConfidenceBand}% combined confidence`) },
-        { label: "Coverage", render: row => researchDataCell(row.total, `${row.wins}W / ${row.losses}L / ${row.flats}F`) },
-        { label: "Ex-Flat Win Rate", render: row => researchDataCell(metricAvailable(row.exFlatWinRatePct) ? `${percentValue(row.exFlatWinRatePct)} ex-flat` : (row.flats ? "Flat only" : displayDash()), `${row.wins + row.losses} directional`) },
-        { label: "Flat Rate", render: row => researchDataCell(metricAvailable(row.flatRatePct) ? percentValue(row.flatRatePct) : displayDash(), `${row.flats} of ${row.total}`) }
+        { label: "Bucket", className: "pair-trade-col-bucket", render: row => researchDataCell(row.bucketLabel, `${row.combinedConfidenceBand}% combined confidence`) },
+        { label: "Coverage", className: "pair-trade-col-coverage", render: row => researchDataCell(row.total, formatPairTradeCountsCompact(row)) },
+        { label: "Ex-Flat Win Rate", className: "pair-trade-col-exflat", render: row => researchDataCell(metricAvailable(row.exFlatWinRatePct) ? `${percentValue(row.exFlatWinRatePct)} ex-flat` : (row.flats ? "Flat only" : displayDash()), `${row.wins + row.losses} directional`) },
+        { label: "Flat Rate", className: "pair-trade-col-flatrate", render: row => researchDataCell(metricAvailable(row.flatRatePct) ? percentValue(row.flatRatePct) : displayDash(), `${row.flats} of ${row.total}`) }
       ], {
+        scrollClass: "pair-trade-table-scroll",
+        tableClass: "pair-trade-bucket-table",
         description: "Confidence buckets use min(target headline confidence, USD headline confidence) so pair trade confidence never exceeds the weaker side of the setup."
       })}
       ${renderPairTradeDayTotals(pairResearch)}
@@ -4515,6 +4621,7 @@ function renderResearchPairTrade(data = {}) {
           <p class="research-panel-copy">Tradable pair rows require opposite target/USD directions. Combined confidence is the lower of the two stored headline confidence values. Same-direction target/USD rows are treated as conflicts, and BTC weekend rows with no same-date USD row remain visible in the conflict / no-trade summary.</p>
         </article>
       </section>
+      ${renderLayer2PairSummary(pairResearchRows)}
       ${pairResearchRows.map(renderPairTradeResearchAsset).join("")}
     </div>
   `;

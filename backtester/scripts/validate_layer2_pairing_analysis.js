@@ -91,6 +91,28 @@ function totalsFromCollection(collection) {
   }, createTotals());
 }
 
+function totalsFromList(list = []) {
+  return list.reduce((aggregate, totals) => {
+    aggregate.total += totals?.total || 0;
+    aggregate.wins += totals?.wins || 0;
+    aggregate.losses += totals?.losses || 0;
+    aggregate.flats += totals?.flats || 0;
+    return aggregate;
+  }, createTotals());
+}
+
+function totalsEqual(left, right) {
+  return left.total === right.total
+    && left.wins === right.wins
+    && left.losses === right.losses
+    && left.flats === right.flats;
+}
+
+function roundPct(value) {
+  if (!Number.isFinite(value)) return null;
+  return Number((value * 100).toFixed(1));
+}
+
 function validateRateShape(label, totals, errors) {
   if (totals.wins + totals.losses + totals.flats !== totals.total) {
     errors.push(`${label}: wins + losses + flats did not equal total`);
@@ -217,8 +239,30 @@ function validatePair(config, checkers) {
 
   const dayRollup = totalsFromCollection(dayTotals);
   const bucketRollup = totalsFromCollection(bucketTotals);
+  const strongPlusRollup = totalsFromList([
+    bucketTotals.STRONG,
+    bucketTotals.VERY_STRONG
+  ]);
+  const coveragePct = targetRows.length ? roundPct(tradableCount / targetRows.length) : null;
+  const strongPlusCoveragePct = targetRows.length ? roundPct(strongPlusRollup.total / targetRows.length) : null;
+  const pairSummary = {
+    paired_rows: targetRows.length,
+    tradable_signals: tradableCount,
+    coverage_pct: coveragePct,
+    all_signal_totals: dayRollup,
+    strong_plus_signals: strongPlusRollup.total,
+    strong_plus_coverage_pct: strongPlusCoveragePct,
+    strong_plus_totals: strongPlusRollup,
+    strong_plus_ex_flat_directional_win_rate_pct: (strongPlusRollup.wins + strongPlusRollup.losses)
+      ? roundPct(strongPlusRollup.wins / (strongPlusRollup.wins + strongPlusRollup.losses))
+      : null,
+    strong_plus_flat_rate_pct: strongPlusRollup.total
+      ? roundPct(strongPlusRollup.flats / strongPlusRollup.total)
+      : null
+  };
 
   validateRateShape("pair total", dayRollup, errors);
+  validateRateShape("strong+ total", strongPlusRollup, errors);
   if (
     dayRollup.total !== bucketRollup.total
     || dayRollup.wins !== bucketRollup.wins
@@ -229,6 +273,35 @@ function validatePair(config, checkers) {
   }
   if (dayRollup.total !== tradableCount) {
     errors.push(`tradable rollup ${dayRollup.total} did not match tradable count ${tradableCount}`);
+  }
+  if (pairSummary.tradable_signals !== pairSummary.all_signal_totals.total) {
+    errors.push("pair summary tradable signals did not match detailed tradable totals");
+  }
+  if (!totalsEqual(pairSummary.all_signal_totals, dayRollup)) {
+    errors.push("pair summary all-signal totals did not reconcile to day totals");
+  }
+  if (!totalsEqual(pairSummary.strong_plus_totals, strongPlusRollup)) {
+    errors.push("pair summary Strong+ totals did not reconcile to Strong + Very Strong bucket totals");
+  }
+  if (pairSummary.coverage_pct !== (pairSummary.paired_rows ? roundPct(pairSummary.tradable_signals / pairSummary.paired_rows) : null)) {
+    errors.push("coverage % did not equal tradable signals divided by paired rows");
+  }
+  if (pairSummary.strong_plus_coverage_pct !== (pairSummary.paired_rows ? roundPct(pairSummary.strong_plus_signals / pairSummary.paired_rows) : null)) {
+    errors.push("Strong+ coverage % did not equal Strong+ tradable signals divided by paired rows");
+  }
+  if (pairSummary.strong_plus_ex_flat_directional_win_rate_pct !== (
+    (pairSummary.strong_plus_totals.wins + pairSummary.strong_plus_totals.losses)
+      ? roundPct(pairSummary.strong_plus_totals.wins / (pairSummary.strong_plus_totals.wins + pairSummary.strong_plus_totals.losses))
+      : null
+  )) {
+    errors.push("Strong+ ex-flat directional win rate did not exclude flats");
+  }
+  if (pairSummary.strong_plus_flat_rate_pct !== (
+    pairSummary.strong_plus_totals.total
+      ? roundPct(pairSummary.strong_plus_totals.flats / pairSummary.strong_plus_totals.total)
+      : null
+  )) {
+    errors.push("Strong+ flat rate did not equal flats divided by total");
   }
   if (targetRows.length !== tradableCount + noTradeCount) {
     errors.push(`target rows ${targetRows.length} did not equal tradable + no-trade (${tradableCount + noTradeCount})`);
@@ -256,6 +329,7 @@ function validatePair(config, checkers) {
     total_rows: dayRollup.total,
     flat_rate_pct: dayRollup.total ? Number(((dayRollup.flats / dayRollup.total) * 100).toFixed(1)) : null,
     ex_flat_directional_win_rate_pct: (dayRollup.wins + dayRollup.losses) ? Number(((dayRollup.wins / (dayRollup.wins + dayRollup.losses)) * 100).toFixed(1)) : null,
+    pair_summary: pairSummary,
     no_trade_reason_counts: noTradeReasonCounts,
     status: errors.length ? "FAIL" : "PASS",
     errors

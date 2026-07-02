@@ -1807,6 +1807,10 @@ h3 {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.backtest-report .pair-trade-card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .backtest-report .matrix-summary-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
@@ -2125,6 +2129,90 @@ h3 {
   gap: 12px;
 }
 
+.pair-trade-table-scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.backtest-report .pair-trade-table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.pair-trade-bucket-table {
+  min-width: 860px;
+  table-layout: auto;
+}
+
+.pair-trade-bucket-table th,
+.pair-trade-bucket-table td {
+  white-space: normal;
+}
+
+.pair-trade-bucket-table .pair-trade-col-bucket {
+  min-width: 180px;
+}
+
+.pair-trade-bucket-table .pair-trade-col-coverage,
+.pair-trade-bucket-table .pair-trade-col-exflat,
+.pair-trade-bucket-table .pair-trade-col-flatrate {
+  min-width: 170px;
+}
+
+.pair-trade-bucket-table th:last-child,
+.pair-trade-bucket-table td:last-child {
+  padding-right: 16px;
+}
+
+.pair-trade-bucket-table .research-cell strong,
+.pair-trade-bucket-table .research-cell span {
+  white-space: nowrap;
+}
+
+.pair-trade-bucket-table .research-cell span {
+  font-size: 11px;
+}
+
+.layer2-pair-summary-table {
+  min-width: 1480px;
+  table-layout: auto;
+}
+
+.layer2-pair-summary-table th,
+.layer2-pair-summary-table td {
+  vertical-align: top;
+  white-space: normal;
+}
+
+.layer2-pair-summary-table th:first-child,
+.layer2-pair-summary-table td:first-child {
+  min-width: 160px;
+}
+
+.pair-summary-cell {
+  gap: 4px;
+}
+
+.pair-summary-cell-nowrap strong,
+.pair-summary-cell-nowrap span,
+.layer2-pair-summary-table .pair-summary-cell strong,
+.layer2-pair-summary-table .pair-summary-cell span {
+  white-space: nowrap;
+}
+
+.pair-summary-strongplus {
+  background: linear-gradient(180deg, rgba(184, 132, 26, 0.1) 0%, rgba(184, 132, 26, 0.04) 100%);
+}
+
+.layer2-pair-summary-table thead .pair-summary-strongplus {
+  color: var(--navy);
+}
+
+.layer2-pair-summary-table th:last-child,
+.layer2-pair-summary-table td:last-child {
+  padding-right: 16px;
+}
+
 .weekday-breakdown-summary-strip {
   display: flex;
   flex-wrap: wrap;
@@ -2315,6 +2403,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .backtest-report .pair-trade-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .agent-grid,
   .adjusted-grid,
   .detail-call-grid,
@@ -2458,6 +2550,10 @@ h3 {
 
   .research-table-scroll {
     overflow-x: auto;
+  }
+
+  .backtest-report .pair-trade-card-grid {
+    grid-template-columns: 1fr;
   }
 
   h1 {

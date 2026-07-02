@@ -139,6 +139,40 @@ async function run() {
       throw new Error(`Pair Trade Research did not render expected pair sections.\n${pairTradeText}`);
     }
 
+    if (!normalizedPairTradeText.includes("layer 2 pair summary") || !normalizedPairTradeText.includes("strong+")) {
+      throw new Error(`Layer 2 Pair Summary did not render above the pair sections.\n${pairTradeText}`);
+    }
+
+    const pairSectionOrder = await page.locator("#backtestPanel .pair-trade-summary-section, #backtestPanel .pair-trade-section").evaluateAll((elements) => {
+      return elements.map((element) => element.className);
+    });
+    if (!pairSectionOrder.length || !String(pairSectionOrder[0]).includes("pair-trade-summary-section")) {
+      throw new Error(`Layer 2 Pair Summary did not appear before the detailed pair sections.\n${pairSectionOrder.join(" | ")}`);
+    }
+
+    const pairSummaryGridCount = await page.locator("[data-pair-trade-card-grid]").count();
+    if (pairSummaryGridCount !== 4) {
+      throw new Error(`Expected 4 pair summary-card grids, found ${pairSummaryGridCount}.`);
+    }
+
+    const firstPairGridColumns = await page.locator("[data-pair-trade-card-grid='EUR_USD']").evaluate((element) => {
+      const columns = getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean);
+      return columns.length;
+    });
+    if (firstPairGridColumns < 4) {
+      throw new Error(`Pair summary cards did not render as a desktop multi-column grid.\nColumns: ${firstPairGridColumns}`);
+    }
+
+    const pairBucketOverflow = await page.locator(".pair-trade-table-scroll").first().evaluate((element) => getComputedStyle(element).overflowX);
+    if (pairBucketOverflow !== "auto" && pairBucketOverflow !== "scroll") {
+      throw new Error(`Pair confidence bucket table wrapper did not allow horizontal scrolling.\nOverflowX: ${pairBucketOverflow}`);
+    }
+
+    const pairBucketWhiteSpace = await page.locator(".pair-trade-bucket-table td:nth-child(3) .research-cell strong").first().evaluate((element) => getComputedStyle(element).whiteSpace);
+    if (pairBucketWhiteSpace !== "nowrap") {
+      throw new Error(`Pair confidence bucket percentage values were still wrapping.\nwhite-space: ${pairBucketWhiteSpace}`);
+    }
+
     const pairTradeBtcHeaders = await page.locator("[data-pair-trade-asset='BTC_USD'] thead th").allInnerTexts();
     const normalizedPairTradeBtcHeaders = pairTradeBtcHeaders.map(text => text.trim().toLowerCase());
 
@@ -156,7 +190,9 @@ async function run() {
       matrix_summary_excerpt: summaryText,
       btc_weekday_headers: btcWeekdayHeaders,
       usd_weekday_headers: usdWeekdayHeaders,
-      pair_trade_btc_headers: pairTradeBtcHeaders
+      pair_trade_btc_headers: pairTradeBtcHeaders,
+      pair_trade_grid_columns: firstPairGridColumns,
+      pair_trade_overflow_x: pairBucketOverflow
     }, null, 2));
   } finally {
     await browser.close();
