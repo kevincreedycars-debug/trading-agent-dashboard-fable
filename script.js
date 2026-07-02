@@ -5,7 +5,8 @@ const checkerDataUrls = {
   USD: "./data/backtester-checker-usd-24h-2024-01.json?v=20260629-usd-flatband-010",
   EUR: "./data/backtester-checker-eur-24h-2024-2026.json?v=20260629-eur-flatband-015",
   GOLD: "./data/backtester-checker-gold-24h-2024-2026.json?v=20260630-gold-xauusd-dashboard",
-  NQ: "./data/backtester-checker-nq-24h-2024-2026.json?v=20260702-nq-qqq-proxy-dashboard"
+  NQ: "./data/backtester-checker-nq-24h-2024-2026.json?v=20260702-nq-qqq-proxy-dashboard",
+  BTC: "./data/backtester-checker-btc-24h-2024-2026.json?v=20260702-btc-benchmark-dashboard"
 };
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
@@ -395,6 +396,22 @@ function workflowStatusLabel(status = "") {
   return value ? value.toUpperCase() : "PENDING";
 }
 
+function isEconomicEventsCollectorFailure(status = workflowStatus) {
+  const failedStep = String(status?.failed_step || status?.error?.step || "").toLowerCase();
+  const errorText = String(workflowErrorText(status?.error) || status?.message || "").toLowerCase();
+  return failedStep.includes("economic events collector")
+    && (
+      errorText.includes("invalid input syntax for type date")
+      || errorText.includes('type date: "null"')
+      || errorText.includes("type date: null")
+    );
+}
+
+function economicEventsCollectorImpactSummary(status = workflowStatus) {
+  if (!isEconomicEventsCollectorFailure(status)) return "";
+  return "Economic event context fallback was used after the latest collector failure. Calls that rely on US or Eurozone event context may be incomplete for this run.";
+}
+
 function normaliseDirection(direction = "") {
   return String(direction || "PENDING").replaceAll("_", " ");
 }
@@ -657,6 +674,44 @@ function eventWasSimplyAbsent(agent, timeframe = "24h", field = "") {
     const reason = String(entry.factor?.reason || "").toLowerCase();
     return evidence.includes("no recent") || reason.includes("no confirmed");
   });
+}
+
+function impactedEventContextLabels(agent, timeframe = "24h") {
+  const labels = new Set();
+  const entries = factorEntriesForDiagnostics(getCall(agent, timeframe), agent, timeframe);
+
+  entries.forEach(entry => {
+    const label = String(entry.label || "");
+    const evidence = String(entry.factor?.evidence || "").toLowerCase();
+    const reason = String(entry.factor?.reason || "").toLowerCase();
+    const missingEventContext = evidence.includes("no recent") || reason.includes("no confirmed");
+
+    if (!missingEventContext) return;
+    if (label === "US Economic Surprise Direction") labels.add("US event context");
+    if (label === "EZ Economic Surprise Direction") labels.add("Eurozone event context");
+  });
+
+  return Array.from(labels);
+}
+
+function agentImpactedByEconomicEventsCollector(agent, timeframe = "24h") {
+  return isEconomicEventsCollectorFailure(workflowStatus)
+    && impactedEventContextLabels(agent, timeframe).length > 0;
+}
+
+function renderEventCollectorAgentWarning(agent, timeframe = "24h") {
+  if (!agentImpactedByEconomicEventsCollector(agent, timeframe)) return "";
+  const impactedContexts = impactedEventContextLabels(agent, timeframe);
+  return `
+    <div class="diagnostic-section diagnostic-status">
+      <h4>Collector Warning</h4>
+      <div class="diagnostic-list">
+        <div class="diagnostic-item">
+          Economic Events Collector failed in the latest workflow run. ${escapeHtml(impactedContexts.join(" and "))} may be incomplete for this ${escapeHtml(String(timeframe).toUpperCase())} call.
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function fallbackMessageForField(field = "", timeframe = "24h") {
@@ -1140,6 +1195,7 @@ function renderAgentCard(agent) {
       </div>
 
       <p class="summary">${escapeHtml(agent.summary || "")}</p>
+      ${renderEventCollectorAgentWarning(agent, "24h")}
 
       <div class="agent-metrics">
         <div class="agent-metric-chip">
@@ -1377,6 +1433,7 @@ function renderTodayCall(agent) {
         <b>${formatConviction(confidence)}</b>
         <small>Confidence in the current trading-session bias</small>
       </div>
+      ${renderEventCollectorAgentWarning(agent, "24h")}
     </section>
   `;
 }
@@ -1441,6 +1498,10 @@ function renderStructuredDiagnostics(agent, timeframe = "24h") {
 
   if (Number.isFinite(participation) && participation < 35) {
     statusLines.push(`Low ${String(timeframe).replaceAll("_", " ").toUpperCase()} participation: only ${participation}% of weighted evidence is directional.`);
+  }
+
+  if (agentImpactedByEconomicEventsCollector(agent, timeframe)) {
+    statusLines.push(`Economic Events Collector failed in the latest workflow run. ${impactedEventContextLabels(agent, timeframe).join(" and ")} may be incomplete for this call.`);
   }
 
   const sectionHtml = (title, items, emptyText, variant = "") => `
@@ -2673,12 +2734,14 @@ function renderResearchAsset24hContext(options = {}) {
   const benchmark = options.benchmark
     || (assetCode === "EUR"
       ? "EURUSD"
-      : (assetCode === "GOLD" ? "XAUUSD" : "DXY"));
+      : (assetCode === "GOLD" ? "XAUUSD" : (assetCode === "BTC" ? "BTCUSD" : "DXY")));
   const ruleText = options.ruleText || (
     assetCode === "EUR"
       ? `EUR bullish is correct when ${benchmark} rises over the following 24hrs; EUR bearish is correct when ${benchmark} falls; flat is a neutral market outcome when ${benchmark} remains inside the EUR/USD flat threshold.`
       : assetCode === "GOLD"
         ? `Gold bullish is correct when ${benchmark} rises over the following 24hrs; Gold bearish is correct when ${benchmark} falls; flat is a neutral market outcome when ${benchmark} remains inside the Gold 24H flat threshold.`
+      : assetCode === "BTC"
+        ? `BTC bullish is correct when ${benchmark} rises over the following 24hrs; BTC bearish is correct when ${benchmark} falls; flat is a neutral market outcome when ${benchmark} remains inside the BTC 24H flat threshold.`
       : `USD bullish is correct when ${benchmark} rises over the following 24hrs; USD bearish is correct when ${benchmark} falls; flat is a neutral market outcome when ${benchmark} remains inside the flat threshold.`
   );
 
@@ -3811,6 +3874,7 @@ function renderResearchAccuracy(data = {}) {
   const eurMatrix24hRows = data.accuracy?.eur_matrix_24h_rows || [];
   const goldMatrix24hRows = data.accuracy?.gold_matrix_24h_rows || [];
   const nqMatrix24hRows = data.accuracy?.nq_matrix_24h_rows || [];
+  const btcMatrix24hRows = data.accuracy?.btc_matrix_24h_rows || [];
 
   if (data.meta?.error) {
     return `
@@ -3895,6 +3959,24 @@ function renderResearchAccuracy(data = {}) {
         assetCode: "NQ",
         timeframe: "following 24hrs",
         assetLabel: "NQ",
+        timeframeLabel: "24H"
+      })}
+      ${renderResearchAsset24hContext({
+        assetCode: "BTC",
+        benchmark: "BTCUSD"
+      })}
+      ${renderResearch24hAccuracyMatrix(btcMatrix24hRows, {
+        assetCode: "BTC",
+        assetLabel: "BTC",
+        timeframe: "following 24hrs",
+        timeframeLabel: "24H",
+        sourceView: "research_prediction_evaluations",
+        exportKey: "btc-24h"
+      })}
+      ${renderMatrixSummary(btcMatrix24hRows, {
+        assetCode: "BTC",
+        timeframe: "following 24hrs",
+        assetLabel: "BTC",
         timeframeLabel: "24H"
       })}
       ${renderResearchDefinitions()}
@@ -4003,6 +4085,11 @@ function exportMatrixEvidenceCsv(exportKey = "usd-24h") {
     "nq-24h": {
       rows: backtestData?.accuracy?.nq_matrix_24h_rows || [],
       assetCode: "NQ",
+      sourceView: "research_prediction_evaluations"
+    },
+    "btc-24h": {
+      rows: backtestData?.accuracy?.btc_matrix_24h_rows || [],
+      assetCode: "BTC",
       sourceView: "research_prediction_evaluations"
     }
   };
@@ -4169,11 +4256,13 @@ function renderWorkflowStatus(status = workflowStatus) {
   const errorText = workflowErrorText(status?.error);
   if (errorReport) {
     if (statusClass === "failed" || errorText) {
+      const impactSummary = economicEventsCollectorImpactSummary(status);
       errorReport.hidden = false;
       errorReport.innerHTML = `
         <p class="eyebrow">Error Report</p>
         <h3>${escapeHtml(status?.failed_step || status?.error?.step || "Workflow run failed")}</h3>
         <p>${escapeHtml(errorText || message || "No error reason was supplied by n8n.")}</p>
+        ${impactSummary ? `<div class="diagnostic-item">${escapeHtml(impactSummary)}</div>` : ""}
       `;
     } else {
       errorReport.hidden = true;
@@ -4494,10 +4583,25 @@ async function fetchResearchDashboardData() {
     assetCode: "NQ",
     benchmark: "QQQ_NQ_PROXY"
   })), []);
+  const btcMatrix24hRowsPromise = resolveResearchTask("research_prediction_evaluations.BTC.24h", fetchResearchView("research_prediction_evaluations", {
+    select: "call_date,asset_code,timeframe,agent_direction,agent_conviction,evaluated_market,open_price,close_price,pct_change,result,prediction_id",
+    order: "call_date.asc",
+    filters: {
+      asset_code: "eq.BTC",
+      evaluated_market: "eq.BTCUSD",
+      timeframe: "eq.following 24hrs",
+      evaluation_mode: "eq.primary",
+      evaluation_version: "eq.phase1_outcome_eval_v1"
+    }
+  }).then(rows => normalizeMarketEvaluationRows(rows, {
+    assetCode: "BTC",
+    benchmark: "BTCUSD"
+  })), []);
   const usdCheckerDataPromise = resolveResearchTask("checker.USD", fetchLocalJson(checkerDataUrls.USD), null);
   const eurCheckerDataPromise = resolveResearchTask("checker.EUR", fetchLocalJson(checkerDataUrls.EUR), null);
   const goldCheckerDataPromise = resolveResearchTask("checker.GOLD", fetchLocalJson(checkerDataUrls.GOLD), null);
   const nqCheckerDataPromise = resolveResearchTask("checker.NQ", fetchLocalJson(checkerDataUrls.NQ), null);
+  const btcCheckerDataPromise = resolveResearchTask("checker.BTC", fetchLocalJson(checkerDataUrls.BTC), null);
 
   const [
     overallRows,
@@ -4506,6 +4610,7 @@ async function fetchResearchDashboardData() {
     eurMatrix24hRows,
     goldMatrix24hRows,
     nqMatrix24hRows,
+    btcMatrix24hRows,
     verdictStrengthRows,
     confidenceBucketRows,
     tradeQualityRows,
@@ -4521,7 +4626,8 @@ async function fetchResearchDashboardData() {
     usdCheckerData,
     eurCheckerData,
     goldCheckerData,
-    nqCheckerData
+    nqCheckerData,
+    btcCheckerData
   ] = await Promise.all([
     resolveResearchTask("research_overall_win_rate", fetchResearchView("research_overall_win_rate"), []),
     resolveResearchTask("research_usd_24h_direction_accuracy", fetchResearchView("research_usd_24h_direction_accuracy"), []),
@@ -4529,6 +4635,7 @@ async function fetchResearchDashboardData() {
     eurMatrix24hRowsPromise,
     goldMatrix24hRowsPromise,
     nqMatrix24hRowsPromise,
+    btcMatrix24hRowsPromise,
     resolveResearchTask("research_accuracy_by_verdict_strength", fetchResearchView("research_accuracy_by_verdict_strength", { order: "timeframe.asc,strength_rank.asc" }), []),
     resolveResearchTask("research_accuracy_by_confidence_bucket", fetchResearchView("research_accuracy_by_confidence_bucket", { order: "timeframe.asc,confidence_bucket_rank.asc" }), []),
     resolveResearchTask("research_trade_quality_thresholds", fetchResearchView("research_trade_quality_thresholds", { order: "timeframe.asc,threshold_rank.asc" }), []),
@@ -4553,7 +4660,8 @@ async function fetchResearchDashboardData() {
     usdCheckerDataPromise,
     eurCheckerDataPromise,
     goldCheckerDataPromise,
-    nqCheckerDataPromise
+    nqCheckerDataPromise,
+    btcCheckerDataPromise
   ]);
 
   const resolvedEurMatrix24hRows = eurCheckerData?.rows?.length
@@ -4574,6 +4682,12 @@ async function fetchResearchDashboardData() {
       benchmark: "QQQ_NQ_PROXY"
     })
     : nqMatrix24hRows;
+  const resolvedBtcMatrix24hRows = btcCheckerData?.rows?.length
+    ? normalizeCheckerRowsForMatrix(btcCheckerData, {
+      assetCode: "BTC",
+      benchmark: "BTCUSD"
+    })
+    : btcMatrix24hRows;
 
   return {
     meta: {
@@ -4588,6 +4702,7 @@ async function fetchResearchDashboardData() {
       eur_matrix_24h_rows: resolvedEurMatrix24hRows,
       gold_matrix_24h_rows: resolvedGoldMatrix24hRows,
       nq_matrix_24h_rows: resolvedNqMatrix24hRows,
+      btc_matrix_24h_rows: resolvedBtcMatrix24hRows,
       by_verdict_strength: verdictStrengthRows,
       by_confidence_bucket: confidenceBucketRows,
       trade_quality: tradeQualityRows,
@@ -4606,7 +4721,8 @@ async function fetchResearchDashboardData() {
       USD: usdCheckerData,
       EUR: eurCheckerData,
       GOLD: goldCheckerData,
-      NQ: nqCheckerData
+      NQ: nqCheckerData,
+      BTC: btcCheckerData
     }
   };
 }

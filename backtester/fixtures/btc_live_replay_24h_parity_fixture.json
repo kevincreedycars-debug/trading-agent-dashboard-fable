@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "name": "btc_live_replay_24h_parity_fixture",
+    "purpose": "One-snapshot live-vs-replay parity gate for BTC 24H before historical replay expansion.",
+    "live_factor_intent_source": "logic/agent_btc_direction.md",
+    "live_24h_parity_target": "exports/btc_layer1_agent.json#Calculate BTC Conviction",
+    "replay_source_under_test": "backtester/replay/btc/btc_replay_core.js",
+    "notes": [
+      "The expected output is frozen from the current live BTC deterministic workflow semantics.",
+      "Parity follows the exported live deterministic node even where it differs from markdown or sampled runtime warnings.",
+      "Canonical headline confidence is derived only from backtester/lib/headline_confidence.js."
+    ]
+  },
+  "snapshot": {
+    "snapshot_date": "2026-07-02",
+    "dxy_d1": -0.1398527457149901,
+    "dxy_d5": 0.40765541655108173,
+    "dxy_d20": 1.558239058806132,
+    "vix_level": 16.45,
+    "vix_d5": -3.039999999999999,
+    "fed_bias": "neutral",
+    "btc_d1_pct": -2.0339098474920267,
+    "btc_d5_pct": null,
+    "btc_d20_pct": null,
+    "nq_d1_pct": -1.525,
+    "nq_d5_pct": null,
+    "nq_d20_pct": null,
+    "us_10y_real_yield_d5_bps": -8.999999999999986,
+    "us_10y_real_yield_d20_bps": 13.000000000000034,
+    "latest_us_event": null,
+    "btc_etf_net_flow_1d_usd": 655300000,
+    "btc_etf_net_flow_5d_usd": 1259400000,
+    "btc_etf_net_flow_20d_usd": 1825800000,
+    "stablecoin_supply_d5_pct": null,
+    "stablecoin_supply_d20_pct": null,
+    "total_crypto_market_cap_d5_pct": null,
+    "total_crypto_market_cap_d20_pct": null,
+    "btc_dominance": null,
+    "btc_dominance_d5": null,
+    "btc_dominance_d20": null,
+    "crypto_fear_greed": 19,
+    "is_weekend_risk": false
+  },
+  "expected_live_24h": {
+    "direction_24h": "BULLISH",
+    "conviction_24h": 73,
+    "raw_strength_bucket": "VERY_STRONG",
+    "displayed_headline_confidence_pct": 60,
+    "headline_strength_bucket": "MODERATE",
+    "bull_case_pct": 73,
+    "bear_case_pct": 27,
+    "net_edge_pct": 46,
+    "participation_pct": 51,
+    "score_bullish": 4,
+    "score_bearish": 1,
+    "score_neutral": 5,
+    "weighted_score": {
+      "bullish_weight": 37,
+      "bearish_weight": 14,
+      "neutral_weight": 49,
+      "active_weight": 51,
+      "weight_margin": 23
+    },
+    "factor_breakdown": {
+      "F1 BTC Own Price Delta": { "signal": "NEUTRAL", "weight": 16 },
+      "F2 DXY / USD Pressure": { "signal": "NEUTRAL", "weight": 14 },
+      "F3 US 10Y Real Yield Delta": { "signal": "BULLISH", "weight": 10 },
+      "F4 Fed Bias / Policy Liquidity": { "signal": "NEUTRAL", "weight": 10 },
+      "F5 VIX Level and Risk Regime": { "signal": "BULLISH", "weight": 16 },
+      "F6 NQ / High-Beta Risk Confirmation": { "signal": "BEARISH", "weight": 14 },
+      "F7 US Economic Surprise Direction": { "signal": "NEUTRAL", "weight": 6 },
+      "F8 BTC ETF / Institutional Flow": { "signal": "BULLISH", "weight": 8 },
+      "F9 Stablecoin / Crypto Liquidity": { "signal": "NEUTRAL", "weight": 3 },
+      "F10 BTC Dominance / Crypto Structure": { "signal": "BULLISH", "weight": 3 }
+    },
+    "conviction_model": {
+      "bullish_argument_pct": 73,
+      "bearish_argument_pct": 27,
+      "neutral_pct": 49,
+      "active_participation_pct": 51,
+      "net_edge_pct": 46,
+      "final_conviction": 73,
+      "headline_confidence_pct": 60,
+      "verdict_strength": "VERY_STRONG",
+      "confidence_strength": "MODERATE"
+    },
+    "missing_inputs": [
+      "stablecoin_supply_d5_pct",
+      "total_crypto_market_cap_d5_pct"
+    ],
+    "warnings_affecting_confidence": [
+      "Missing/neutral input: F9 Stablecoin / Crypto Liquidity"
+    ]
+  },
+  "supplemental_cases": [
+    {
+      "name": "lean_conversion_case",
+      "snapshot": {
+        "snapshot_date": "2026-07-02",
+        "dxy_d1": 0.2,
+        "vix_level": 18,
+        "vix_d5": 0,
+        "fed_bias": "neutral",
+        "btc_d1_pct": 3.2,
+        "nq_d1_pct": 0,
+        "us_10y_real_yield_d5_bps": 0,
+        "latest_us_event": null,
+        "btc_etf_net_flow_1d_usd": 0,
+        "stablecoin_supply_d5_pct": null,
+        "total_crypto_market_cap_d5_pct": null,
+        "btc_dominance": null,
+        "btc_dominance_d5": null,
+        "crypto_fear_greed": null,
+        "is_weekend_risk": false
+      },
+      "expected": {
+        "direction_24h": "BULLISH_LEAN",
+        "conviction_24h": 53,
+        "bull_case_pct": 53,
+        "bear_case_pct": 47,
+        "net_edge_pct": 6,
+        "participation_pct": 30,
+        "weighted_score": {
+          "bullish_weight": 16,
+          "bearish_weight": 14,
+          "neutral_weight": 70,
+          "active_weight": 30,
+          "weight_margin": 2
+        },
+        "factor_breakdown": {
+          "F1 BTC Own Price Delta": { "signal": "BULLISH", "weight": 16 },
+          "F2 DXY / USD Pressure": { "signal": "BEARISH", "weight": 14 }
+        }
+      }
+    },
+    {
+      "name": "no_clear_bias_case",
+      "snapshot": {
+        "snapshot_date": "2026-07-02",
+        "dxy_d1": -0.2,
+        "vix_level": 18,
+        "vix_d5": 0,
+        "fed_bias": "neutral",
+        "btc_d1_pct": 0,
+        "nq_d1_pct": -0.25,
+        "us_10y_real_yield_d5_bps": 0,
+        "latest_us_event": null,
+        "btc_etf_net_flow_1d_usd": 0,
+        "stablecoin_supply_d5_pct": null,
+        "total_crypto_market_cap_d5_pct": null,
+        "btc_dominance": null,
+        "btc_dominance_d5": null,
+        "crypto_fear_greed": null,
+        "is_weekend_risk": false
+      },
+      "expected": {
+        "direction_24h": "NO_CLEAR_BIAS",
+        "conviction_24h": 0,
+        "bull_case_pct": 50,
+        "bear_case_pct": 50,
+        "net_edge_pct": 0,
+        "participation_pct": 28,
+        "weighted_score": {
+          "bullish_weight": 14,
+          "bearish_weight": 14,
+          "neutral_weight": 72,
+          "active_weight": 28,
+          "weight_margin": 0
+        },
+        "factor_breakdown": {
+          "F2 DXY / USD Pressure": { "signal": "BULLISH", "weight": 14 },
+          "F6 NQ / High-Beta Risk Confirmation": { "signal": "BEARISH", "weight": 14 }
+        }
+      }
+    },
+    {
+      "name": "weekend_risk_case",
+      "snapshot": {
+        "snapshot_date": "2026-07-04",
+        "dxy_d1": 0,
+        "vix_level": 18,
+        "vix_d5": 0,
+        "fed_bias": "neutral",
+        "btc_d1_pct": 3.2,
+        "nq_d1_pct": 0.25,
+        "us_10y_real_yield_d5_bps": -6,
+        "latest_us_event": null,
+        "btc_etf_net_flow_1d_usd": 1000000,
+        "stablecoin_supply_d5_pct": 0,
+        "total_crypto_market_cap_d5_pct": null,
+        "btc_dominance": null,
+        "btc_dominance_d5": null,
+        "crypto_fear_greed": 50,
+        "is_weekend_risk": true
+      },
+      "expected": {
+        "direction_24h": "BULLISH_LEAN",
+        "conviction_24h": 100,
+        "bull_case_pct": 100,
+        "bear_case_pct": 0,
+        "net_edge_pct": 100,
+        "participation_pct": 48,
+        "weighted_score": {
+          "bullish_weight": 48,
+          "bearish_weight": 0,
+          "neutral_weight": 52,
+          "active_weight": 48,
+          "weight_margin": 48
+        },
+        "factor_breakdown": {
+          "F1 BTC Own Price Delta": { "signal": "BULLISH", "weight": 16 },
+          "F3 US 10Y Real Yield Delta": { "signal": "BULLISH", "weight": 10 },
+          "F6 NQ / High-Beta Risk Confirmation": { "signal": "BULLISH", "weight": 14 },
+          "F8 BTC ETF / Institutional Flow": { "signal": "BULLISH", "weight": 8 }
+        },
+        "warnings_affecting_confidence": [
+          "WEEKEND_LIQUIDITY_RISK"
+        ]
+      }
+    }
+  ]
+}

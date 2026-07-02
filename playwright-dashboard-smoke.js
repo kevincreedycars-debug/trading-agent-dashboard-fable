@@ -54,6 +54,7 @@ async function run() {
 
     await page.waitForSelector("text=Gold 24H direction by strength", { timeout: 15000 });
     await page.waitForSelector("text=NQ 24H direction by strength", { timeout: 15000 });
+    await page.waitForSelector("text=BTC 24H direction by strength", { timeout: 15000 });
     await page.waitForTimeout(2000);
     const backtestText = await page.locator("#backtestPanel").innerText();
 
@@ -75,9 +76,21 @@ async function run() {
       throw new Error(`Gold matrix summary did not include expected totals.\n${summaryText}`);
     }
 
+    if (!backtestText.includes("BTC 24H direction by strength")) {
+      throw new Error(`BTC matrix section did not render.\n${backtestText}`);
+    }
+
+    await page.getByRole("button", { name: "Backtest Checker" }).click();
+    await page.waitForSelector("text=BTC 24H", { timeout: 15000 });
+    const checkerText = await page.locator("#backtestPanel").innerText();
+
+    if (!checkerText.includes("BTC 24H")) {
+      throw new Error(`BTC checker section did not render.\n${checkerText}`);
+    }
+
     console.log(JSON.stringify({
       status: "PASS",
-      target: "Gold and NQ Backtest / Accuracy matrices",
+      target: "Gold, NQ, and BTC Backtest / Accuracy matrices plus BTC checker",
       ancillary_failure_injected: "research_best_factor_combinations 500",
       matrix_summary_excerpt: summaryText
     }, null, 2));
