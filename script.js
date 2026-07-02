@@ -25,6 +25,28 @@ const labels = {
 };
 
 const orderedAgents = ["USD", "EUR", "GOLD", "NQ", "BTC"];
+const weekdayBreakdownBuckets = [
+  { key: "WEAK", label: "Weak", min: 0, max: 49 },
+  { key: "MODERATE", label: "Moderate", min: 50, max: 64 },
+  { key: "STRONG", label: "Strong", min: 65, max: 79 },
+  { key: "VERY_STRONG", label: "Very Strong", min: 80, max: 100 }
+];
+const weekdayBreakdownLabels = {
+  MONDAY: "Monday",
+  TUESDAY: "Tuesday",
+  WEDNESDAY: "Wednesday",
+  THURSDAY: "Thursday",
+  FRIDAY: "Friday",
+  SATURDAY: "Saturday",
+  SUNDAY: "Sunday"
+};
+const weekdayBreakdownColumnsByAsset = {
+  USD: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+  EUR: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+  GOLD: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+  NQ: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+  BTC: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+};
 let layer1Data = null;
 let layer2Data = null;
 let backtestData = null;
@@ -3788,6 +3810,294 @@ function normalizeCheckerRowsForMatrix(checker = null, options = {}) {
   });
 }
 
+function checkerRowHeadlineConfidence(row = {}) {
+  const candidates = [
+    row?.stored?.displayed_headline_confidence_pct,
+    row?.stored?.headline_confidence_pct,
+    row?.checker?.displayed_headline_confidence_pct,
+    row?.checker?.headline_confidence_pct
+  ];
+
+  for (const candidate of candidates) {
+    const numeric = parseConfidenceCandidate(candidate);
+    if (!Number.isFinite(numeric)) continue;
+
+    if (numeric >= 0.5 && numeric <= 1) {
+      return roundTo(numeric * 100, 1);
+    }
+
+    if (numeric >= 0 && numeric <= 100) {
+      return roundTo(numeric, 1);
+    }
+  }
+
+  return null;
+}
+
+function weekdayBreakdownBucketKey(confidencePct) {
+  const numeric = Number(confidencePct);
+  if (!Number.isFinite(numeric)) return null;
+  const clamped = Math.max(0, Math.min(100, numeric));
+  const bucket = weekdayBreakdownBuckets.find(item => clamped >= item.min && clamped <= item.max);
+  return bucket?.key || null;
+}
+
+function snapshotDateToWeekdayKey(snapshotDate = "") {
+  const value = String(snapshotDate || "").trim();
+  if (!value) return null;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const labelsByIndex = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  return labelsByIndex[parsed.getUTCDay()] || null;
+}
+
+function createWeekdayBreakdownCell() {
+  return {
+    total: 0,
+    correct: 0,
+    wrong: 0,
+    flat: 0,
+    other: 0
+  };
+}
+
+function summarizeWeekdayBreakdownCell(cell = {}) {
+  const total = Number(cell.total || 0);
+  const correct = Number(cell.correct || 0);
+  return {
+    total,
+    correct,
+    wrong: Number(cell.wrong || 0),
+    flat: Number(cell.flat || 0),
+    other: Number(cell.other || 0),
+    winRatePct: total ? roundTo((correct / total) * 100, 1) : null
+  };
+}
+
+function computeWeekdayBreakdownForChecker(checker = null) {
+  const assetCode = String(checker?.meta?.asset || "").trim().toUpperCase();
+  const rows = Array.isArray(checker?.rows) ? checker.rows : [];
+  const weekdayKeys = weekdayBreakdownColumnsByAsset[assetCode] || weekdayBreakdownColumnsByAsset.USD;
+  const bucketMatrix = {};
+  const bucketTotals = {};
+  const weekdayTotals = {};
+
+  weekdayBreakdownBuckets.forEach(bucket => {
+    bucketMatrix[bucket.key] = {};
+    bucketTotals[bucket.key] = createWeekdayBreakdownCell();
+    weekdayKeys.forEach(weekdayKey => {
+      bucketMatrix[bucket.key][weekdayKey] = createWeekdayBreakdownCell();
+    });
+  });
+
+  weekdayKeys.forEach(weekdayKey => {
+    weekdayTotals[weekdayKey] = createWeekdayBreakdownCell();
+  });
+
+  const unknownCounts = {
+    missing_weekday: 0,
+    unexpected_weekday: 0,
+    missing_confidence: 0,
+    unsupported_bucket: 0
+  };
+
+  let totalRows = 0;
+
+  rows.forEach(row => {
+    const weekdayKey = snapshotDateToWeekdayKey(row?.snapshot_date || "");
+    const confidencePct = checkerRowHeadlineConfidence(row);
+    const bucketKey = weekdayBreakdownBucketKey(confidencePct);
+    const result = String(row?.stored?.evaluation_result || row?.checker?.evaluation_result || "").trim().toUpperCase();
+
+    if (!weekdayKey) {
+      unknownCounts.missing_weekday += 1;
+      return;
+    }
+    if (!weekdayKeys.includes(weekdayKey)) {
+      unknownCounts.unexpected_weekday += 1;
+      return;
+    }
+    if (!metricAvailable(confidencePct)) {
+      unknownCounts.missing_confidence += 1;
+      return;
+    }
+    if (!bucketKey || !bucketMatrix[bucketKey]) {
+      unknownCounts.unsupported_bucket += 1;
+      return;
+    }
+    const matrixCell = bucketMatrix[bucketKey][weekdayKey];
+    const bucketTotal = bucketTotals[bucketKey];
+    const weekdayTotal = weekdayTotals[weekdayKey];
+
+    matrixCell.total += 1;
+    bucketTotal.total += 1;
+    weekdayTotal.total += 1;
+    totalRows += 1;
+
+    if (result === "CORRECT") {
+      matrixCell.correct += 1;
+      bucketTotal.correct += 1;
+      weekdayTotal.correct += 1;
+    } else if (result === "WRONG") {
+      matrixCell.wrong += 1;
+      bucketTotal.wrong += 1;
+      weekdayTotal.wrong += 1;
+    } else if (result === "FLAT") {
+      matrixCell.flat += 1;
+      bucketTotal.flat += 1;
+      weekdayTotal.flat += 1;
+    } else {
+      matrixCell.other += 1;
+      bucketTotal.other += 1;
+      weekdayTotal.other += 1;
+    }
+  });
+
+  const candidates = [];
+  weekdayBreakdownBuckets.forEach(bucket => {
+    weekdayKeys.forEach(weekdayKey => {
+      const summary = summarizeWeekdayBreakdownCell(bucketMatrix[bucket.key][weekdayKey]);
+      if (!summary.total) return;
+      candidates.push({
+        bucketKey: bucket.key,
+        bucketLabel: bucket.label,
+        weekdayKey,
+        weekdayLabel: weekdayBreakdownLabels[weekdayKey] || weekdayKey,
+        ...summary
+      });
+    });
+  });
+
+  const bestCombination = [...candidates].sort((a, b) => {
+    if ((b.winRatePct ?? -1) !== (a.winRatePct ?? -1)) return (b.winRatePct ?? -1) - (a.winRatePct ?? -1);
+    if (b.total !== a.total) return b.total - a.total;
+    return a.weekdayLabel.localeCompare(b.weekdayLabel);
+  })[0] || null;
+
+  const worstCombination = [...candidates].sort((a, b) => {
+    if ((a.winRatePct ?? 101) !== (b.winRatePct ?? 101)) return (a.winRatePct ?? 101) - (b.winRatePct ?? 101);
+    if (b.total !== a.total) return b.total - a.total;
+    return a.weekdayLabel.localeCompare(b.weekdayLabel);
+  })[0] || null;
+
+  return {
+    assetCode,
+    timeframeLabel: checker?.meta?.timeframe === "following 24hrs" ? "24H" : (checker?.meta?.timeframe || "24H"),
+    weekdayKeys,
+    bucketMatrix,
+    bucketTotals,
+    weekdayTotals,
+    totalRows,
+    bestCombination,
+    worstCombination,
+    unknownCounts,
+    summaryRowsChecked: Number(checker?.summary?.rows_checked || 0)
+  };
+}
+
+function formatWeekdayBreakdownCell(cell = {}) {
+  const summary = summarizeWeekdayBreakdownCell(cell);
+  if (!summary.total) return displayDash();
+  return `${percentValue(summary.winRatePct)} (${summary.correct}/${summary.total})`;
+}
+
+function formatWeekdayBreakdownSummaryItem(item = null) {
+  if (!item || !item.total) return displayDash();
+  return `${item.weekdayLabel} / ${item.bucketLabel} ${formatWeekdayBreakdownCell(item)}`;
+}
+
+function renderWeekdayBreakdownAsset(assetSummary = null) {
+  if (!assetSummary) return "";
+  const assetLabel = assetSummary.assetCode || "Asset";
+  const weekdayHeaders = assetSummary.weekdayKeys.map(weekdayKey => `
+    <th>${escapeHtml(weekdayBreakdownLabels[weekdayKey] || weekdayKey)}</th>
+  `).join("");
+  const bucketRows = weekdayBreakdownBuckets.map(bucket => {
+    const cells = assetSummary.weekdayKeys.map(weekdayKey => `
+      <td>${escapeHtml(formatWeekdayBreakdownCell(assetSummary.bucketMatrix?.[bucket.key]?.[weekdayKey]))}</td>
+    `).join("");
+
+    return `
+      <tr>
+        <th scope="row">${escapeHtml(bucket.label)}</th>
+        ${cells}
+        <td class="weekday-breakdown-total-cell">${escapeHtml(formatWeekdayBreakdownCell(assetSummary.bucketTotals?.[bucket.key]))}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <section class="research-section weekday-breakdown-asset-section">
+      <div class="research-section-head">
+        <div>
+          <p class="eyebrow">Weekday Breakdown</p>
+          <h3>${escapeHtml(assetLabel)} ${escapeHtml(assetSummary.timeframeLabel)} by confidence bucket and weekday</h3>
+        </div>
+        <p class="research-panel-copy">Stored displayed headline confidence buckets from the checker artifact. Win rate is correct rows divided by total rows in each bucket/day cell; wrong, flat, no-call, and not-evaluable rows all stay in scope so the full checker row count reconciles cleanly.</p>
+      </div>
+      <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-panel" data-weekday-breakdown-asset="${escapeHtml(assetLabel)}">
+        <div class="weekday-breakdown-summary-strip">
+          <span><strong>Best:</strong> ${escapeHtml(formatWeekdayBreakdownSummaryItem(assetSummary.bestCombination))}</span>
+          <span><strong>Worst:</strong> ${escapeHtml(formatWeekdayBreakdownSummaryItem(assetSummary.worstCombination))}</span>
+          <span><strong>Total Evaluated Rows:</strong> ${escapeHtml(String(assetSummary.totalRows))}</span>
+        </div>
+        <div class="research-table-scroll weekday-breakdown-scroll">
+          <table class="dashboard-table weekday-breakdown-table">
+            <thead>
+              <tr>
+                <th>Confidence Bucket</th>
+                ${weekdayHeaders}
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${bucketRows}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function renderResearchWeekdayBreakdown(data = {}) {
+  const availableCheckers = orderedAgents
+    .map(assetCode => data.checkers?.[assetCode] || null)
+    .filter(checker => checker?.summary && Array.isArray(checker?.rows));
+  const breakdowns = availableCheckers.map(computeWeekdayBreakdownForChecker);
+
+  if (!breakdowns.length) {
+    return `
+      <div class="backtest-report">
+        <article class="detail-panel wide-panel research-secondary-panel">
+          <p class="eyebrow">Weekday Breakdown</p>
+          <h3>Weekday breakdown unavailable</h3>
+          <div class="empty-state matrix-evidence-empty">No checker artifacts could be loaded for the weekday breakdown tab.</div>
+        </article>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="backtest-report">
+      ${renderResearchStatusHeader(data)}
+      <section class="research-section">
+        <div class="research-section-head">
+          <div>
+            <p class="eyebrow">Weekday Breakdown</p>
+            <h3>Day-of-week performance by displayed headline confidence</h3>
+          </div>
+          <p class="research-panel-copy">This view stays downstream of the deterministic checker artifacts. It uses each stored row's displayed headline confidence and evaluation result directly, without recalculating replay confidence or changing checker semantics.</p>
+        </div>
+        <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-intro-panel">
+          <p class="research-panel-copy">Confidence buckets are fixed to Weak 0-49, Moderate 50-64, Strong 65-79, and Very Strong 80-100. USD, EUR, Gold, and NQ stay Monday-Friday only. BTC extends the same table through Saturday and Sunday.</p>
+        </article>
+      </section>
+      ${breakdowns.map(renderWeekdayBreakdownAsset).join("")}
+    </div>
+  `;
+}
+
 function renderResearchVerdictQuality(data = {}) {
   const byVerdictStrength = data.accuracy?.by_verdict_strength || [];
   const byConfidenceBucket = data.accuracy?.by_confidence_bucket || [];
@@ -4023,7 +4333,9 @@ function renderBacktest(data = {}) {
   try {
     panel.innerHTML = activeBacktestTab === "infrastructure"
       ? renderResearchInfrastructure(data)
-      : (activeBacktestTab === "checker" ? renderResearchDataChecker(data) : renderResearchAccuracy(data));
+      : (activeBacktestTab === "checker"
+        ? renderResearchDataChecker(data)
+        : (activeBacktestTab === "weekday-breakdown" ? renderResearchWeekdayBreakdown(data) : renderResearchAccuracy(data)));
     applyMatrixEvidenceFilter("all");
   } catch (err) {
     console.error("Backtest render failed", err);

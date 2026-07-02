@@ -1,14 +1,14 @@
 # Current Task
 
-Last updated: 2026-06-29
+Last updated: 2026-07-02
 
 ## Task
 
-Complete the EUR historical replay, checker, and dashboard release path using the parity-validated live EUR 24H logic as the reference.
+Add a new Backtest / Accuracy weekday breakdown view showing day-of-week performance by Layer 1 agent and displayed headline confidence bucket.
 
 ## Objective
 
-Measure how the current live EUR Layer 1 agent would have performed historically by reproducing its 24H behavior exactly, evaluating outcomes directly against EUR/USD, and exposing the resulting checker and matrix outputs in the dashboard.
+Expose a compact historical breakdown that answers: for each Layer 1 agent, how did each displayed headline confidence bucket perform by day of week, while preserving the existing matrices/checkers and keeping all calculations downstream of the validated checker artifacts.
 
 ## Current Status
 
@@ -67,6 +67,10 @@ Completed and validated for release.
 - EUR/USD provisional 24H flat band set to `0.15` in the EUR-specific evaluation/checker path
 - EUR deterministic checker artifact generated with result `602 / 0 / 0 / 0`
 - Dashboard support added for the EUR 24H matrix and EUR checker alongside the existing USD views
+- Full Layer 1 historical replay rollout completed and validated for USD, EUR, Gold, NQ, and BTC
+- New `Weekday Breakdown` Backtest / Accuracy tab added using stored checker-artifact headline confidence and evaluation results
+- New weekday reconciliation validator added and passing for USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`
+- Dashboard smoke updated and passing for matrices, checker views, and the new weekday breakdown tab
 
 ## n8n Workspace
 
@@ -84,15 +88,15 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Monitor the live dashboard push and confirm the public Backtest / Accuracy panel renders both USD and EUR research views correctly.
-2. Decide whether the next EUR research milestone is richer macro reconstruction through historical EUR event/PMI backfill or broader replay-window expansion.
-3. Keep EUR replay semantics frozen until a deliberate optimization phase begins.
+1. Push the validated weekday breakdown dashboard change and confirm the public Backtest / Accuracy section renders the new tab cleanly.
+2. Decide the next analytical breakdown or research view now that the full Layer 1 replay rollout is complete.
+3. Keep replay, checker, confidence, and flat-band semantics frozen until an explicit optimization phase is approved.
 
 ## Current Blocker
 
 No current repository-side blocker.
 
-Known research limitation: EUR macro reconstruction is still lighter than the full live environment because historical EUR event and PMI inputs are incomplete, but this no longer blocks direct EUR/USD outcome evaluation or checker generation.
+Known research limitations in individual historical inputs remain, but they do not block the validated full Layer 1 replay rollout or the new weekday breakdown view because that view is computed entirely from canonical checker artifacts.
 
 The n8n API key was supplied in chat and must not be committed to GitHub.
 
@@ -127,4 +131,4 @@ before making any changes.
 
 The immediate working outcome for the current task is:
 
-> ship parity-validated EUR historical replay, EUR/USD outcome evaluation, EUR checker coverage, and dashboard support without changing live EUR semantics
+> ship the weekday confidence-by-weekday breakdown from canonical checker artifacts without changing replay outputs, checker semantics, flat bands, or headline confidence logic

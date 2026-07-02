@@ -2,11 +2,11 @@
 
 ## Current Feature
 
-EUR historical replay, checker, and dashboard support based on parity-validated live EUR 24H behavior
+Backtest / Accuracy weekday breakdown by displayed headline confidence bucket
 
 ## Current Milestone
 
-Release EUR parity, historical replay, outcome evaluation, checker, and dashboard support
+Release weekday-by-confidence performance tables for all validated Layer 1 checker artifacts
 
 ## Status
 
@@ -29,15 +29,25 @@ Complete
 - EUR-specific provisional 24H flat band was set to `0.15` without changing shared USD evaluation defaults.
 - EUR checker artifact now passes `602 / 0 / 0 / 0`.
 - Dashboard support was added for the EUR 24H matrix and EUR checker.
+- Full Layer 1 historical replay rollout is now validated across USD, EUR, Gold, NQ, and BTC.
+- A new `Weekday Breakdown` tab was added under Backtest / Accuracy without removing or disrupting the existing matrices or checker views.
+- The weekday view uses stored displayed headline confidence and stored evaluation results from the canonical checker artifacts rather than recalculating confidence.
+- Weekday reconciliation validation now passes for USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`.
+- Browser smoke now passes for accuracy tables, checker views, and the weekday breakdown tab.
 
 ## Remaining Work
 
-- Decide the next post-release EUR research priority.
-- Backfill richer historical EUR macro inputs if the next milestone needs fuller live-environment reconstruction.
-- Keep replay and evaluation semantics stable until an explicit optimization phase is approved.
+- Push the validated weekday breakdown release to GitHub.
+- Confirm the public GitHub Pages dashboard renders the new tab cleanly after push.
+- Decide the next analytical breakdown or research milestone.
 
 ## Current Files Being Modified
 
+- `index.html`
+- `script.js`
+- `styles.css`
+- `playwright-dashboard-smoke.js`
+- `backtester/scripts/validate_weekday_breakdown.js`
 - `docs/CURRENT_TASK.md`
 - `docs/ACTIVE_MILESTONE.md`
 - `docs/SESSION_NOTES.md`
@@ -47,12 +57,10 @@ Complete
 
 No repository-side blocker.
 
-Current limitation: EUR macro backfill is still incomplete for some historical features, but direct EUR/USD evaluation and checker coverage are live and validated.
-
 ## Next Immediate Action
 
-Push the validated EUR dashboard release and monitor the public Backtest / Accuracy views.
+Push the validated weekday breakdown dashboard release and verify the public Backtest / Accuracy tab set.
 
 ## Last Updated
 
-2026-06-29 22:05 Europe/London
+2026-07-02 12:45 Europe/London

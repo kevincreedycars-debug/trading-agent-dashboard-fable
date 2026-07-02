@@ -1,14 +1,14 @@
 # Current State - AI Trading Platform
 
-Last updated: 2026-06-29
+Last updated: 2026-07-02
 
 ## Platform Status
 
 The Layer 1 trading-agent platform remains operational, and the latest runtime evidence shows the Master Orchestrator completed successfully on 2026-06-28.
 
-The active repository work has shifted away from dashboard deployment follow-up and into USD historical replay and backtester validation. The current focus is verifying the deterministic USD Data Checker and backtester path before expanding replay-check coverage.
+The full Layer 1 historical replay rollout is now validated across USD, EUR, Gold, NQ, and BTC. The active repository work has shifted from replay rollout itself into downstream research presentation and breakdown views built on top of the canonical checker artifacts.
 
-The historical research platform is implemented end-to-end for USD. The currently validated backtester-checker scope is USD 24H for January 2024, with deterministic checker output now committed and passing cleanly.
+The current dashboard now includes the existing accuracy matrices, the checker workspaces, and a new weekday breakdown view that shows day-of-week performance by displayed headline confidence bucket without changing replay, checker, flat-band, or confidence semantics.
 
 ## Current Architecture
 
@@ -140,11 +140,11 @@ Older architecture notes that refer to Netlify are historical context and should
 
 ## Current Strategic Shift
 
-The project has already established the AI-assisted development environment baseline and is now using that environment to validate and harden the historical research stack.
+The project has already established the AI-assisted development environment baseline and completed the Layer 1 historical replay rollout. The current repository priority is downstream analytical visibility and validation on top of those frozen checker artifacts.
 
 The current repository priority is:
 
-> deterministic USD historical replay and checker validation
+> compact historical research breakdowns that reuse canonical checker artifact outputs
 
 GitHub is the source of truth. n8n remains the execution engine. Supabase remains the data layer. GitHub Pages is the active presentation host.
 
@@ -198,11 +198,8 @@ Authoritative principles live in:
 
 Current implemented state:
 
-- USD-only historical replay is implemented end-to-end.
-- Current committed replay coverage is January 2024.
-- The current validated checker scope is USD 24H for January 2024.
-- The latest deterministic checker result is 22 checked, 22 pass, 0 fail, 0 missing.
-- Headline USD benchmark accuracy remains DXY-only.
-- Basket and translation markets remain diagnostic only.
+- Historical replay and deterministic checker coverage are validated for USD, EUR, Gold, NQ, and BTC.
+- Current checker totals are USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`, all passing with zero fail / zero missing / zero tolerance pass.
+- The Backtest / Accuracy dashboard exposes the existing matrices and checker workspaces plus a weekday confidence breakdown derived directly from the checker artifacts.
 - 24H remains the primary short-horizon benchmark focus.
-- Pair-specific benchmark architecture exists, but only USD is implemented end-to-end in committed code.
+- Historical research presentation remains downstream-only and must not modify live runtime behavior.

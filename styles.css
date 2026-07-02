@@ -2119,6 +2119,60 @@ h3 {
   table-layout: auto;
 }
 
+.weekday-breakdown-intro-panel,
+.weekday-breakdown-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.weekday-breakdown-summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+.weekday-breakdown-scroll {
+  overflow-x: auto;
+}
+
+.weekday-breakdown-table {
+  min-width: 820px;
+  table-layout: fixed;
+}
+
+.weekday-breakdown-table th,
+.weekday-breakdown-table td {
+  padding: 10px 8px;
+  font-size: 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.weekday-breakdown-table thead th {
+  white-space: nowrap;
+}
+
+.weekday-breakdown-table th:first-child,
+.weekday-breakdown-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background: #fffdf8;
+  min-width: 160px;
+}
+
+.weekday-breakdown-table thead th:first-child {
+  z-index: 2;
+}
+
+.weekday-breakdown-total-cell {
+  font-weight: 700;
+  color: var(--navy);
+}
+
 .backtest-report .research-matrix-table th,
 .backtest-report .research-matrix-table td,
 .backtest-report .research-evidence-table th,

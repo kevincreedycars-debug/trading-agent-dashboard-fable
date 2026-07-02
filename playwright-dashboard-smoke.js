@@ -40,12 +40,11 @@ async function run() {
   const page = await browser.newPage();
 
   try {
-    await page.route("**/research_best_factor_combinations**", async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: "application/json; charset=utf-8",
-        body: JSON.stringify({ message: "forced ancillary failure for smoke test" })
-      });
+    const consoleErrors = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
     });
 
     await page.goto("http://127.0.0.1:4173/", { waitUntil: "networkidle" });
@@ -88,11 +87,38 @@ async function run() {
       throw new Error(`BTC checker section did not render.\n${checkerText}`);
     }
 
+    await page.getByRole("button", { name: "Weekday Breakdown" }).click();
+    await page.waitForSelector("[data-weekday-breakdown-asset='BTC']", { timeout: 15000 });
+    const weekdayText = await page.locator("#backtestPanel").innerText();
+
+    if (!weekdayText.includes("Day-of-week performance by displayed headline confidence")) {
+      throw new Error(`Weekday Breakdown tab header did not render.\n${weekdayText}`);
+    }
+
+    const btcWeekdayHeaders = await page.locator("[data-weekday-breakdown-asset='BTC'] thead th").allInnerTexts();
+    const usdWeekdayHeaders = await page.locator("[data-weekday-breakdown-asset='USD'] thead th").allInnerTexts();
+
+    const normalizedBtcHeaders = btcWeekdayHeaders.map(text => text.trim().toLowerCase());
+    const normalizedUsdHeaders = usdWeekdayHeaders.map(text => text.trim().toLowerCase());
+
+    if (!normalizedBtcHeaders.includes("saturday") || !normalizedBtcHeaders.includes("sunday")) {
+      throw new Error(`BTC weekday table did not include weekend columns.\n${btcWeekdayHeaders.join(" | ")}`);
+    }
+
+    if (normalizedUsdHeaders.includes("saturday") || normalizedUsdHeaders.includes("sunday")) {
+      throw new Error(`USD weekday table unexpectedly included weekend columns.\n${usdWeekdayHeaders.join(" | ")}`);
+    }
+
+    if (consoleErrors.length) {
+      throw new Error(`Console errors were emitted during dashboard smoke.\n${consoleErrors.join("\n")}`);
+    }
+
     console.log(JSON.stringify({
       status: "PASS",
-      target: "Gold, NQ, and BTC Backtest / Accuracy matrices plus BTC checker",
-      ancillary_failure_injected: "research_best_factor_combinations 500",
-      matrix_summary_excerpt: summaryText
+      target: "Accuracy tables, checker, and weekday breakdown",
+      matrix_summary_excerpt: summaryText,
+      btc_weekday_headers: btcWeekdayHeaders,
+      usd_weekday_headers: usdWeekdayHeaders
     }, null, 2));
   } finally {
     await browser.close();
