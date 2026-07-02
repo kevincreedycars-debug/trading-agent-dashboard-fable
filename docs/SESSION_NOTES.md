@@ -12,10 +12,13 @@ Last updated: 2026-07-02
 - Added `backtester/scripts/validate_weekday_breakdown.js` and confirmed reconciliation passes for USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`.
 - Expanded the local Playwright smoke script to verify the existing matrices, existing checker views, and the new weekday breakdown tab with correct weekday columns by asset.
 - Re-ran validation successfully: syntax checks, five checker validators, weekday reconciliation validator, and browser smoke all pass.
+- Updated Weekday Breakdown cells so flats are separated from directional wins/losses and the displayed rate is ex-flat only.
+- Added a `Day Totals` table above each asset's confidence-bucket table, with ex-flat rate, `W / L / F / T`, and flat rate for each weekday plus the all-days total.
+- Extended the weekday validator to prove day totals equal the sum of bucket rows for each weekday and still reconcile back to the checker row counts.
+- Committed and pushed the flat-aware weekday breakdown follow-ups to `origin/main`.
 
 ## Unfinished Work
 
-- Push the weekday breakdown dashboard change to GitHub.
 - Verify the public GitHub Pages dashboard after push.
 - Decide the next Backtest / Accuracy analytical expansion.
 
@@ -35,4 +38,4 @@ Last updated: 2026-07-02
 
 ## Exact Next Task
 
-Push the validated weekday breakdown dashboard update to GitHub and verify the public Backtest / Accuracy section renders the new tab cleanly.
+Verify the public GitHub Pages dashboard renders the final Weekday Breakdown and Day Totals cleanly, then decide the next Backtest / Accuracy analytical expansion.

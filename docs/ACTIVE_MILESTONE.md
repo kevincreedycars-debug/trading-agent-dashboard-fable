@@ -34,16 +34,17 @@ Complete
 - The weekday view uses stored displayed headline confidence and stored evaluation results from the canonical checker artifacts rather than recalculating confidence.
 - Weekday reconciliation validation now passes for USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`.
 - Browser smoke now passes for accuracy tables, checker views, and the weekday breakdown tab.
+- Weekday Breakdown cells now separate flat outcomes from directional wins/losses and show ex-flat directional win rate plus `W / L / F / T`.
+- Each asset now includes a `Day Totals` table above the bucket table, aggregating performance across all confidence buckets for each weekday.
+- The weekday validator now confirms day-level totals reconcile back to bucket rows and checker totals.
 
 ## Remaining Work
 
-- Push the validated weekday breakdown release to GitHub.
-- Confirm the public GitHub Pages dashboard renders the new tab cleanly after push.
+- Confirm the public GitHub Pages dashboard renders the final flat-aware Weekday Breakdown and Day Totals cleanly.
 - Decide the next analytical breakdown or research milestone.
 
 ## Current Files Being Modified
 
-- `index.html`
 - `script.js`
 - `styles.css`
 - `playwright-dashboard-smoke.js`
@@ -59,8 +60,8 @@ No repository-side blocker.
 
 ## Next Immediate Action
 
-Push the validated weekday breakdown dashboard release and verify the public Backtest / Accuracy tab set.
+Verify the public GitHub Pages dashboard renders the final Weekday Breakdown and Day Totals cleanly, then choose the next research breakdown.
 
 ## Last Updated
 
-2026-07-02 12:45 Europe/London
+2026-07-02 13:25 Europe/London

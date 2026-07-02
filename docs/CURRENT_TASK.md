@@ -12,7 +12,7 @@ Expose a compact historical breakdown that answers: for each Layer 1 agent, how 
 
 ## Current Status
 
-Completed and validated for release.
+Completed, validated, committed, and pushed.
 
 ## Completed
 
@@ -71,6 +71,10 @@ Completed and validated for release.
 - New `Weekday Breakdown` Backtest / Accuracy tab added using stored checker-artifact headline confidence and evaluation results
 - New weekday reconciliation validator added and passing for USD `604`, EUR `602`, Gold `608`, NQ `604`, and BTC `850`
 - Dashboard smoke updated and passing for matrices, checker views, and the new weekday breakdown tab
+- Weekday Breakdown updated so flat outcomes are shown separately and ex-flat directional win rate excludes flats
+- Each weekday cell now shows ex-flat win rate plus `W / L / F / T` counts, with `Flat only` handling when a cell has no directional rows
+- Each asset now includes a `Day Totals` table above the bucket breakdown, aggregating Monday-Friday for USD/EUR/Gold/NQ and Monday-Sunday for BTC
+- Updated weekday validation confirms day totals reconcile to bucket rows and checker totals while preserving BTC weekends and non-BTC weekday-only coverage
 
 ## n8n Workspace
 
@@ -88,8 +92,8 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Push the validated weekday breakdown dashboard change and confirm the public Backtest / Accuracy section renders the new tab cleanly.
-2. Decide the next analytical breakdown or research view now that the full Layer 1 replay rollout is complete.
+1. Confirm the public GitHub Pages dashboard renders the flat-aware Weekday Breakdown and Day Totals cleanly.
+2. Decide the next analytical breakdown or research view now that the full Layer 1 replay rollout and weekday breakdown are complete.
 3. Keep replay, checker, confidence, and flat-band semantics frozen until an explicit optimization phase is approved.
 
 ## Current Blocker
@@ -131,4 +135,4 @@ before making any changes.
 
 The immediate working outcome for the current task is:
 
-> ship the weekday confidence-by-weekday breakdown from canonical checker artifacts without changing replay outputs, checker semantics, flat bands, or headline confidence logic
+> ship the flat-aware weekday and day-total breakdowns from canonical checker artifacts without changing replay outputs, checker semantics, flat bands, or headline confidence logic
