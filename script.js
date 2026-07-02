@@ -4428,21 +4428,39 @@ function renderPairTradeSummaryCards(pairResearch = null) {
 function renderLayer2PairSummary(pairResearchRows = []) {
   if (!pairResearchRows.length) return "";
 
-  const summaryRows = pairResearchRows.map((pairResearch) => {
+  const summaryCards = pairResearchRows.map((pairResearch) => {
     const summary = pairResearch.layer2Summary || {};
     return `
-      <tr data-layer2-pair-summary-row="${escapeHtml(pairResearch.pairCode)}">
-        <td>${renderPairTradeSummaryCell(pairResearch.pairLabel, `${pairResearch.targetAssetCode} paired with USD`)}</td>
-        <td>${renderPairTradeSummaryCell(String(summary.tradableSignals ?? 0), `${summary.pairedRows ?? 0} paired rows`)}</td>
-        <td>${renderPairTradeSummaryCell(metricAvailable(summary.coveragePct) ? percentValue(summary.coveragePct) : displayDash(), "Tradable / paired")}</td>
-        <td>${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.allSignalTotals), "All tradable rows", { className: "pair-summary-cell-nowrap" })}</td>
-        <td>${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.allSignalTotals), "Wins / losses / flats / total", { className: "pair-summary-cell-nowrap" })}</td>
-        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(String(summary.strongPlusSignals ?? 0), "Strong + Very Strong")}</td>
-        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(metricAvailable(summary.strongPlusCoveragePct) ? percentValue(summary.strongPlusCoveragePct) : displayDash(), "Strong+ tradable / paired")}</td>
-        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.strongPlusTotals), "Strong+ ex-flat WR", { className: "pair-summary-cell-nowrap" })}</td>
-        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.strongPlusTotals), "Strong+ W / L / F / T", { className: "pair-summary-cell-nowrap" })}</td>
-        <td class="pair-summary-strongplus">${renderPairTradeSummaryCell(formatPairTradeFlatRateInline(summary.strongPlusTotals), "Strong+ flat rate", { className: "pair-summary-cell-nowrap" })}</td>
-      </tr>
+      <article class="detail-panel research-secondary-panel pair-summary-card" data-layer2-pair-summary-card="${escapeHtml(pairResearch.pairCode)}">
+        <div class="pair-summary-card-head">
+          <p class="eyebrow">${escapeHtml(pairResearch.pairLabel)}</p>
+          <h3>${escapeHtml(pairResearch.pairLabel)}</h3>
+          <p class="research-panel-copy">${escapeHtml(pairResearch.targetAssetCode)} paired with USD</p>
+        </div>
+        <section class="pair-summary-block">
+          <div class="pair-summary-block-head">
+            <strong>All Tradable Signals</strong>
+          </div>
+          <div class="pair-summary-stat-grid">
+            ${renderPairTradeSummaryCell(`${summary.tradableSignals ?? 0} signals`, "Tradable signals", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(metricAvailable(summary.coveragePct) ? `${percentValue(summary.coveragePct)} coverage` : displayDash(), "Coverage %", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.allSignalTotals), "Ex-flat WR", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.allSignalTotals), "W / L / F / T", { className: "pair-summary-cell-nowrap" })}
+          </div>
+        </section>
+        <section class="pair-summary-block pair-summary-block-strongplus">
+          <div class="pair-summary-block-head">
+            <strong>Strong+</strong>
+          </div>
+          <div class="pair-summary-stat-grid">
+            ${renderPairTradeSummaryCell(`${summary.strongPlusSignals ?? 0} signals`, "Strong+ signals", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(metricAvailable(summary.strongPlusCoveragePct) ? `${percentValue(summary.strongPlusCoveragePct)} coverage` : displayDash(), "Strong+ coverage %", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(formatPairTradeExFlatInline(summary.strongPlusTotals), "Strong+ ex-flat WR", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(formatPairTradeCountsCompact(summary.strongPlusTotals), "Strong+ W / L / F / T", { className: "pair-summary-cell-nowrap" })}
+            ${renderPairTradeSummaryCell(formatPairTradeFlatRateInline(summary.strongPlusTotals), "Strong+ flat rate", { className: "pair-summary-cell-nowrap" })}
+          </div>
+        </section>
+      </article>
     `;
   }).join("");
 
@@ -4455,29 +4473,9 @@ function renderLayer2PairSummary(pairResearchRows = []) {
         </div>
         <p class="research-panel-copy">This summary stays downstream of the validated pair-analysis view. Coverage uses tradable signals divided by total paired rows, and Strong+ uses the combined confidence bands where target/USD headline confidence resolves to 65 or higher.</p>
       </div>
-      <article class="detail-panel wide-panel research-secondary-panel research-table-panel">
-        <div class="table-scroll research-table-scroll pair-trade-table-scroll">
-          <table class="dashboard-table research-table layer2-pair-summary-table" data-layer2-pair-summary="true">
-            <thead>
-              <tr>
-                <th>Pair</th>
-                <th>Tradable Signals</th>
-                <th>Coverage %</th>
-                <th>All-Signal Ex-Flat Win Rate</th>
-                <th>All-Signal W / L / F / T</th>
-                <th class="pair-summary-strongplus">Strong+ Signals</th>
-                <th class="pair-summary-strongplus">Strong+ Coverage %</th>
-                <th class="pair-summary-strongplus">Strong+ Ex-Flat Win Rate</th>
-                <th class="pair-summary-strongplus">Strong+ W / L / F / T</th>
-                <th class="pair-summary-strongplus">Strong+ Flat Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${summaryRows}
-            </tbody>
-          </table>
-        </div>
-      </article>
+      <div class="pair-summary-grid" data-layer2-pair-summary="cards">
+        ${summaryCards}
+      </div>
     </section>
   `;
 }

@@ -2173,44 +2173,72 @@ h3 {
   font-size: 11px;
 }
 
-.layer2-pair-summary-table {
-  min-width: 1480px;
-  table-layout: auto;
+.pair-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.layer2-pair-summary-table th,
-.layer2-pair-summary-table td {
-  vertical-align: top;
-  white-space: normal;
+.pair-summary-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
 }
 
-.layer2-pair-summary-table th:first-child,
-.layer2-pair-summary-table td:first-child {
-  min-width: 160px;
+.pair-summary-card-head {
+  display: grid;
+  gap: 4px;
+}
+
+.pair-summary-card-head h3 {
+  margin: 0;
+}
+
+.pair-summary-block {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--cream-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.pair-summary-block-strongplus {
+  background: linear-gradient(180deg, rgba(184, 132, 26, 0.12) 0%, rgba(184, 132, 26, 0.05) 100%);
+  border-color: rgba(184, 132, 26, 0.28);
+}
+
+.pair-summary-block-head {
+  color: var(--navy);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pair-summary-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .pair-summary-cell {
   gap: 4px;
+  min-width: 0;
+}
+
+.pair-summary-cell strong {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.pair-summary-cell span {
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .pair-summary-cell-nowrap strong,
-.pair-summary-cell-nowrap span,
-.layer2-pair-summary-table .pair-summary-cell strong,
-.layer2-pair-summary-table .pair-summary-cell span {
+.pair-summary-cell-nowrap span {
   white-space: nowrap;
-}
-
-.pair-summary-strongplus {
-  background: linear-gradient(180deg, rgba(184, 132, 26, 0.1) 0%, rgba(184, 132, 26, 0.04) 100%);
-}
-
-.layer2-pair-summary-table thead .pair-summary-strongplus {
-  color: var(--navy);
-}
-
-.layer2-pair-summary-table th:last-child,
-.layer2-pair-summary-table td:last-child {
-  padding-right: 16px;
 }
 
 .weekday-breakdown-summary-strip {
@@ -2407,6 +2435,10 @@ h3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .pair-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .agent-grid,
   .adjusted-grid,
   .detail-call-grid,
@@ -2553,6 +2585,11 @@ h3 {
   }
 
   .backtest-report .pair-trade-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pair-summary-grid,
+  .pair-summary-stat-grid {
     grid-template-columns: 1fr;
   }
 
