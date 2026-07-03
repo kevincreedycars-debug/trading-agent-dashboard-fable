@@ -232,6 +232,48 @@ async function run() {
       throw new Error(`ADR Reach Research did not render the required detail tables.\n${adrReachText}`);
     }
 
+    for (const expectedAvailableText of [
+      "eur adr reach from layer 1 checker artifacts",
+      "nq adr reach from layer 1 checker artifacts",
+      "btc adr reach from layer 1 checker artifacts",
+      "eur/usd from existing pair trade research signal selection",
+      "nq/usd from existing pair trade research signal selection",
+      "btc/usd from existing pair trade research signal selection"
+    ]) {
+      if (!normalizedAdrReachText.includes(expectedAvailableText)) {
+        throw new Error(`ADR Reach Research did not render expected available section: ${expectedAvailableText}\n${adrReachText}`);
+      }
+    }
+
+    for (const expectedUnavailableText of [
+      "gold adr reach unavailable",
+      "xau/usd adr reach unavailable",
+      "no repo-local dxy ohlc source"
+    ]) {
+      if (!normalizedAdrReachText.includes(expectedUnavailableText)) {
+        throw new Error(`ADR Reach Research did not preserve expected unavailable section: ${expectedUnavailableText}\n${adrReachText}`);
+      }
+    }
+
+    if (normalizedAdrReachText.includes("no repo-local eurusd ohlc source") || normalizedAdrReachText.includes("repository evidence only includes eurusd close-only lineage")) {
+      throw new Error(`ADR Reach Research still rendered stale EUR unavailable copy.\n${adrReachText}`);
+    }
+
+    if (normalizedAdrReachText.includes("no repo-local btc ohlc source") || normalizedAdrReachText.includes("repository evidence only includes btc close-only coinbase spot lineage")) {
+      throw new Error(`ADR Reach Research still rendered stale BTC unavailable copy.\n${adrReachText}`);
+    }
+
+    const adrAuditText = (await page.locator("[data-adr-reach-layer1-summary='true']").innerText()).toLowerCase();
+    for (const expectedAuditText of [
+      "eur/usd daily ohlc csv from alpha vantage fx_daily",
+      "btc/usd daily ohlc csv from coinbase exchange candles",
+      "qqq ohlc daily proxy csv"
+    ]) {
+      if (!adrAuditText.includes(expectedAuditText)) {
+        throw new Error(`Warehouse Audit did not render current OHLC source text: ${expectedAuditText}\n${adrAuditText}`);
+      }
+    }
+
     const adrReachNqHeaders = await page.locator("[data-adr-reach-asset='NQ'] thead th").allInnerTexts();
     const normalizedAdrReachNqHeaders = adrReachNqHeaders.map(text => text.trim().toLowerCase());
     if (normalizedAdrReachNqHeaders.includes("saturday") || normalizedAdrReachNqHeaders.includes("sunday")) {
@@ -242,6 +284,21 @@ async function run() {
     const normalizedAdrReachPairHeaders = adrReachPairHeaders.map(text => text.trim().toLowerCase());
     if (normalizedAdrReachPairHeaders.includes("saturday") || normalizedAdrReachPairHeaders.includes("sunday")) {
       throw new Error(`NQ/USD ADR weekday table unexpectedly included weekend columns.\n${adrReachPairHeaders.join(" | ")}`);
+    }
+
+    const adrSummaryOverflow = await page.locator(".adr-summary-scroll").first().evaluate((element) => getComputedStyle(element).overflowX);
+    if (adrSummaryOverflow !== "auto" && adrSummaryOverflow !== "scroll") {
+      throw new Error(`ADR summary table wrapper did not allow horizontal scrolling.\nOverflowX: ${adrSummaryOverflow}`);
+    }
+
+    const adrSummaryPercentWhiteSpace = await page.locator(".adr-rate-cell strong").first().evaluate((element) => getComputedStyle(element).whiteSpace);
+    if (adrSummaryPercentWhiteSpace !== "nowrap") {
+      throw new Error(`ADR summary percentage values were still wrapping.\nwhite-space: ${adrSummaryPercentWhiteSpace}`);
+    }
+
+    const adrSummaryLastCellPadding = await page.locator(".adr-summary-table td:last-child").first().evaluate((element) => getComputedStyle(element).paddingRight);
+    if (parseFloat(adrSummaryLastCellPadding) < 16) {
+      throw new Error(`ADR summary last column padding is too small.\nPaddingRight: ${adrSummaryLastCellPadding}`);
     }
 
     if (consoleErrors.length) {

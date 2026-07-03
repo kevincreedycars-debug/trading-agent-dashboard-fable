@@ -8,7 +8,7 @@ const checkerDataUrls = {
   NQ: "./data/backtester-checker-nq-24h-2024-2026.json?v=20260702-nq-qqq-proxy-dashboard",
   BTC: "./data/backtester-checker-btc-24h-2024-2026.json?v=20260702-btc-benchmark-dashboard"
 };
-const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260703-adr-reach-research";
+const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260703-adr-reach-research-ohcl-expansion-fix";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 const headlineConfidenceLib = globalThis.HeadlineConfidence;
@@ -2067,6 +2067,37 @@ function researchDataCell(primary, secondary = "") {
       ${secondary ? `<span>${escapeHtml(secondary)}</span>` : ""}
     </div>
   `;
+}
+
+function renderAdrStatusCell(row = {}, secondaryAvailable = "", secondaryUnavailable = "") {
+  return `
+    <div class="research-cell adr-compact-cell adr-status-cell">
+      <strong>${escapeHtml(row.available ? "Available" : "Unavailable")}</strong>
+      <span>${escapeHtml(row.available ? secondaryAvailable : (secondaryUnavailable || row.blocker || "Supportable OHLC unavailable"))}</span>
+    </div>
+  `;
+}
+
+function renderAdrCompactMetricCell(primary = "", secondary = "", options = {}) {
+  const className = ["research-cell", "adr-compact-cell", options.className || ""].filter(Boolean).join(" ");
+  return `
+    <div class="${className}">
+      <strong>${escapeHtml(metricAvailable(primary) ? String(primary) : displayDash())}</strong>
+      ${secondary ? `<span>${escapeHtml(secondary)}</span>` : ""}
+    </div>
+  `;
+}
+
+function formatAdrAuditCoverage(row = {}) {
+  const coverage = row.sourceCoverage || null;
+  if (!coverage?.startDate || !coverage?.endDate || !metricAvailable(coverage?.rowCount)) {
+    return "Coverage unavailable";
+  }
+
+  const weekendNote = Number(coverage.weekendRowCount || 0) > 0
+    ? ` · ${coverage.weekendRowCount} weekend rows`
+    : "";
+  return `${coverage.startDate} to ${coverage.endDate} · ${coverage.rowCount} rows${weekendNote}`;
 }
 
 function researchPairCell(primary, secondary) {
@@ -4280,12 +4311,14 @@ function renderResearchAdrReach(data = {}) {
           <p class="research-panel-copy">A trade is counted as successful the moment the 50% ADR20 target is touched intraday, regardless of where price later closed. ADR20 uses the previous 20 completed sessions only, never the current day. Where repo evidence lacks supportable High/Low history, the asset or pair stays explicitly unavailable instead of estimated.</p>
         </article>
         ${renderResearchBreakdownTable("ADR source audit", "Warehouse Audit", sourceAuditRows, [
-          { label: "Asset", render: row => researchDataCell(row.assetLabel, row.available ? "Available" : "Unavailable") },
-          { label: "OHLC Source", render: row => researchDataCell(row.ohlcSourceLabel || displayDash(), row.ohlcSourcePath || "") },
-          { label: "Reference Price", render: row => researchDataCell(row.referencePricePolicy || displayDash(), row.available ? "Open first, previous close fallback" : "Blocked") },
-          { label: "Status", render: row => researchDataCell(row.available ? "Ready" : "Blocked", row.blocker || "Supportable OHLC confirmed") }
+          { label: "Asset", className: "adr-col-entity", render: row => renderAdrCompactMetricCell(row.assetLabel, row.assetCode, { className: "adr-entity-cell" }) },
+          { label: "Status", className: "adr-col-status", render: row => renderAdrStatusCell(row, "Supportable OHLC confirmed", row.blocker || "Blocked") },
+          { label: "OHLC Source", className: "adr-col-source", render: row => renderAdrCompactMetricCell(row.ohlcSourceLabel || displayDash(), row.ohlcSourcePath || formatAdrAuditCoverage(row), { className: "adr-source-cell" }) },
+          { label: "Reference", className: "adr-col-reference", render: row => renderAdrCompactMetricCell(row.available ? "Open first" : "Blocked", row.available ? "Previous close fallback" : (row.referencePricePolicy || "Unavailable"), { className: "adr-reference-cell" }) }
         ], {
-          description: "Warehouse audit is based on repo evidence available to this static dashboard build. Only supportable OHLC inputs are used."
+          description: "Warehouse audit is based on repo evidence available to this static dashboard build. Only supportable OHLC inputs are used.",
+          tableClass: "adr-summary-table adr-audit-table",
+          scrollClass: "adr-summary-scroll"
         })}
       </section>
       <section class="research-section" data-adr-reach-layer2-summary="true">
@@ -4297,15 +4330,27 @@ function renderResearchAdrReach(data = {}) {
           <p class="research-panel-copy">Layer 1 rows use stored displayed headline confidence and directional calls from the canonical checker artifacts. Lean signals remain directional for Layer 1 reach measurement.</p>
         </div>
         ${renderResearchBreakdownTable("Layer 1 ADR Reach Summary", "Summary", layer1SummaryRows, [
-          { label: "Asset", render: row => researchDataCell(row.assetLabel, row.available ? "Supportable OHLC confirmed" : "Unavailable") },
-          { label: "Evaluated Calls", render: row => researchDataCell(row.available ? row.evaluatedCalls : "Unavailable", row.available ? `${row.adrReachWins}W / ${row.adrReachLosses}L` : (row.blocker || displayDash())) },
-          { label: "ADR Reach Wins", render: row => researchDataCell(row.available ? row.adrReachWins : displayDash(), row.available ? `${row.adrReachLosses} losses` : "No estimate") },
-          { label: "ADR Reach Losses", render: row => researchDataCell(row.available ? row.adrReachLosses : displayDash(), row.available ? `${row.evaluatedCalls} total` : "No estimate") },
-          { label: "ADR Reach Win %", render: row => researchDataCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : (row.available ? displayDash() : "Unavailable"), "50% ADR20") },
-          { label: "Strong+ Calls", render: row => researchDataCell(row.available ? row.strongPlusCalls : displayDash(), row.available ? "Strong + Very Strong" : "No estimate") },
-          { label: "Strong+ ADR Reach Win %", render: row => researchDataCell(row.available && metricAvailable(row.strongPlusAdrReachWinPct) ? percentValue(row.strongPlusAdrReachWinPct) : (row.available ? displayDash() : "Unavailable"), "65+ confidence") }
+          { label: "Asset", className: "adr-col-entity", render: row => renderAdrCompactMetricCell(row.assetLabel, row.assetCode, { className: "adr-entity-cell" }) },
+          { label: "Status", className: "adr-col-status", render: row => renderAdrStatusCell(row, "Supportable OHLC confirmed", row.blocker || "Unavailable") },
+          { label: "Evaluated", className: "adr-col-metric", render: row => renderAdrCompactMetricCell(
+            row.available ? `${row.evaluatedCalls} calls` : displayDash(),
+            row.available ? `${row.adrReachWins}W / ${row.adrReachLosses}L` : (row.blocker || "Unavailable"),
+            { className: "adr-metric-cell" }
+          ) },
+          { label: "Win Rate", className: "adr-col-rate", render: row => renderAdrCompactMetricCell(
+            row.available && metricAvailable(row.adrReachWinPct) ? `${percentValue(row.adrReachWinPct)} ADR reach` : "Unavailable",
+            row.available ? "50% ADR20 target" : "No estimate",
+            { className: "adr-rate-cell" }
+          ) },
+          { label: "Strong+", className: "adr-col-strongplus", render: row => renderAdrCompactMetricCell(
+            row.available ? `${row.strongPlusCalls} calls` : displayDash(),
+            row.available && metricAvailable(row.strongPlusAdrReachWinPct) ? `${percentValue(row.strongPlusAdrReachWinPct)} reach` : "Unavailable",
+            { className: "adr-strongplus-cell" }
+          ) }
         ], {
-          description: "Reference price uses the evaluation-day open where repo-local OHLC open exists, otherwise previous close."
+          description: "Reference price uses the evaluation-day open where repo-local OHLC open exists, otherwise previous close.",
+          tableClass: "adr-summary-table adr-layer1-summary-table",
+          scrollClass: "adr-summary-scroll"
         })}
       </section>
       <section class="research-section">
@@ -4317,15 +4362,27 @@ function renderResearchAdrReach(data = {}) {
           <p class="research-panel-copy">Layer 2 rows reuse the existing Pair Trade Research signal-selection rules. Only actual tradable pair signals are evaluated, while conflict, no-trade, and neutral setups stay excluded.</p>
         </div>
         ${renderResearchBreakdownTable("Layer 2 ADR Reach Summary", "Summary", layer2SummaryRows, [
-          { label: "Pair", render: row => researchDataCell(row.pairLabel, row.available ? "Tradable-signal ADR reach" : "Unavailable") },
-          { label: "Tradable Signals", render: row => researchDataCell(row.available ? row.tradableSignals : "Unavailable", row.available ? `${row.adrReachWins}W / ${row.adrReachLosses}L` : (row.blocker || displayDash())) },
-          { label: "ADR Reach Wins", render: row => researchDataCell(row.available ? row.adrReachWins : displayDash(), row.available ? `${row.adrReachLosses} losses` : "No estimate") },
-          { label: "ADR Reach Losses", render: row => researchDataCell(row.available ? row.adrReachLosses : displayDash(), row.available ? `${row.tradableSignals} total` : "No estimate") },
-          { label: "ADR Reach Win %", render: row => researchDataCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : (row.available ? displayDash() : "Unavailable"), "50% ADR20") },
-          { label: "Strong+ Signals", render: row => researchDataCell(row.available ? row.strongPlusSignals : displayDash(), row.available ? "Strong + Very Strong" : "No estimate") },
-          { label: "Strong+ ADR Reach Win %", render: row => researchDataCell(row.available && metricAvailable(row.strongPlusAdrReachWinPct) ? percentValue(row.strongPlusAdrReachWinPct) : (row.available ? displayDash() : "Unavailable"), "65+ combined confidence") }
+          { label: "Pair", className: "adr-col-entity", render: row => renderAdrCompactMetricCell(row.pairLabel, row.pairCode.replaceAll("_", "/"), { className: "adr-entity-cell" }) },
+          { label: "Status", className: "adr-col-status", render: row => renderAdrStatusCell(row, "Tradable-signal ADR reach", row.blocker || "Unavailable") },
+          { label: "Tradable", className: "adr-col-metric", render: row => renderAdrCompactMetricCell(
+            row.available ? `${row.tradableSignals} signals` : displayDash(),
+            row.available ? `${row.adrReachWins}W / ${row.adrReachLosses}L` : (row.blocker || "Unavailable"),
+            { className: "adr-metric-cell" }
+          ) },
+          { label: "Win Rate", className: "adr-col-rate", render: row => renderAdrCompactMetricCell(
+            row.available && metricAvailable(row.adrReachWinPct) ? `${percentValue(row.adrReachWinPct)} ADR reach` : "Unavailable",
+            row.available ? "50% ADR20 target" : "No estimate",
+            { className: "adr-rate-cell" }
+          ) },
+          { label: "Strong+", className: "adr-col-strongplus", render: row => renderAdrCompactMetricCell(
+            row.available ? `${row.strongPlusSignals} signals` : displayDash(),
+            row.available && metricAvailable(row.strongPlusAdrReachWinPct) ? `${percentValue(row.strongPlusAdrReachWinPct)} reach` : "Unavailable",
+            { className: "adr-strongplus-cell" }
+          ) }
         ], {
-          description: "Combined confidence is reused from the existing Pair Trade Research logic and is not recalculated here."
+          description: "Combined confidence is reused from the existing Pair Trade Research logic and is not recalculated here.",
+          tableClass: "adr-summary-table adr-layer2-summary-table",
+          scrollClass: "adr-summary-scroll"
         })}
       </section>
       ${layer1Assets.map(renderAdrReachLayer1Asset).join("")}

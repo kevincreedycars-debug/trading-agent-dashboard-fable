@@ -2116,11 +2116,110 @@ h3 {
   overflow: visible;
 }
 
+.backtest-report .adr-summary-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 4px;
+}
+
 .backtest-report .dashboard-table,
 .backtest-report .research-table,
 .backtest-report .research-matrix-table {
   min-width: 0;
   table-layout: auto;
+}
+
+.adr-summary-table {
+  min-width: 920px;
+  table-layout: fixed;
+}
+
+.adr-summary-table th,
+.adr-summary-table td {
+  vertical-align: top;
+  padding: 12px 12px 12px 10px;
+}
+
+.adr-summary-table th:last-child,
+.adr-summary-table td:last-child {
+  padding-right: 18px;
+}
+
+.adr-col-entity {
+  min-width: 120px;
+  width: 14%;
+}
+
+.adr-col-status {
+  min-width: 180px;
+  width: 24%;
+}
+
+.adr-col-source {
+  min-width: 260px;
+  width: 34%;
+}
+
+.adr-col-reference {
+  min-width: 190px;
+  width: 28%;
+}
+
+.adr-col-metric,
+.adr-col-rate,
+.adr-col-strongplus {
+  min-width: 160px;
+}
+
+.adr-layer1-summary-table .adr-col-entity,
+.adr-layer2-summary-table .adr-col-entity {
+  width: 12%;
+}
+
+.adr-layer1-summary-table .adr-col-status,
+.adr-layer2-summary-table .adr-col-status {
+  width: 20%;
+}
+
+.adr-layer1-summary-table .adr-col-metric,
+.adr-layer2-summary-table .adr-col-metric {
+  width: 24%;
+}
+
+.adr-layer1-summary-table .adr-col-rate,
+.adr-layer2-summary-table .adr-col-rate {
+  width: 20%;
+}
+
+.adr-layer1-summary-table .adr-col-strongplus,
+.adr-layer2-summary-table .adr-col-strongplus {
+  width: 24%;
+}
+
+.adr-compact-cell {
+  gap: 4px;
+}
+
+.adr-compact-cell strong,
+.adr-compact-cell span {
+  white-space: nowrap;
+}
+
+.adr-status-cell span,
+.adr-source-cell span {
+  white-space: normal;
+}
+
+.adr-source-cell strong,
+.adr-source-cell span {
+  word-break: break-word;
+}
+
+.adr-rate-cell strong,
+.adr-strongplus-cell strong,
+.adr-rate-cell span,
+.adr-strongplus-cell span {
+  white-space: nowrap;
 }
 
 .weekday-breakdown-intro-panel,
