@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-07-03T09:49:39.369Z",
+    "generated_at": "2026-07-03T10:44:52.682Z",
     "source": "backtester/scripts/validate_adr_reach_research.js",
     "evaluation_window": "following 24hrs",
     "adr_window_sessions": 20,
@@ -11,11 +11,17 @@
     {
       "assetCode": "EUR",
       "assetLabel": "EUR",
-      "available": false,
-      "ohlcSourceLabel": "No repo-local EURUSD OHLC source",
-      "ohlcSourcePath": null,
-      "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
-      "blocker": "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach."
+      "available": true,
+      "ohlcSourceLabel": "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY",
+      "ohlcSourcePath": "backtester/tmp/eurusd_daily_alpha_vantage.csv",
+      "sourceCoverage": {
+        "startDate": "2023-11-01",
+        "endDate": "2026-07-02",
+        "rowCount": 697,
+        "weekendRowCount": 0
+      },
+      "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+      "blocker": null
     },
     {
       "assetCode": "GOLD",
@@ -23,8 +29,9 @@
       "available": false,
       "ohlcSourceLabel": "No repo-local XAU/USD OHLC source",
       "ohlcSourcePath": null,
+      "sourceCoverage": null,
       "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
-      "blocker": "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows."
+      "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach."
     },
     {
       "assetCode": "NQ",
@@ -32,17 +39,29 @@
       "available": true,
       "ohlcSourceLabel": "QQQ OHLC daily proxy CSV",
       "ohlcSourcePath": "backtester/tmp/qqq_daily_yahoo.csv",
+      "sourceCoverage": {
+        "startDate": "2024-01-02",
+        "endDate": "2026-04-30",
+        "rowCount": 584,
+        "weekendRowCount": 0
+      },
       "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
       "blocker": null
     },
     {
       "assetCode": "BTC",
       "assetLabel": "BTC",
-      "available": false,
-      "ohlcSourceLabel": "No repo-local BTC OHLC source",
-      "ohlcSourcePath": null,
-      "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
-      "blocker": "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach."
+      "available": true,
+      "ohlcSourceLabel": "BTC/USD daily OHLC CSV from Coinbase Exchange candles",
+      "ohlcSourcePath": "backtester/tmp/btcusd_daily_coinbase.csv",
+      "sourceCoverage": {
+        "startDate": "2023-11-01",
+        "endDate": "2026-07-03",
+        "rowCount": 976,
+        "weekendRowCount": 278
+      },
+      "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+      "blocker": null
     },
     {
       "assetCode": "USD",
@@ -50,6 +69,7 @@
       "available": false,
       "ohlcSourceLabel": "No repo-local DXY OHLC source",
       "ohlcSourcePath": null,
+      "sourceCoverage": null,
       "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
       "blocker": "The repo includes only USD checker artifacts and close-to-close research views. No repo-local DXY OHLC export is available, and the raw warehouse table is not readable through the publishable research key."
     }
@@ -59,20 +79,20 @@
       {
         "assetCode": "EUR",
         "assetLabel": "EUR",
-        "available": false,
-        "blocker": "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach.",
-        "evaluatedCalls": 0,
-        "adrReachWins": 0,
-        "adrReachLosses": 0,
-        "adrReachWinPct": null,
-        "strongPlusCalls": 0,
-        "strongPlusAdrReachWinPct": null
+        "available": true,
+        "blocker": null,
+        "evaluatedCalls": 575,
+        "adrReachWins": 212,
+        "adrReachLosses": 363,
+        "adrReachWinPct": 36.9,
+        "strongPlusCalls": 127,
+        "strongPlusAdrReachWinPct": 39.4
       },
       {
         "assetCode": "GOLD",
         "assetLabel": "Gold",
         "available": false,
-        "blocker": "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows.",
+        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
         "evaluatedCalls": 0,
         "adrReachWins": 0,
         "adrReachLosses": 0,
@@ -95,14 +115,14 @@
       {
         "assetCode": "BTC",
         "assetLabel": "BTC",
-        "available": false,
-        "blocker": "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach.",
-        "evaluatedCalls": 0,
-        "adrReachWins": 0,
-        "adrReachLosses": 0,
-        "adrReachWinPct": null,
-        "strongPlusCalls": 0,
-        "strongPlusAdrReachWinPct": null
+        "available": true,
+        "blocker": null,
+        "evaluatedCalls": 794,
+        "adrReachWins": 290,
+        "adrReachLosses": 504,
+        "adrReachWinPct": 36.5,
+        "strongPlusCalls": 230,
+        "strongPlusAdrReachWinPct": 37.4
       },
       {
         "assetCode": "USD",
@@ -121,8 +141,8 @@
       {
         "assetCode": "EUR",
         "assetLabel": "EUR",
-        "available": false,
-        "blocker": "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach.",
+        "available": true,
+        "blocker": null,
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -131,209 +151,213 @@
           "FRIDAY"
         ],
         "summary": {
-          "evaluatedCalls": 0,
-          "adrReachWins": 0,
-          "adrReachLosses": 0,
-          "adrReachWinPct": null,
-          "strongPlusCalls": 0,
-          "strongPlusAdrReachWinPct": null
+          "evaluatedCalls": 575,
+          "adrReachWins": 212,
+          "adrReachLosses": 363,
+          "adrReachWinPct": 36.9,
+          "strongPlusCalls": 127,
+          "strongPlusAdrReachWinPct": 39.4
         },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
             "bucketLabel": "Weak",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 385,
+            "wins": 140,
+            "losses": 245,
+            "winRatePct": 36.4,
+            "adrReachWinPct": 36.4
           },
           {
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 63,
+            "wins": 22,
+            "losses": 41,
+            "winRatePct": 34.9,
+            "adrReachWinPct": 34.9
           },
           {
             "bucketKey": "STRONG",
             "bucketLabel": "Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 98,
+            "wins": 41,
+            "losses": 57,
+            "winRatePct": 41.8,
+            "adrReachWinPct": 41.8
           },
           {
             "bucketKey": "VERY_STRONG",
             "bucketLabel": "Very Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 29,
+            "wins": 9,
+            "losses": 20,
+            "winRatePct": 31,
+            "adrReachWinPct": 31
           }
         ],
         "dayTotals": {
-          "total": 0,
-          "wins": 0,
-          "losses": 0,
-          "winRatePct": null
+          "total": 575,
+          "wins": 212,
+          "losses": 363,
+          "winRatePct": 36.9
         },
         "weekdayTotals": {
           "MONDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 113,
+            "wins": 39,
+            "losses": 74
           },
           "TUESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 116,
+            "wins": 42,
+            "losses": 74
           },
           "WEDNESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 121,
+            "wins": 41,
+            "losses": 80
           },
           "THURSDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 112,
+            "wins": 48,
+            "losses": 64
           },
           "FRIDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 113,
+            "wins": 42,
+            "losses": 71
           }
         },
         "bucketTotals": {
           "WEAK": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 385,
+            "wins": 140,
+            "losses": 245
           },
           "MODERATE": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 63,
+            "wins": 22,
+            "losses": 41
           },
           "STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 98,
+            "wins": 41,
+            "losses": 57
           },
           "VERY_STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 29,
+            "wins": 9,
+            "losses": 20
           }
         },
         "bucketMatrix": {
           "WEAK": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 70,
+              "wins": 25,
+              "losses": 45
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 88,
+              "wins": 33,
+              "losses": 55
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 79,
+              "wins": 25,
+              "losses": 54
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 76,
+              "wins": 34,
+              "losses": 42
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 72,
+              "wins": 23,
+              "losses": 49
             }
           },
           "MODERATE": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 13,
+              "wins": 5,
+              "losses": 8
             },
             "TUESDAY": {
-              "total": 0,
+              "total": 7,
               "wins": 0,
-              "losses": 0
+              "losses": 7
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 18,
+              "wins": 7,
+              "losses": 11
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 13,
+              "wins": 4,
+              "losses": 9
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 12,
+              "wins": 6,
+              "losses": 6
             }
           },
           "STRONG": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 22,
+              "wins": 6,
+              "losses": 16
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 16,
+              "wins": 9,
+              "losses": 7
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 21,
+              "wins": 8,
+              "losses": 13
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 19,
+              "wins": 9,
+              "losses": 10
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 20,
+              "wins": 9,
+              "losses": 11
             }
           },
           "VERY_STRONG": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 8,
+              "wins": 3,
+              "losses": 5
             },
             "TUESDAY": {
-              "total": 0,
+              "total": 5,
               "wins": 0,
-              "losses": 0
+              "losses": 5
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 3,
+              "wins": 1,
+              "losses": 2
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 4,
+              "wins": 1,
+              "losses": 3
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 9,
+              "wins": 4,
+              "losses": 5
             }
           }
         }
@@ -342,7 +366,7 @@
         "assetCode": "GOLD",
         "assetLabel": "Gold",
         "available": false,
-        "blocker": "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows.",
+        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -785,8 +809,8 @@
       {
         "assetCode": "BTC",
         "assetLabel": "BTC",
-        "available": false,
-        "blocker": "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach.",
+        "available": true,
+        "blocker": null,
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -797,185 +821,189 @@
           "SUNDAY"
         ],
         "summary": {
-          "evaluatedCalls": 0,
-          "adrReachWins": 0,
-          "adrReachLosses": 0,
-          "adrReachWinPct": null,
-          "strongPlusCalls": 0,
-          "strongPlusAdrReachWinPct": null
+          "evaluatedCalls": 794,
+          "adrReachWins": 290,
+          "adrReachLosses": 504,
+          "adrReachWinPct": 36.5,
+          "strongPlusCalls": 230,
+          "strongPlusAdrReachWinPct": 37.4
         },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
             "bucketLabel": "Weak",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 379,
+            "wins": 126,
+            "losses": 253,
+            "winRatePct": 33.2,
+            "adrReachWinPct": 33.2
           },
           {
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 185,
+            "wins": 78,
+            "losses": 107,
+            "winRatePct": 42.2,
+            "adrReachWinPct": 42.2
           },
           {
             "bucketKey": "STRONG",
             "bucketLabel": "Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 142,
+            "wins": 50,
+            "losses": 92,
+            "winRatePct": 35.2,
+            "adrReachWinPct": 35.2
           },
           {
             "bucketKey": "VERY_STRONG",
             "bucketLabel": "Very Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 88,
+            "wins": 36,
+            "losses": 52,
+            "winRatePct": 40.9,
+            "adrReachWinPct": 40.9
           }
         ],
         "dayTotals": {
-          "total": 0,
-          "wins": 0,
-          "losses": 0,
-          "winRatePct": null
+          "total": 794,
+          "wins": 290,
+          "losses": 504,
+          "winRatePct": 36.5
         },
         "weekdayTotals": {
           "MONDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 103,
+            "wins": 51,
+            "losses": 52
           },
           "TUESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 116,
+            "wins": 39,
+            "losses": 77
           },
           "WEDNESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 119,
+            "wins": 46,
+            "losses": 73
           },
           "THURSDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 116,
+            "wins": 47,
+            "losses": 69
           },
           "FRIDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 119,
+            "wins": 56,
+            "losses": 63
           },
           "SATURDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 116,
+            "wins": 20,
+            "losses": 96
           },
           "SUNDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 105,
+            "wins": 31,
+            "losses": 74
           }
         },
         "bucketTotals": {
           "WEAK": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 379,
+            "wins": 126,
+            "losses": 253
           },
           "MODERATE": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 185,
+            "wins": 78,
+            "losses": 107
           },
           "STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 142,
+            "wins": 50,
+            "losses": 92
           },
           "VERY_STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 88,
+            "wins": 36,
+            "losses": 52
           }
         },
         "bucketMatrix": {
           "WEAK": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 77,
+              "wins": 37,
+              "losses": 40
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 52,
+              "wins": 17,
+              "losses": 35
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 49,
+              "wins": 17,
+              "losses": 32
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 50,
+              "wins": 19,
+              "losses": 31
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 37,
+              "wins": 16,
+              "losses": 21
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 47,
+              "wins": 7,
+              "losses": 40
             },
             "SUNDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 67,
+              "wins": 13,
+              "losses": 54
             }
           },
           "MODERATE": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 25,
+              "wins": 13,
+              "losses": 12
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 23,
+              "wins": 9,
+              "losses": 14
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 27,
+              "wins": 12,
+              "losses": 15
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 28,
+              "wins": 13,
+              "losses": 15
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 34,
+              "wins": 17,
+              "losses": 17
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 25,
+              "wins": 4,
+              "losses": 21
             },
             "SUNDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 23,
+              "wins": 10,
+              "losses": 13
             }
           },
           "STRONG": {
@@ -985,71 +1013,71 @@
               "losses": 0
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 31,
+              "wins": 11,
+              "losses": 20
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 25,
+              "wins": 9,
+              "losses": 16
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 24,
+              "wins": 7,
+              "losses": 17
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 29,
+              "wins": 13,
+              "losses": 16
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 27,
+              "wins": 6,
+              "losses": 21
             },
             "SUNDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 6,
+              "wins": 4,
+              "losses": 2
             }
           },
           "VERY_STRONG": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
+              "total": 1,
+              "wins": 1,
               "losses": 0
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 10,
+              "wins": 2,
+              "losses": 8
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 18,
+              "wins": 8,
+              "losses": 10
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 14,
+              "wins": 8,
+              "losses": 6
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 19,
+              "wins": 10,
+              "losses": 9
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 17,
+              "wins": 3,
+              "losses": 14
             },
             "SUNDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 9,
+              "wins": 4,
+              "losses": 5
             }
           }
         }
@@ -1282,21 +1310,21 @@
         "pairCode": "EUR_USD",
         "pairLabel": "EUR/USD",
         "targetAssetCode": "EUR",
-        "available": false,
-        "blocker": "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach.",
-        "tradableSignals": 0,
-        "adrReachWins": 0,
-        "adrReachLosses": 0,
-        "adrReachWinPct": null,
-        "strongPlusSignals": 0,
-        "strongPlusAdrReachWinPct": null
+        "available": true,
+        "blocker": null,
+        "tradableSignals": 325,
+        "adrReachWins": 120,
+        "adrReachLosses": 205,
+        "adrReachWinPct": 36.9,
+        "strongPlusSignals": 29,
+        "strongPlusAdrReachWinPct": 55.2
       },
       {
         "pairCode": "XAU_USD",
         "pairLabel": "XAU/USD",
         "targetAssetCode": "GOLD",
         "available": false,
-        "blocker": "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows.",
+        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
         "tradableSignals": 0,
         "adrReachWins": 0,
         "adrReachLosses": 0,
@@ -1321,14 +1349,14 @@
         "pairCode": "BTC_USD",
         "pairLabel": "BTC/USD",
         "targetAssetCode": "BTC",
-        "available": false,
-        "blocker": "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach.",
-        "tradableSignals": 0,
-        "adrReachWins": 0,
-        "adrReachLosses": 0,
-        "adrReachWinPct": null,
-        "strongPlusSignals": 0,
-        "strongPlusAdrReachWinPct": null
+        "available": true,
+        "blocker": null,
+        "tradableSignals": 75,
+        "adrReachWins": 37,
+        "adrReachLosses": 38,
+        "adrReachWinPct": 49.3,
+        "strongPlusSignals": 37,
+        "strongPlusAdrReachWinPct": 45.9
       }
     ],
     "pairs": [
@@ -1336,8 +1364,8 @@
         "pairCode": "EUR_USD",
         "pairLabel": "EUR/USD",
         "targetAssetCode": "EUR",
-        "available": false,
-        "blocker": "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach.",
+        "available": true,
+        "blocker": null,
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -1346,189 +1374,193 @@
           "FRIDAY"
         ],
         "summary": {
-          "tradableSignals": 0,
-          "adrReachWins": 0,
-          "adrReachLosses": 0,
-          "adrReachWinPct": null,
-          "strongPlusSignals": 0,
-          "strongPlusAdrReachWinPct": null
+          "tradableSignals": 325,
+          "adrReachWins": 120,
+          "adrReachLosses": 205,
+          "adrReachWinPct": 36.9,
+          "strongPlusSignals": 29,
+          "strongPlusAdrReachWinPct": 55.2
         },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
             "bucketLabel": "Weak",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 226,
+            "wins": 82,
+            "losses": 144,
+            "winRatePct": 36.3,
+            "adrReachWinPct": 36.3
           },
           {
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 70,
+            "wins": 22,
+            "losses": 48,
+            "winRatePct": 31.4,
+            "adrReachWinPct": 31.4
           },
           {
             "bucketKey": "STRONG",
             "bucketLabel": "Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 26,
+            "wins": 15,
+            "losses": 11,
+            "winRatePct": 57.7,
+            "adrReachWinPct": 57.7
           },
           {
             "bucketKey": "VERY_STRONG",
             "bucketLabel": "Very Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 3,
+            "wins": 1,
+            "losses": 2,
+            "winRatePct": 33.3,
+            "adrReachWinPct": 33.3
           }
         ],
         "dayTotals": {
-          "total": 0,
-          "wins": 0,
-          "losses": 0,
-          "winRatePct": null
+          "total": 325,
+          "wins": 120,
+          "losses": 205,
+          "winRatePct": 36.9
         },
         "weekdayTotals": {
           "MONDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 74,
+            "wins": 27,
+            "losses": 47
           },
           "TUESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 62,
+            "wins": 23,
+            "losses": 39
           },
           "WEDNESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 65,
+            "wins": 22,
+            "losses": 43
           },
           "THURSDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 64,
+            "wins": 27,
+            "losses": 37
           },
           "FRIDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 60,
+            "wins": 21,
+            "losses": 39
           }
         },
         "bucketTotals": {
           "WEAK": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 226,
+            "wins": 82,
+            "losses": 144
           },
           "MODERATE": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 70,
+            "wins": 22,
+            "losses": 48
           },
           "STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 26,
+            "wins": 15,
+            "losses": 11
           },
           "VERY_STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 3,
+            "wins": 1,
+            "losses": 2
           }
         },
         "bucketMatrix": {
           "WEAK": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 51,
+              "wins": 21,
+              "losses": 30
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 48,
+              "wins": 19,
+              "losses": 29
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 40,
+              "wins": 11,
+              "losses": 29
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 46,
+              "wins": 19,
+              "losses": 27
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 41,
+              "wins": 12,
+              "losses": 29
             }
           },
           "MODERATE": {
             "MONDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 18,
+              "wins": 6,
+              "losses": 12
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 9,
+              "wins": 1,
+              "losses": 8
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 18,
+              "wins": 6,
+              "losses": 12
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 12,
+              "wins": 4,
+              "losses": 8
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 13,
+              "wins": 5,
+              "losses": 8
             }
           },
           "STRONG": {
             "MONDAY": {
-              "total": 0,
+              "total": 3,
               "wins": 0,
-              "losses": 0
+              "losses": 3
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 5,
+              "wins": 3,
+              "losses": 2
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 7,
+              "wins": 5,
+              "losses": 2
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 6,
+              "wins": 4,
+              "losses": 2
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 5,
+              "wins": 3,
+              "losses": 2
             }
           },
           "VERY_STRONG": {
             "MONDAY": {
-              "total": 0,
+              "total": 2,
               "wins": 0,
-              "losses": 0
+              "losses": 2
             },
             "TUESDAY": {
               "total": 0,
@@ -1546,8 +1578,8 @@
               "losses": 0
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
+              "total": 1,
+              "wins": 1,
               "losses": 0
             }
           }
@@ -1558,7 +1590,7 @@
         "pairLabel": "XAU/USD",
         "targetAssetCode": "GOLD",
         "available": false,
-        "blocker": "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows.",
+        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -2003,8 +2035,8 @@
         "pairCode": "BTC_USD",
         "pairLabel": "BTC/USD",
         "targetAssetCode": "BTC",
-        "available": false,
-        "blocker": "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach.",
+        "available": true,
+        "blocker": null,
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -2015,52 +2047,56 @@
           "SUNDAY"
         ],
         "summary": {
-          "tradableSignals": 0,
-          "adrReachWins": 0,
-          "adrReachLosses": 0,
-          "adrReachWinPct": null,
-          "strongPlusSignals": 0,
-          "strongPlusAdrReachWinPct": null
+          "tradableSignals": 75,
+          "adrReachWins": 37,
+          "adrReachLosses": 38,
+          "adrReachWinPct": 49.3,
+          "strongPlusSignals": 37,
+          "strongPlusAdrReachWinPct": 45.9
         },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
             "bucketLabel": "Weak",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 9,
+            "wins": 5,
+            "losses": 4,
+            "winRatePct": 55.6,
+            "adrReachWinPct": 55.6
           },
           {
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 29,
+            "wins": 15,
+            "losses": 14,
+            "winRatePct": 51.7,
+            "adrReachWinPct": 51.7
           },
           {
             "bucketKey": "STRONG",
             "bucketLabel": "Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 18,
+            "wins": 8,
+            "losses": 10,
+            "winRatePct": 44.4,
+            "adrReachWinPct": 44.4
           },
           {
             "bucketKey": "VERY_STRONG",
             "bucketLabel": "Very Strong",
-            "wins": 0,
-            "losses": 0,
-            "total": 0,
-            "adrReachWinPct": null
+            "total": 19,
+            "wins": 9,
+            "losses": 10,
+            "winRatePct": 47.4,
+            "adrReachWinPct": 47.4
           }
         ],
         "dayTotals": {
-          "total": 0,
-          "wins": 0,
-          "losses": 0,
-          "winRatePct": null
+          "total": 75,
+          "wins": 37,
+          "losses": 38,
+          "winRatePct": 49.3
         },
         "weekdayTotals": {
           "MONDAY": {
@@ -2069,29 +2105,29 @@
             "losses": 0
           },
           "TUESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 10,
+            "wins": 5,
+            "losses": 5
           },
           "WEDNESDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 20,
+            "wins": 11,
+            "losses": 9
           },
           "THURSDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 13,
+            "wins": 5,
+            "losses": 8
           },
           "FRIDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 19,
+            "wins": 13,
+            "losses": 6
           },
           "SATURDAY": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 13,
+            "wins": 3,
+            "losses": 10
           },
           "SUNDAY": {
             "total": 0,
@@ -2101,24 +2137,24 @@
         },
         "bucketTotals": {
           "WEAK": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 9,
+            "wins": 5,
+            "losses": 4
           },
           "MODERATE": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 29,
+            "wins": 15,
+            "losses": 14
           },
           "STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 18,
+            "wins": 8,
+            "losses": 10
           },
           "VERY_STRONG": {
-            "total": 0,
-            "wins": 0,
-            "losses": 0
+            "total": 19,
+            "wins": 9,
+            "losses": 10
           }
         },
         "bucketMatrix": {
@@ -2134,19 +2170,19 @@
               "losses": 0
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 2,
+              "wins": 1,
+              "losses": 1
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 4,
+              "wins": 2,
+              "losses": 2
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 3,
+              "wins": 2,
+              "losses": 1
             },
             "SATURDAY": {
               "total": 0,
@@ -2166,29 +2202,29 @@
               "losses": 0
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 6,
+              "wins": 3,
+              "losses": 3
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 9,
+              "wins": 5,
+              "losses": 4
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 3,
+              "wins": 1,
+              "losses": 2
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 7,
+              "wins": 6,
+              "losses": 1
             },
             "SATURDAY": {
-              "total": 0,
+              "total": 4,
               "wins": 0,
-              "losses": 0
+              "losses": 4
             },
             "SUNDAY": {
               "total": 0,
@@ -2203,29 +2239,29 @@
               "losses": 0
             },
             "TUESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 4,
+              "wins": 2,
+              "losses": 2
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 5,
+              "wins": 2,
+              "losses": 3
             },
             "THURSDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 3,
+              "wins": 2,
+              "losses": 1
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 4,
+              "wins": 1,
+              "losses": 3
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 2,
+              "wins": 1,
+              "losses": 1
             },
             "SUNDAY": {
               "total": 0,
@@ -2245,24 +2281,24 @@
               "losses": 0
             },
             "WEDNESDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 4,
+              "wins": 3,
+              "losses": 1
             },
             "THURSDAY": {
-              "total": 0,
+              "total": 3,
               "wins": 0,
-              "losses": 0
+              "losses": 3
             },
             "FRIDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 5,
+              "wins": 4,
+              "losses": 1
             },
             "SATURDAY": {
-              "total": 0,
-              "wins": 0,
-              "losses": 0
+              "total": 7,
+              "wins": 2,
+              "losses": 5
             },
             "SUNDAY": {
               "total": 0,

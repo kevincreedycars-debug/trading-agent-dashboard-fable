@@ -32,11 +32,17 @@ Last updated: 2026-07-03
 - Explicitly marked `EUR`, `Gold`, `BTC`, `USD`, `EUR/USD`, `XAU/USD`, and `BTC/USD` unavailable in the ADR module because repo evidence does not currently include supportable High/Low history for them.
 - Updated the local dashboard smoke test so ADR Reach Research now verifies summary tables, confidence tables, day totals, weekday tables, and console-clean rendering.
 - Re-ran syntax checks, the new ADR validator, all existing Layer 1 checker validators, the existing Layer 2 pairing validator, and browser smoke successfully.
+- Added deterministic repo-local `EUR/USD` OHLC coverage in `backtester/tmp/eurusd_daily_alpha_vantage.csv` using Alpha Vantage `FX_DAILY`.
+- Added deterministic repo-local `BTC/USD` OHLC coverage in `backtester/tmp/btcusd_daily_coinbase.csv` using Coinbase Exchange daily candles.
+- Added `backtester/importers/eurusd/download_eurusd_daily_ohlc_alpha_vantage.js` and `backtester/importers/btc/download_btcusd_daily_ohlc_coinbase.js` to make those repo-local OHLC files reproducible.
+- Extended `backtester/scripts/validate_adr_reach_research.js` so `EUR`, `NQ`, and `BTC` Layer 1 plus `EUR/USD`, `NQ/USD`, and `BTC/USD` Layer 2 now build real ADR reach results from supportable OHLC sources.
+- Tightened the ADR validator so non-BTC sources cannot introduce weekend OHLC rows and BTC must preserve weekend calendar handling.
+- Confirmed `Gold` and `XAU/USD` remain unavailable because the current repo/runtime evidence still does not include a supportable true `XAU/USD` OHLC source, and `USD` remains unavailable because no repo-local `DXY` OHLC source exists.
 
 ## Unfinished Work
 
-- Source supportable OHLC history for the blocked ADR assets and pairs.
-- Extend ADR evaluation beyond `NQ` / `NQ/USD` only after verified `Open` / `High` / `Low` / `Close` coverage exists.
+- Source supportable true `XAU/USD` spot OHLC history for the remaining Gold-layer ADR blocker.
+- Source supportable `DXY` or other accepted USD benchmark OHLC history only if a real non-estimated source can be staged repo-locally.
 
 ## Blockers
 
@@ -58,7 +64,7 @@ Expand supportable OHLC coverage for the shipped `ADR Reach Research` module.
 
 Design intent for the handover:
 
-- The first ADR release is now live.
-- Current supportable repo-local scope is `NQ` Layer 1 and `NQ/USD` Layer 2 only.
+- The first ADR release is now live and OHLC expansion is partially complete.
+- Current supportable repo-local scope is `EUR`, `NQ`, and `BTC` for Layer 1, plus `EUR/USD`, `NQ/USD`, and `BTC/USD` for Layer 2.
 - Reference price for the supported ADR path is evaluation-day `Open`, with previous-close fallback logic retained for future supportable OHLC feeds.
-- The next step is not to weaken the blocker rules; it is to source verified High/Low coverage for the currently unavailable assets and pairs.
+- The next step is not to weaken the blocker rules; it is to source verified true `XAU/USD` and optional `DXY` High/Low coverage for the remaining unavailable assets and pairs.

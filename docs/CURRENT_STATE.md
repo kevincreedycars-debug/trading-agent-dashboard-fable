@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Platform Status
 
-The Layer 1 trading-agent platform remains operational, and the latest runtime evidence shows the Master Orchestrator completed successfully on 2026-06-28.
+The Layer 1 trading-agent platform remains operational, and the latest runtime evidence in `data/workflow-status.json` shows a successful manual refresh on 2026-07-03 with every listed step marked successful, including `Layer 2 Trade Selection Agent`.
 
 The full Layer 1 historical replay rollout is now validated across USD, EUR, Gold, NQ, and BTC. The active repository work has shifted from replay rollout itself into downstream research presentation and breakdown views built on top of the canonical checker artifacts.
 
@@ -97,7 +97,7 @@ Dashboard Writer
 
 Every workflow has been converted to use `Execute Sub-workflow Trigger`, allowing the master workflow to call workflows sequentially.
 
-Runtime evidence in `data/workflow-status.json` shows a successful Master Orchestrator run on 2026-06-28, with every listed step marked successful and no reported error.
+Runtime evidence in `data/workflow-status.json` shows a successful run on 2026-07-03, with every listed step marked successful and no reported error.
 
 ## Known Current Issues
 
@@ -156,18 +156,18 @@ The newly added ADR Reach Research module is not another close-to-close accuracy
 
 Current repository evidence supports real ADR measurement for:
 
+- `EUR` Layer 1 using the repo-local `EUR/USD` OHLC file sourced from Alpha Vantage `FX_DAILY`
 - `NQ` Layer 1 using the repo-local `QQQ` OHLC proxy file
+- `BTC` Layer 1 using the repo-local `BTC/USD` OHLC file sourced from Coinbase Exchange candles
+- `EUR/USD` Layer 2 using the existing Pair Trade Research tradable-signal logic plus the same `EUR/USD` OHLC source
 - `NQ/USD` Layer 2 using the existing Pair Trade Research tradable-signal logic plus the same `QQQ` OHLC source
+- `BTC/USD` Layer 2 using the existing Pair Trade Research tradable-signal logic plus the same `BTC/USD` OHLC source
 
 Current repository evidence does not yet support real ADR measurement for:
 
-- `EUR`
 - `Gold`
-- `BTC`
 - `USD`
-- `EUR/USD`
 - `XAU/USD`
-- `BTC/USD`
 
 Those assets and pairs are now rendered as unavailable in the ADR module rather than estimated from close-only data.
 

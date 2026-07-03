@@ -18,7 +18,7 @@ This work must sit alongside the existing Layer 1 and Pair Trade Research views,
 
 ## Current Status
 
-Initial ADR Reach Research release shipped. Current platform state is stable and validated.
+ADR Reach Research supportable OHLC expansion is partially complete. Current platform state is stable and validated.
 
 ## Completed
 
@@ -91,7 +91,11 @@ Initial ADR Reach Research release shipped. Current platform state is stable and
 - Added `backtester/scripts/validate_adr_reach_research.js` and generated `data/adr-reach-research.json`
 - Confirmed repo-local supportable OHLC coverage for `NQ` via `backtester/tmp/qqq_daily_yahoo.csv`
 - ADR reach now evaluates `NQ` Layer 1 and `NQ/USD` Layer 2 using evaluation-day `Open` as the reference price and rolling previous-20-session ADR20
-- `EUR`, `Gold`, `BTC`, `USD`, `EUR/USD`, `XAU/USD`, and `BTC/USD` are rendered unavailable in ADR Reach Research because repo evidence does not yet include supportable High/Low history for them
+- Added deterministic repo-local `EUR/USD` daily OHLC coverage in `backtester/tmp/eurusd_daily_alpha_vantage.csv` using Alpha Vantage `FX_DAILY`
+- Added deterministic repo-local `BTC/USD` daily OHLC coverage in `backtester/tmp/btcusd_daily_coinbase.csv` using Coinbase Exchange daily candles
+- ADR reach now evaluates `EUR`, `NQ`, and `BTC` Layer 1 assets using supportable daily OHLC with evaluation-day `Open` as the reference price and previous-close fallback preserved
+- ADR reach now evaluates `EUR/USD`, `NQ/USD`, and `BTC/USD` Layer 2 pairs by reusing existing Pair Trade Research tradable-signal selection against the same supportable OHLC sources
+- `Gold`, `USD`, and `XAU/USD` remain unavailable in ADR Reach Research because repo evidence still does not include supportable true `XAU/USD` or `DXY` High/Low history
 - Updated dashboard smoke and validation passes for the new ADR Reach Research tab while leaving replay, checker, confidence, and Pair Trade Research logic unchanged
 
 ## n8n Workspace
@@ -110,8 +114,8 @@ https://silver17.app.n8n.cloud/projects/ISQG9XU7TGTT6Fcu/workflows
 
 ## Next Immediate Steps
 
-1. Source supportable OHLC history for `EUR`, `Gold`, `BTC`, and `USD` so the current ADR blockers can be resolved without estimating intraday reach.
-2. Extend the ADR module from the current supported `NQ` / `NQ/USD` scope onto the newly supported assets only after verified `Open` / `High` / `Low` / `Close` coverage exists.
+1. Source supportable true `XAU/USD` spot OHLC history so `Gold` Layer 1 and `XAU/USD` Layer 2 can move from unavailable to real ADR measurement.
+2. Source supportable `DXY` or other accepted USD benchmark OHLC history only if a real non-estimated source can be staged repo-locally.
 3. Keep replay, checker, pair-calculation, confidence, and flat-band semantics frozen while ADR coverage expands downstream-only.
 
 ## Current Blocker

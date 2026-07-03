@@ -33,10 +33,10 @@ const ASSET_CONFIGS = [
     assetLabel: "EUR",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
     checkerPath: CHECKER_PATHS.EUR,
-    ohlcSourcePath: null,
-    ohlcSourceLabel: "No repo-local EURUSD OHLC source",
-    status: "unavailable",
-    blocker: "Repository evidence only includes EURUSD close-only lineage via the FRED importer; no repo-local High/Low history is available for ADR reach."
+    ohlcSourcePath: path.resolve(__dirname, "../tmp/eurusd_daily_alpha_vantage.csv"),
+    ohlcSourceLabel: "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY",
+    status: "available",
+    blocker: null
   },
   {
     assetCode: "GOLD",
@@ -46,7 +46,7 @@ const ASSET_CONFIGS = [
     ohlcSourcePath: null,
     ohlcSourceLabel: "No repo-local XAU/USD OHLC source",
     status: "unavailable",
-    blocker: "Accepted Gold lineage in this repo points to Coinbase XAU/USD spot by date, but the current repo evidence exposes close-only history rather than reusable repo-local OHLC rows."
+    blocker: "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach."
   },
   {
     assetCode: "NQ",
@@ -63,10 +63,10 @@ const ASSET_CONFIGS = [
     assetLabel: "BTC",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
     checkerPath: CHECKER_PATHS.BTC,
-    ohlcSourcePath: null,
-    ohlcSourceLabel: "No repo-local BTC OHLC source",
-    status: "unavailable",
-    blocker: "Repository evidence only includes BTC close-only Coinbase spot lineage; no repo-local High/Low history is available for ADR reach."
+    ohlcSourcePath: path.resolve(__dirname, "../tmp/btcusd_daily_coinbase.csv"),
+    ohlcSourceLabel: "BTC/USD daily OHLC CSV from Coinbase Exchange candles",
+    status: "available",
+    blocker: null
   },
   {
     assetCode: "USD",
@@ -202,8 +202,22 @@ function loadCsvOhlc(filePath) {
 
   const byDate = new Map(records.map(record => [record.date, record]));
   const indexByDate = new Map(records.map((record, index) => [record.date, index]));
+  const weekdayCounts = records.reduce((counts, record) => {
+    const weekdayKey = weekdayFromDate(record.date);
+    if (weekdayKey) counts[weekdayKey] = (counts[weekdayKey] || 0) + 1;
+    return counts;
+  }, {});
+  const weekendRowCount = Number(weekdayCounts.SATURDAY || 0) + Number(weekdayCounts.SUNDAY || 0);
 
-  return { records, byDate, indexByDate };
+  return {
+    records,
+    byDate,
+    indexByDate,
+    coverageStart: records[0]?.date || null,
+    coverageEnd: records[records.length - 1]?.date || null,
+    weekdayCounts,
+    weekendRowCount
+  };
 }
 
 function computeAdrInputs(context, evaluationDate) {
@@ -390,6 +404,12 @@ function buildLayer1AssetResearch(config, checker) {
     ohlcSourceLabel: config.ohlcSourceLabel,
     ohlcSourcePath: path.relative(path.resolve(__dirname, "../.."), config.ohlcSourcePath).replace(/\\/g, "/"),
     referencePricePolicy: "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+    sourceCoverage: {
+      startDate: context.coverageStart,
+      endDate: context.coverageEnd,
+      rowCount: context.records.length,
+      weekendRowCount: context.weekendRowCount
+    },
     summaryRowsChecked: Number(checker?.summary?.rows_checked || 0),
     totalCheckerRows: rows.length,
     evaluatedRows,
@@ -574,6 +594,18 @@ function validateCheckerInvariants(checkers, errors) {
 }
 
 function validateAvailableAsset(asset, errors) {
+  if (asset.assetCode === "BTC") {
+    if (Number(asset?.sourceCoverage?.weekendRowCount || 0) <= 0) {
+      errors.push("BTC: source coverage did not include weekend OHLC rows");
+    }
+    const btcWeekendEvaluations = asset.evaluatedRows.filter((row) => row.weekdayKey === "SATURDAY" || row.weekdayKey === "SUNDAY").length;
+    if (btcWeekendEvaluations <= 0) {
+      errors.push("BTC: evaluated rows did not retain weekend calendar handling");
+    }
+  } else if (Number(asset?.sourceCoverage?.weekendRowCount || 0) > 0) {
+    errors.push(`${asset.assetCode}: non-BTC OHLC source included weekend rows`);
+  }
+
   asset.evaluatedRows.forEach((row, index) => {
     if (row.prev20Count !== ADR_WINDOW_SESSIONS) {
       errors.push(`${asset.assetCode} row ${index + 1}: previous 20 sessions were not used`);
@@ -657,6 +689,7 @@ function buildOutput(layer1Assets, layer2Pairs) {
       available: asset.available,
       ohlcSourceLabel: asset.ohlcSourceLabel,
       ohlcSourcePath: asset.ohlcSourcePath || null,
+      sourceCoverage: asset.sourceCoverage || null,
       referencePricePolicy: asset.referencePricePolicy,
       blocker: asset.blocker || null
     })),
