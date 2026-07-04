@@ -1,25 +1,22 @@
 {
   "dashboard_meta": {
-    "last_updated_et": "2026-07-03T06:48:11.709Z",
+    "last_updated_et": "2026-07-04T15:14:32.910Z",
     "source": "layer_2_trade_selection_agent"
   },
   "trade_opportunities": [
     {
-      "instrument": "EUR/USD",
-      "direction": "SELL",
-      "confidence": 86,
-      "reason": "USD is independently bullish while EUR is independently bearish during today's session.",
-      "rank": 1
-    },
-    {
       "instrument": "NQ/USD",
       "direction": "SELL",
-      "confidence": 85,
+      "confidence": 75,
       "reason": "USD is independently bullish while NQ is independently bearish during today's session.",
-      "rank": 2
+      "rank": 1
     }
   ],
   "avoid_today": [
+    {
+      "instrument": "EUR/USD",
+      "reason": "One or both assets have no clear 24H bias."
+    },
     {
       "instrument": "XAU/USD",
       "reason": "Mixed or low conviction 24H signals."
