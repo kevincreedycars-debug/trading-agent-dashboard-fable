@@ -13,7 +13,7 @@ const checkerDataUrls = {
   NQ: "./data/backtester-checker-nq-24h-2024-2026.json?v=20260702-nq-qqq-proxy-dashboard",
   BTC: "./data/backtester-checker-btc-24h-2024-2026.json?v=20260702-btc-benchmark-dashboard"
 };
-const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260703-adr-reach-research-ohcl-expansion-fix";
+const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260704-adr-reach-intraday-touch-strict-open";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 const headlineConfidenceLib = globalThis.HeadlineConfidence;
@@ -4332,7 +4332,7 @@ function renderAdrReachLayer1Asset(asset = {}) {
         <div>
           <h3>${escapeHtml(asset.assetLabel)} ADR reach from Layer 1 checker artifacts</h3>
         </div>
-        <p class="research-panel-copy">Reference price uses the evaluation-day open when available, otherwise previous close. This section stays downstream of the stored checker artifact and evaluates only whether the 50% ADR20 target was reached intraday.</p>
+        <p class="research-panel-copy">Reference price is strictly the call day's open; rows without a usable same-day open are excluded and counted in diagnostics. This section stays downstream of the stored checker artifact and evaluates only whether the 50% ADR20 target was reached intraday.</p>
       </div>
       ${renderResearchBreakdownTable(`${asset.assetLabel} confidence buckets`, "Confidence Breakdown", asset.bucketSummaryRows || [], [
         { label: "Bucket", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.bucketLabel, "", { className: "adr-table-tight-cell" }) },
@@ -4425,7 +4425,7 @@ function renderResearchAdrReach(data = {}) {
           { label: "Asset", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.assetLabel, "", { className: "adr-table-tight-cell" }) },
           { label: "Status", className: "adr-col-status", render: row => renderAdrCompactTextCell(row.available ? "Available" : "Unavailable", "", { className: "adr-table-tight-cell" }) },
           { label: "Source", className: "adr-col-source", render: row => renderAdrCompactTextCell(row.available ? (row.ohlcSourceLabel || displayDash()) : displayDash(), row.available ? formatAdrAuditCoverage(row) : "", { className: "adr-table-tight-cell adr-source-cell" }) },
-          { label: "Reference", className: "adr-col-reference", render: row => renderAdrCompactTextCell(row.available ? "Open first" : displayDash(), row.available ? "Prev close fallback" : "", { className: "adr-table-tight-cell" }) }
+          { label: "Reference", className: "adr-col-reference", render: row => renderAdrCompactTextCell(row.available ? "Day open only" : displayDash(), row.available ? "No prev-close fallback" : "", { className: "adr-table-tight-cell" }) }
         ], {
           tableClass: "adr-summary-table adr-audit-table",
           scrollClass: "adr-summary-scroll"

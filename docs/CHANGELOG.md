@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-07-04
+
+### Added
+
+- Added `backtester/lib/adr_reach_logic.js` as the single source of truth for ADR/L2L intraday reach semantics: win means the day's high (bullish/long) or low (bearish/short) touched `open +/- L2L distance` at any point inside the evaluation day, with the close explicitly ignored and non-directional calls counted as no-trade instead of losses.
+- Added `backtester/importers/binance/download_btcusdt_daily_ohlc_binance.js` (Binance Spot `GET /api/v3/klines`, `symbol=BTCUSDT`, `interval=1d`, startTime/endTime pagination) and staged a tracked cache at `backtester/cache/ohlc/btcusdt_daily_binance.csv` covering 2023-11-01..2026-07-04.
+- Added `backtester/importers/oanda/download_oanda_daily_ohlc.js` (OANDA v20 candles, mid daily, `--list-instruments` account verification, configurable UTC vs NY-17:00 alignment) plus a README; it stages tracked caches for `EUR_USD`, `XAU_USD`, and `NAS100_USD` once `OANDA_API_TOKEN` is provided.
+- Added `backtester/tests/adr_reach_logic.test.js`: unit tests pinning the exact win/miss boundaries (bullish open 100 / high 106 / L2L 5 = win, high 104.9 = miss; bearish low 94 = win, low 95.1 = miss; close never changes a touched outcome) and contract tests proving the artifact groups results by Layer 1 asset, Layer 2 pair, and strength bucket, and matches the builder byte-for-byte.
+
+### Changed
+
+- Rebuilt `backtester/scripts/validate_adr_reach_research.js` around the shared reach lib with source-priority lists per asset: OANDA caches always outrank fallbacks (Alpha Vantage EUR/USD, QQQ proxy for NQ now explicitly labeled as proxy, Coinbase BTC legacy), so coverage upgrades automatically when account-verified OANDA data is staged.
+- Reference price is now strictly the call day's open; the previous-close fallback was removed and rows without a same-day open are excluded and reported in diagnostics.
+- Switched BTC ADR reach OHLC from Coinbase BTC-USD to Binance BTCUSDT (user-traded instrument); 794 evaluated calls unchanged, one win/loss flip from the range differences.
+- Regenerated `data/adr-reach-research.json` with per-asset/per-pair diagnostics (missing OHLC rows, missing L2L-distance rows, no-trade rows, unsupported instruments) published in `meta.diagnostics`, plus explicit `win_definition` and `l2l_definition` strings.
+- Updated the ADR source-audit UI copy and smoke-test expectations to the strict-open policy and new source labels; incomplete (still-forming) candles and weekend rows for weekday-only markets are filtered at load and counted in the source audit.
+- Gold `XAU/USD` and `USD` remain explicitly unavailable; Gold now unlocks by staging the OANDA `XAU_USD` cache and rebuilding, rather than requiring new code.
+
 ## 2026-07-03
 
 ### Added

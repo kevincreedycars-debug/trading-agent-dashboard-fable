@@ -1,77 +1,169 @@
 {
   "meta": {
-    "generated_at": "2026-07-03T10:44:52.682Z",
+    "generated_at": "2026-07-04T20:45:54.369Z",
     "source": "backtester/scripts/validate_adr_reach_research.js",
     "evaluation_window": "following 24hrs",
     "adr_window_sessions": 20,
     "adr_threshold_pct": 50,
-    "reference_price_policy": "Use evaluation-day open when OHLC open exists; otherwise previous close. Unsupported assets stay unavailable rather than estimated."
+    "l2l_definition": "L2L target distance = 50% of the rolling ADR(20) computed from the 20 completed sessions before the evaluation day.",
+    "win_definition": "WIN when the day's high (bullish/long) or low (bearish/short) touches open +/- the L2L target distance at any point inside the evaluation day. The close is ignored; this is intraday reach, not close-to-close accuracy.",
+    "reference_price_policy": "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.",
+    "diagnostics": {
+      "unsupportedInstruments": [
+        {
+          "assetCode": "GOLD",
+          "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence."
+        },
+        {
+          "assetCode": "USD",
+          "blocker": "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence."
+        }
+      ],
+      "layer1": {
+        "EUR": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 27,
+          "otherSkippedRows": 0
+        },
+        "GOLD": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 0,
+          "otherSkippedRows": 0
+        },
+        "NQ": {
+          "missingOhlcRows": 23,
+          "missingL2lDistanceRows": 18,
+          "noTradeRows": 38,
+          "otherSkippedRows": 0
+        },
+        "BTC": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 56,
+          "otherSkippedRows": 0
+        },
+        "USD": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 0,
+          "otherSkippedRows": 0
+        }
+      },
+      "layer2": {
+        "EUR_USD": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 142,
+          "sameDirectionConflicts": 135,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0
+        },
+        "XAU_USD": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 0,
+          "sameDirectionConflicts": 0,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0
+        },
+        "NQ_USD": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 144,
+          "sameDirectionConflicts": 136,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 19
+        },
+        "BTC_USD": {
+          "missingUsdSnapshotRows": 246,
+          "noTradeRows": 507,
+          "sameDirectionConflicts": 22,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0
+        }
+      }
+    }
   },
   "source_audit": [
     {
       "assetCode": "EUR",
       "assetLabel": "EUR",
       "available": true,
-      "ohlcSourceLabel": "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY",
+      "ohlcSourceLabel": "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY (fallback until the OANDA EUR_USD cache is staged)",
+      "ohlcSourceKind": "legacy_fallback",
+      "ohlcInstrument": "EUR/USD (Alpha Vantage)",
       "ohlcSourcePath": "backtester/tmp/eurusd_daily_alpha_vantage.csv",
       "sourceCoverage": {
         "startDate": "2023-11-01",
         "endDate": "2026-07-02",
         "rowCount": 697,
-        "weekendRowCount": 0
+        "weekendRowCount": 0,
+        "incompleteRowsExcluded": 0,
+        "weekendRowsDropped": 0
       },
-      "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+      "referencePricePolicy": "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.",
       "blocker": null
     },
     {
       "assetCode": "GOLD",
       "assetLabel": "Gold",
       "available": false,
-      "ohlcSourceLabel": "No repo-local XAU/USD OHLC source",
+      "ohlcSourceLabel": "XAU/USD daily OHLC from OANDA v20 XAU_USD mid candles",
+      "ohlcSourceKind": null,
+      "ohlcInstrument": null,
       "ohlcSourcePath": null,
       "sourceCoverage": null,
-      "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
-      "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach."
+      "referencePricePolicy": "Unavailable because no supportable OHLC source is staged in the repo.",
+      "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence."
     },
     {
       "assetCode": "NQ",
       "assetLabel": "NQ",
       "available": true,
-      "ohlcSourceLabel": "QQQ OHLC daily proxy CSV",
-      "ohlcSourcePath": "backtester/tmp/qqq_daily_yahoo.csv",
+      "ohlcSourceLabel": "QQQ daily OHLC proxy (Yahoo) — explicit proxy fallback until the OANDA NAS100_USD cache is staged",
+      "ohlcSourceKind": "proxy_fallback",
+      "ohlcInstrument": "QQQ (proxy for NAS100)",
+      "ohlcSourcePath": "backtester/cache/ohlc/qqq_daily_yahoo_proxy.csv",
       "sourceCoverage": {
         "startDate": "2024-01-02",
         "endDate": "2026-04-30",
         "rowCount": 584,
-        "weekendRowCount": 0
+        "weekendRowCount": 0,
+        "incompleteRowsExcluded": 0,
+        "weekendRowsDropped": 0
       },
-      "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+      "referencePricePolicy": "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.",
       "blocker": null
     },
     {
       "assetCode": "BTC",
       "assetLabel": "BTC",
       "available": true,
-      "ohlcSourceLabel": "BTC/USD daily OHLC CSV from Coinbase Exchange candles",
-      "ohlcSourcePath": "backtester/tmp/btcusd_daily_coinbase.csv",
+      "ohlcSourceLabel": "BTC/USDT daily OHLC from Binance Spot GET /api/v3/klines (interval=1d)",
+      "ohlcSourceKind": "binance",
+      "ohlcInstrument": "BTCUSDT",
+      "ohlcSourcePath": "backtester/cache/ohlc/btcusdt_daily_binance.csv",
       "sourceCoverage": {
         "startDate": "2023-11-01",
         "endDate": "2026-07-03",
         "rowCount": 976,
-        "weekendRowCount": 278
+        "weekendRowCount": 278,
+        "incompleteRowsExcluded": 1,
+        "weekendRowsDropped": 0
       },
-      "referencePricePolicy": "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+      "referencePricePolicy": "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.",
       "blocker": null
     },
     {
       "assetCode": "USD",
       "assetLabel": "USD",
       "available": false,
-      "ohlcSourceLabel": "No repo-local DXY OHLC source",
+      "ohlcSourceLabel": "No OHLC source configured",
+      "ohlcSourceKind": null,
+      "ohlcInstrument": null,
       "ohlcSourcePath": null,
       "sourceCoverage": null,
-      "referencePricePolicy": "Unavailable because no supportable OHLC source exists in repo evidence.",
-      "blocker": "The repo includes only USD checker artifacts and close-to-close research views. No repo-local DXY OHLC export is available, and the raw warehouse table is not readable through the publishable research key."
+      "referencePricePolicy": "Unavailable because no supportable OHLC source is staged in the repo.",
+      "blocker": "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence."
     }
   ],
   "layer1": {
@@ -92,7 +184,7 @@
         "assetCode": "GOLD",
         "assetLabel": "Gold",
         "available": false,
-        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
+        "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence.",
         "evaluatedCalls": 0,
         "adrReachWins": 0,
         "adrReachLosses": 0,
@@ -118,17 +210,17 @@
         "available": true,
         "blocker": null,
         "evaluatedCalls": 794,
-        "adrReachWins": 290,
-        "adrReachLosses": 504,
-        "adrReachWinPct": 36.5,
+        "adrReachWins": 289,
+        "adrReachLosses": 505,
+        "adrReachWinPct": 36.4,
         "strongPlusCalls": 230,
-        "strongPlusAdrReachWinPct": 37.4
+        "strongPlusAdrReachWinPct": 37
       },
       {
         "assetCode": "USD",
         "assetLabel": "USD",
         "available": false,
-        "blocker": "The repo includes only USD checker artifacts and close-to-close research views. No repo-local DXY OHLC export is available, and the raw warehouse table is not readable through the publishable research key.",
+        "blocker": "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence.",
         "evaluatedCalls": 0,
         "adrReachWins": 0,
         "adrReachLosses": 0,
@@ -157,6 +249,15 @@
           "adrReachWinPct": 36.9,
           "strongPlusCalls": 127,
           "strongPlusAdrReachWinPct": 39.4
+        },
+        "diagnostics": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 27,
+          "otherSkippedRows": 0,
+          "skippedCounts": {
+            "no_trade_non_directional": 27
+          }
         },
         "bucketSummaryRows": [
           {
@@ -366,7 +467,7 @@
         "assetCode": "GOLD",
         "assetLabel": "Gold",
         "available": false,
-        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
+        "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence.",
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -381,6 +482,13 @@
           "adrReachWinPct": null,
           "strongPlusCalls": 0,
           "strongPlusAdrReachWinPct": null
+        },
+        "diagnostics": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 0,
+          "otherSkippedRows": 0,
+          "skippedCounts": {}
         },
         "bucketSummaryRows": [
           {
@@ -602,6 +710,17 @@
           "strongPlusCalls": 144,
           "strongPlusAdrReachWinPct": 37.5
         },
+        "diagnostics": {
+          "missingOhlcRows": 23,
+          "missingL2lDistanceRows": 18,
+          "noTradeRows": 38,
+          "otherSkippedRows": 0,
+          "skippedCounts": {
+            "insufficient_previous_sessions": 18,
+            "missing_evaluation_day_ohlc": 23,
+            "no_trade_non_directional": 38
+          }
+        },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
@@ -822,39 +941,48 @@
         ],
         "summary": {
           "evaluatedCalls": 794,
-          "adrReachWins": 290,
-          "adrReachLosses": 504,
-          "adrReachWinPct": 36.5,
+          "adrReachWins": 289,
+          "adrReachLosses": 505,
+          "adrReachWinPct": 36.4,
           "strongPlusCalls": 230,
-          "strongPlusAdrReachWinPct": 37.4
+          "strongPlusAdrReachWinPct": 37
+        },
+        "diagnostics": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 56,
+          "otherSkippedRows": 0,
+          "skippedCounts": {
+            "no_trade_non_directional": 56
+          }
         },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
             "bucketLabel": "Weak",
             "total": 379,
-            "wins": 126,
-            "losses": 253,
-            "winRatePct": 33.2,
-            "adrReachWinPct": 33.2
+            "wins": 125,
+            "losses": 254,
+            "winRatePct": 33,
+            "adrReachWinPct": 33
           },
           {
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
             "total": 185,
-            "wins": 78,
-            "losses": 107,
-            "winRatePct": 42.2,
-            "adrReachWinPct": 42.2
+            "wins": 79,
+            "losses": 106,
+            "winRatePct": 42.7,
+            "adrReachWinPct": 42.7
           },
           {
             "bucketKey": "STRONG",
             "bucketLabel": "Strong",
             "total": 142,
-            "wins": 50,
-            "losses": 92,
-            "winRatePct": 35.2,
-            "adrReachWinPct": 35.2
+            "wins": 49,
+            "losses": 93,
+            "winRatePct": 34.5,
+            "adrReachWinPct": 34.5
           },
           {
             "bucketKey": "VERY_STRONG",
@@ -868,9 +996,9 @@
         ],
         "dayTotals": {
           "total": 794,
-          "wins": 290,
-          "losses": 504,
-          "winRatePct": 36.5
+          "wins": 289,
+          "losses": 505,
+          "winRatePct": 36.4
         },
         "weekdayTotals": {
           "MONDAY": {
@@ -880,13 +1008,13 @@
           },
           "TUESDAY": {
             "total": 116,
-            "wins": 39,
-            "losses": 77
+            "wins": 38,
+            "losses": 78
           },
           "WEDNESDAY": {
             "total": 119,
-            "wins": 46,
-            "losses": 73
+            "wins": 47,
+            "losses": 72
           },
           "THURSDAY": {
             "total": 116,
@@ -895,8 +1023,8 @@
           },
           "FRIDAY": {
             "total": 119,
-            "wins": 56,
-            "losses": 63
+            "wins": 55,
+            "losses": 64
           },
           "SATURDAY": {
             "total": 116,
@@ -912,18 +1040,18 @@
         "bucketTotals": {
           "WEAK": {
             "total": 379,
-            "wins": 126,
-            "losses": 253
+            "wins": 125,
+            "losses": 254
           },
           "MODERATE": {
             "total": 185,
-            "wins": 78,
-            "losses": 107
+            "wins": 79,
+            "losses": 106
           },
           "STRONG": {
             "total": 142,
-            "wins": 50,
-            "losses": 92
+            "wins": 49,
+            "losses": 93
           },
           "VERY_STRONG": {
             "total": 88,
@@ -955,8 +1083,8 @@
             },
             "FRIDAY": {
               "total": 37,
-              "wins": 16,
-              "losses": 21
+              "wins": 15,
+              "losses": 22
             },
             "SATURDAY": {
               "total": 47,
@@ -982,8 +1110,8 @@
             },
             "WEDNESDAY": {
               "total": 27,
-              "wins": 12,
-              "losses": 15
+              "wins": 13,
+              "losses": 14
             },
             "THURSDAY": {
               "total": 28,
@@ -1014,8 +1142,8 @@
             },
             "TUESDAY": {
               "total": 31,
-              "wins": 11,
-              "losses": 20
+              "wins": 10,
+              "losses": 21
             },
             "WEDNESDAY": {
               "total": 25,
@@ -1086,7 +1214,7 @@
         "assetCode": "USD",
         "assetLabel": "USD",
         "available": false,
-        "blocker": "The repo includes only USD checker artifacts and close-to-close research views. No repo-local DXY OHLC export is available, and the raw warehouse table is not readable through the publishable research key.",
+        "blocker": "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence.",
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -1101,6 +1229,13 @@
           "adrReachWinPct": null,
           "strongPlusCalls": 0,
           "strongPlusAdrReachWinPct": null
+        },
+        "diagnostics": {
+          "missingOhlcRows": 0,
+          "missingL2lDistanceRows": 0,
+          "noTradeRows": 0,
+          "otherSkippedRows": 0,
+          "skippedCounts": {}
         },
         "bucketSummaryRows": [
           {
@@ -1324,7 +1459,7 @@
         "pairLabel": "XAU/USD",
         "targetAssetCode": "GOLD",
         "available": false,
-        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
+        "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence.",
         "tradableSignals": 0,
         "adrReachWins": 0,
         "adrReachLosses": 0,
@@ -1352,9 +1487,9 @@
         "available": true,
         "blocker": null,
         "tradableSignals": 75,
-        "adrReachWins": 37,
-        "adrReachLosses": 38,
-        "adrReachWinPct": 49.3,
+        "adrReachWins": 38,
+        "adrReachLosses": 37,
+        "adrReachWinPct": 50.7,
         "strongPlusSignals": 37,
         "strongPlusAdrReachWinPct": 45.9
       }
@@ -1380,6 +1515,18 @@
           "adrReachWinPct": 36.9,
           "strongPlusSignals": 29,
           "strongPlusAdrReachWinPct": 55.2
+        },
+        "diagnostics": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 142,
+          "sameDirectionConflicts": 135,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0,
+          "skippedCounts": {
+            "same_direction_conflict": 135,
+            "unsupported_usd_direction": 71,
+            "unsupported_target_direction": 71
+          }
         },
         "bucketSummaryRows": [
           {
@@ -1590,7 +1737,7 @@
         "pairLabel": "XAU/USD",
         "targetAssetCode": "GOLD",
         "available": false,
-        "blocker": "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach.",
+        "blocker": "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence.",
         "weekdayKeys": [
           "MONDAY",
           "TUESDAY",
@@ -1605,6 +1752,14 @@
           "adrReachWinPct": null,
           "strongPlusSignals": 0,
           "strongPlusAdrReachWinPct": null
+        },
+        "diagnostics": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 0,
+          "sameDirectionConflicts": 0,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0,
+          "skippedCounts": {}
         },
         "bucketSummaryRows": [
           {
@@ -1827,6 +1982,19 @@
           "strongPlusSignals": 58,
           "strongPlusAdrReachWinPct": 31
         },
+        "diagnostics": {
+          "missingUsdSnapshotRows": 0,
+          "noTradeRows": 144,
+          "sameDirectionConflicts": 136,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 19,
+          "skippedCounts": {
+            "unsupported_target_direction": 80,
+            "same_direction_conflict": 136,
+            "missing_target_adr_support": 19,
+            "unsupported_usd_direction": 64
+          }
+        },
         "bucketSummaryRows": [
           {
             "bucketKey": "WEAK",
@@ -2048,11 +2216,24 @@
         ],
         "summary": {
           "tradableSignals": 75,
-          "adrReachWins": 37,
-          "adrReachLosses": 38,
-          "adrReachWinPct": 49.3,
+          "adrReachWins": 38,
+          "adrReachLosses": 37,
+          "adrReachWinPct": 50.7,
           "strongPlusSignals": 37,
           "strongPlusAdrReachWinPct": 45.9
+        },
+        "diagnostics": {
+          "missingUsdSnapshotRows": 246,
+          "noTradeRows": 507,
+          "sameDirectionConflicts": 22,
+          "missingCombinedConfidenceRows": 0,
+          "missingTargetAdrSupportRows": 0,
+          "skippedCounts": {
+            "unsupported_target_direction": 494,
+            "missing_usd_snapshot": 246,
+            "unsupported_usd_direction": 13,
+            "same_direction_conflict": 22
+          }
         },
         "bucketSummaryRows": [
           {
@@ -2068,10 +2249,10 @@
             "bucketKey": "MODERATE",
             "bucketLabel": "Moderate",
             "total": 29,
-            "wins": 15,
-            "losses": 14,
-            "winRatePct": 51.7,
-            "adrReachWinPct": 51.7
+            "wins": 16,
+            "losses": 13,
+            "winRatePct": 55.2,
+            "adrReachWinPct": 55.2
           },
           {
             "bucketKey": "STRONG",
@@ -2094,9 +2275,9 @@
         ],
         "dayTotals": {
           "total": 75,
-          "wins": 37,
-          "losses": 38,
-          "winRatePct": 49.3
+          "wins": 38,
+          "losses": 37,
+          "winRatePct": 50.7
         },
         "weekdayTotals": {
           "MONDAY": {
@@ -2111,8 +2292,8 @@
           },
           "WEDNESDAY": {
             "total": 20,
-            "wins": 11,
-            "losses": 9
+            "wins": 12,
+            "losses": 8
           },
           "THURSDAY": {
             "total": 13,
@@ -2143,8 +2324,8 @@
           },
           "MODERATE": {
             "total": 29,
-            "wins": 15,
-            "losses": 14
+            "wins": 16,
+            "losses": 13
           },
           "STRONG": {
             "total": 18,
@@ -2208,8 +2389,8 @@
             },
             "WEDNESDAY": {
               "total": 9,
-              "wins": 5,
-              "losses": 4
+              "wins": 6,
+              "losses": 3
             },
             "THURSDAY": {
               "total": 3,

@@ -298,8 +298,11 @@ async function run() {
     }
 
     const adrUnavailableAuditText = (await page.locator("[data-adr-unavailable-audit='true']").textContent() || "").toLowerCase();
-    if (!adrUnavailableAuditText.includes("no repo-local dxy ohlc export is available")) {
+    if (!adrUnavailableAuditText.includes("no supportable dxy/usd-index daily ohlc source is staged")) {
       throw new Error(`ADR unavailable audit details did not preserve the USD/DXY blocker.\n${adrUnavailableAuditText}`);
+    }
+    if (!adrUnavailableAuditText.includes("oanda xau_usd daily ohlc cache is not staged")) {
+      throw new Error(`ADR unavailable audit details did not preserve the Gold/OANDA blocker.\n${adrUnavailableAuditText}`);
     }
 
     if (normalizedAdrReachText.includes("no repo-local eurusd ohlc source") || normalizedAdrReachText.includes("repository evidence only includes eurusd close-only lineage")) {
@@ -313,8 +316,8 @@ async function run() {
     const adrAuditText = (await page.locator("[data-adr-reach-layer1-summary='true']").innerText()).toLowerCase();
     for (const expectedAuditText of [
       "eur/usd daily ohlc csv from alpha vantage fx_daily",
-      "btc/usd daily ohlc csv from coinbase exchange candles",
-      "qqq ohlc daily proxy csv"
+      "btc/usdt daily ohlc from binance spot",
+      "qqq daily ohlc proxy (yahoo)"
     ]) {
       if (!adrAuditText.includes(expectedAuditText)) {
         throw new Error(`Warehouse Audit did not render current OHLC source text: ${expectedAuditText}\n${adrAuditText}`);

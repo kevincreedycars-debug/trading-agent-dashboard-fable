@@ -1,8 +1,15 @@
 # Session Notes
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 
 ## Work Completed
+
+- Fixed the ADR/L2L reach definition end-to-end: reach is intraday touch of `open +/- L2L distance` against the day's high/low, close ignored, strict day-open entry (previous-close fallback removed), no-trade rows separated from losses.
+- Extracted the semantics into `backtester/lib/adr_reach_logic.js` and covered them with unit + contract tests (`backtester/tests/adr_reach_logic.test.js`), including a guard against `Number(null) === 0` silently turning a missing open into an entry price of 0.
+- Added OANDA v20 and Binance importers with tracked caches under `backtester/cache/ohlc/`; BTC now evaluates against Binance BTCUSDT klines. OANDA `EUR_USD`/`XAU_USD`/`NAS100_USD` downloads are ready but blocked on `OANDA_API_TOKEN` (no credential exists in this environment); the builder auto-prefers those caches once staged, which also unlocks Gold.
+- Regenerated `data/adr-reach-research.json` with diagnostics; EUR and NQ results are unchanged vs the prior artifact (their sources already had opens everywhere), BTC shifted by exactly one row due to the instrument switch.
+- Validation: `node --check script.js` clean, backtester suite 31/32 (the single failure is the pre-existing Supabase-linked `evaluation_pipeline` test, which requires `supabase link` and is unrelated), Playwright dashboard smoke PASS, ADR validator PASS.
+- No live Layer 1 / Layer 2 trading logic was touched; all changes are backtester/research, dashboard research rendering copy, and test infrastructure.
 
 - Confirmed the full Layer 1 historical replay rollout is already validated across USD, EUR, Gold, NQ, and BTC.
 - Added a new `Weekday Breakdown` Backtest / Accuracy sub-tab so the main research area stays compact.

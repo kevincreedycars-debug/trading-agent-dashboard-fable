@@ -3,16 +3,18 @@
 const fs = require("fs");
 const path = require("path");
 const { parseArgs, parseDelimited } = require("../lib/historical_common");
+const {
+  ADR_WINDOW_SESSIONS,
+  ADR_THRESHOLD_PCT,
+  CONFIDENCE_BUCKETS,
+  normalizeReachDirection,
+  computeAdrFromSessions,
+  resolveL2lDistance,
+  evaluateIntradayReach,
+  bucketKeyFromConfidence
+} = require("../lib/adr_reach_logic");
 
-const ADR_WINDOW_SESSIONS = 20;
-const ADR_THRESHOLD_PCT = 50;
 const WEEKDAY_KEYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-const CONFIDENCE_BUCKETS = [
-  { key: "WEAK", label: "Weak", min: 0, max: 49 },
-  { key: "MODERATE", label: "Moderate", min: 50, max: 64 },
-  { key: "STRONG", label: "Strong", min: 65, max: 79 },
-  { key: "VERY_STRONG", label: "Very Strong", min: 80, max: 100 }
-];
 const CHECKER_PATHS = {
   USD: path.resolve(__dirname, "../../data/backtester-checker-usd-24h-2024-01.json"),
   EUR: path.resolve(__dirname, "../../data/backtester-checker-eur-24h-2024-2026.json"),
@@ -27,56 +29,104 @@ const EXPECTED_CHECKER_ROWS = {
   NQ: 604,
   BTC: 850
 };
+const CACHE_DIR = path.resolve(__dirname, "../cache/ohlc");
+const TMP_DIR = path.resolve(__dirname, "../tmp");
+
+// Sources are tried in order; the first one whose file exists wins. OANDA
+// caches (staged via backtester/importers/oanda/download_oanda_daily_ohlc.js)
+// always outrank legacy/proxy fallbacks, so coverage upgrades automatically
+// once the account-verified instrument data is downloaded.
 const ASSET_CONFIGS = [
   {
     assetCode: "EUR",
     assetLabel: "EUR",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
     checkerPath: CHECKER_PATHS.EUR,
-    ohlcSourcePath: path.resolve(__dirname, "../tmp/eurusd_daily_alpha_vantage.csv"),
-    ohlcSourceLabel: "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY",
-    status: "available",
-    blocker: null
+    allowWeekends: false,
+    sources: [
+      {
+        path: path.resolve(CACHE_DIR, "eur_usd_daily_oanda.csv"),
+        label: "EUR/USD daily OHLC from OANDA v20 EUR_USD mid candles",
+        kind: "oanda",
+        instrument: "EUR_USD"
+      },
+      {
+        path: path.resolve(TMP_DIR, "eurusd_daily_alpha_vantage.csv"),
+        label: "EUR/USD daily OHLC CSV from Alpha Vantage FX_DAILY (fallback until the OANDA EUR_USD cache is staged)",
+        kind: "legacy_fallback",
+        instrument: "EUR/USD (Alpha Vantage)"
+      }
+    ],
+    unavailableBlocker: "No EUR/USD daily OHLC source is staged."
   },
   {
     assetCode: "GOLD",
     assetLabel: "Gold",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
     checkerPath: CHECKER_PATHS.GOLD,
-    ohlcSourcePath: null,
-    ohlcSourceLabel: "No repo-local XAU/USD OHLC source",
-    status: "unavailable",
-    blocker: "No supportable unauthenticated XAU/USD spot OHLC feed is staged repo-locally yet. Existing repo evidence is still either close-only spot lineage or GLD proxy data, neither of which is acceptable for ADR reach."
+    allowWeekends: false,
+    sources: [
+      {
+        path: path.resolve(CACHE_DIR, "xau_usd_daily_oanda.csv"),
+        label: "XAU/USD daily OHLC from OANDA v20 XAU_USD mid candles",
+        kind: "oanda",
+        instrument: "XAU_USD"
+      }
+    ],
+    unavailableBlocker: "OANDA XAU_USD daily OHLC cache is not staged. Set OANDA_API_TOKEN and run backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=XAU_USD, then rebuild this artifact. Close-only spot lineage and GLD proxy data remain unacceptable for intraday reach evidence."
   },
   {
     assetCode: "NQ",
     assetLabel: "NQ",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
     checkerPath: CHECKER_PATHS.NQ,
-    ohlcSourcePath: path.resolve(__dirname, "../tmp/qqq_daily_yahoo.csv"),
-    ohlcSourceLabel: "QQQ OHLC daily proxy CSV",
-    status: "available",
-    blocker: null
+    allowWeekends: false,
+    sources: [
+      {
+        path: path.resolve(CACHE_DIR, "nas100_usd_daily_oanda.csv"),
+        label: "NAS100 daily OHLC from OANDA v20 NAS100_USD mid candles",
+        kind: "oanda",
+        instrument: "NAS100_USD"
+      },
+      {
+        path: path.resolve(CACHE_DIR, "qqq_daily_yahoo_proxy.csv"),
+        label: "QQQ daily OHLC proxy (Yahoo) — explicit proxy fallback until the OANDA NAS100_USD cache is staged",
+        kind: "proxy_fallback",
+        instrument: "QQQ (proxy for NAS100)"
+      }
+    ],
+    unavailableBlocker: "No NQ daily OHLC source is staged. Stage the OANDA NAS100_USD cache via backtester/importers/oanda/download_oanda_daily_ohlc.js."
   },
   {
     assetCode: "BTC",
     assetLabel: "BTC",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
     checkerPath: CHECKER_PATHS.BTC,
-    ohlcSourcePath: path.resolve(__dirname, "../tmp/btcusd_daily_coinbase.csv"),
-    ohlcSourceLabel: "BTC/USD daily OHLC CSV from Coinbase Exchange candles",
-    status: "available",
-    blocker: null
+    allowWeekends: true,
+    sources: [
+      {
+        path: path.resolve(CACHE_DIR, "btcusdt_daily_binance.csv"),
+        label: "BTC/USDT daily OHLC from Binance Spot GET /api/v3/klines (interval=1d)",
+        kind: "binance",
+        instrument: "BTCUSDT"
+      },
+      {
+        path: path.resolve(TMP_DIR, "btcusd_daily_coinbase.csv"),
+        label: "BTC/USD daily OHLC CSV from Coinbase Exchange candles (legacy fallback)",
+        kind: "legacy_fallback",
+        instrument: "BTC-USD (Coinbase)"
+      }
+    ],
+    unavailableBlocker: "No BTC daily OHLC source is staged."
   },
   {
     assetCode: "USD",
     assetLabel: "USD",
     weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
     checkerPath: CHECKER_PATHS.USD,
-    ohlcSourcePath: null,
-    ohlcSourceLabel: "No repo-local DXY OHLC source",
-    status: "unavailable",
-    blocker: "The repo includes only USD checker artifacts and close-to-close research views. No repo-local DXY OHLC export is available, and the raw warehouse table is not readable through the publishable research key."
+    allowWeekends: false,
+    sources: [],
+    unavailableBlocker: "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence."
   }
 ];
 const PAIR_CONFIGS = [
@@ -86,6 +136,7 @@ const PAIR_CONFIGS = [
   { targetAssetCode: "BTC", pairCode: "BTC_USD", pairLabel: "BTC/USD", weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"] }
 ];
 const OUTPUT_PATH = path.resolve(__dirname, "../../data/adr-reach-research.json");
+const REFERENCE_PRICE_POLICY = "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.";
 
 function parseConfidenceCandidate(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -109,13 +160,6 @@ function normalizeHeadlineConfidence(row) {
   }
 
   return null;
-}
-
-function bucketKeyFromConfidence(confidence) {
-  const numeric = Number(confidence);
-  if (!Number.isFinite(numeric)) return null;
-  const clamped = Math.max(0, Math.min(100, numeric));
-  return CONFIDENCE_BUCKETS.find(bucket => clamped >= bucket.min && clamped <= bucket.max)?.key || null;
 }
 
 function bucketLabelFromKey(bucketKey) {
@@ -165,13 +209,6 @@ function buildCellMap(keys = []) {
   return Object.fromEntries(keys.map(key => [key, createOutcomeCell()]));
 }
 
-function normalizeLayer1Direction(value = "") {
-  const normalized = String(value || "").trim().toUpperCase();
-  if (normalized.startsWith("BULLISH")) return "BULLISH";
-  if (normalized.startsWith("BEARISH")) return "BEARISH";
-  return null;
-}
-
 function normalizeExactDirectionalSignal(value = "") {
   const normalized = String(value || "").trim().toUpperCase();
   if (normalized === "BULLISH" || normalized === "BEARISH") return normalized;
@@ -182,9 +219,31 @@ function loadChecker(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
-function loadCsvOhlc(filePath) {
-  const rows = parseDelimited(fs.readFileSync(filePath, "utf8"));
+function resolveSource(config) {
+  for (const source of config.sources) {
+    if (fs.existsSync(source.path)) return source;
+  }
+  return null;
+}
+
+// Supports both cache schemas:
+// - legacy: date,open,high,low,close[,volume,...]
+// - importer: instrument,date,open,high,low,close,volume,source,complete
+// Incomplete (still-forming) candles and, for weekday-only markets, weekend
+// rows are filtered out and counted so the artifact can report them.
+function loadCsvOhlc(source, allowWeekends) {
+  const rows = parseDelimited(fs.readFileSync(source.path, "utf8"));
+  let incompleteRowsExcluded = 0;
+  let weekendRowsDropped = 0;
+
   const records = rows
+    .filter((row) => {
+      if (String(row.complete || "").trim().toLowerCase() === "false") {
+        incompleteRowsExcluded += 1;
+        return false;
+      }
+      return true;
+    })
     .map((row) => ({
       date: String(row.date || "").trim(),
       open: Number(row.open),
@@ -198,6 +257,15 @@ function loadCsvOhlc(filePath) {
       && Number.isFinite(row.low)
       && Number.isFinite(row.close)
     )
+    .filter((row) => {
+      if (allowWeekends) return true;
+      const weekdayKey = weekdayFromDate(row.date);
+      if (weekdayKey === "SATURDAY" || weekdayKey === "SUNDAY") {
+        weekendRowsDropped += 1;
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => a.date.localeCompare(b.date));
 
   const byDate = new Map(records.map(record => [record.date, record]));
@@ -216,7 +284,9 @@ function loadCsvOhlc(filePath) {
     coverageStart: records[0]?.date || null,
     coverageEnd: records[records.length - 1]?.date || null,
     weekdayCounts,
-    weekendRowCount
+    weekendRowCount,
+    incompleteRowsExcluded,
+    weekendRowsDropped
   };
 }
 
@@ -230,43 +300,38 @@ function computeAdrInputs(context, evaluationDate) {
   }
 
   const evaluationRecord = context.records[index];
-  const previousSessions = context.records.slice(index - ADR_WINDOW_SESSIONS, index);
-  if (previousSessions.length !== ADR_WINDOW_SESSIONS) {
-    return { ok: false, reason: "insufficient_previous_sessions" };
+  if (!Number.isFinite(evaluationRecord.open)) {
+    return { ok: false, reason: "missing_day_open" };
   }
 
-  const adr20 = previousSessions.reduce((sum, row) => sum + (row.high - row.low), 0) / ADR_WINDOW_SESSIONS;
-  const previousClose = context.records[index - 1]?.close;
-  const open = Number.isFinite(evaluationRecord.open) ? evaluationRecord.open : null;
-  const entryPrice = Number.isFinite(open) ? open : (Number.isFinite(previousClose) ? previousClose : null);
-  const entryKind = Number.isFinite(open) ? "open" : (Number.isFinite(previousClose) ? "previous_close" : null);
-
-  if (!Number.isFinite(entryPrice)) {
-    return { ok: false, reason: "missing_reference_price" };
+  const previousSessions = context.records.slice(index - ADR_WINDOW_SESSIONS, index);
+  const adr20 = computeAdrFromSessions(previousSessions, ADR_WINDOW_SESSIONS);
+  const targetDistance = resolveL2lDistance(adr20, ADR_THRESHOLD_PCT);
+  if (!Number.isFinite(targetDistance)) {
+    return { ok: false, reason: "insufficient_previous_sessions" };
   }
 
   return {
     ok: true,
-    entryPrice,
-    entryKind,
+    entryPrice: evaluationRecord.open,
     evaluationRecord,
     previousSessions,
     adr20,
-    targetDistance: adr20 * (ADR_THRESHOLD_PCT / 100)
+    targetDistance
   };
 }
 
-function evaluateAdrReach(directionKey, adrInputs) {
-  if (directionKey === "BULLISH") {
-    return {
-      reached: adrInputs.evaluationRecord.high >= (adrInputs.entryPrice + adrInputs.targetDistance),
-      reachedVia: "high"
-    };
-  }
-
+function buildDiagnostics(skippedCounts = {}) {
   return {
-    reached: adrInputs.evaluationRecord.low <= (adrInputs.entryPrice - adrInputs.targetDistance),
-    reachedVia: "low"
+    missingOhlcRows:
+      Number(skippedCounts.missing_evaluation_day_ohlc || 0)
+      + Number(skippedCounts.missing_day_open || 0),
+    missingL2lDistanceRows: Number(skippedCounts.insufficient_previous_sessions || 0),
+    noTradeRows: Number(skippedCounts.no_trade_non_directional || 0),
+    otherSkippedRows:
+      Number(skippedCounts.missing_confidence_bucket || 0)
+      + Number(skippedCounts.missing_evaluation_date || 0),
+    skippedCounts
   };
 }
 
@@ -276,13 +341,16 @@ function buildUnavailableAsset(config, checker) {
     assetLabel: config.assetLabel,
     available: false,
     status: "UNAVAILABLE",
-    blocker: config.blocker,
-    ohlcSourceLabel: config.ohlcSourceLabel,
-    referencePricePolicy: "Unavailable because no supportable OHLC source exists in repo evidence.",
+    blocker: config.unavailableBlocker,
+    ohlcSourceLabel: config.sources[0]?.label || "No OHLC source configured",
+    ohlcSourceKind: null,
+    ohlcInstrument: null,
+    referencePricePolicy: "Unavailable because no supportable OHLC source is staged in the repo.",
     summaryRowsChecked: Number(checker?.summary?.rows_checked || 0),
     totalCheckerRows: Array.isArray(checker?.rows) ? checker.rows.length : 0,
     evaluatedRows: [],
     skippedCounts: {},
+    diagnostics: buildDiagnostics({}),
     summary: {
       evaluatedCalls: 0,
       adrReachWins: 0,
@@ -308,11 +376,12 @@ function buildUnavailableAsset(config, checker) {
 }
 
 function buildLayer1AssetResearch(config, checker) {
-  if (config.status !== "available") {
+  const source = resolveSource(config);
+  if (!source) {
     return buildUnavailableAsset(config, checker);
   }
 
-  const context = loadCsvOhlc(config.ohlcSourcePath);
+  const context = loadCsvOhlc(source, config.allowWeekends);
   const rows = Array.isArray(checker?.rows) ? checker.rows : [];
   const weekdayTotals = buildCellMap(config.weekdayKeys);
   const bucketTotals = buildCellMap(CONFIDENCE_BUCKETS.map(bucket => bucket.key));
@@ -321,9 +390,10 @@ function buildLayer1AssetResearch(config, checker) {
   const skippedCounts = {};
 
   rows.forEach((row) => {
-    const directionKey = normalizeLayer1Direction(row?.stored?.direction || row?.checker?.direction || "");
+    const rawDirection = row?.stored?.direction || row?.checker?.direction || "";
+    const directionKey = normalizeReachDirection(rawDirection);
     if (!directionKey) {
-      skippedCounts.unsupported_direction = (skippedCounts.unsupported_direction || 0) + 1;
+      skippedCounts.no_trade_non_directional = (skippedCounts.no_trade_non_directional || 0) + 1;
       return;
     }
 
@@ -347,8 +417,19 @@ function buildLayer1AssetResearch(config, checker) {
       return;
     }
 
-    const reach = evaluateAdrReach(directionKey, adrInputs);
-    const outcomeKey = reach.reached ? "WIN" : "LOSS";
+    const reach = evaluateIntradayReach({
+      direction: directionKey,
+      open: adrInputs.entryPrice,
+      high: adrInputs.evaluationRecord.high,
+      low: adrInputs.evaluationRecord.low,
+      l2lDistance: adrInputs.targetDistance
+    });
+    if (reach.status !== "WIN" && reach.status !== "MISS") {
+      skippedCounts[reach.reason || "invalid_reach_inputs"] = (skippedCounts[reach.reason || "invalid_reach_inputs"] || 0) + 1;
+      return;
+    }
+
+    const outcomeKey = reach.status === "WIN" ? "WIN" : "LOSS";
     addOutcome(weekdayTotals[weekdayKey], outcomeKey);
     addOutcome(bucketTotals[bucketKey], outcomeKey);
     addOutcome(bucketMatrix[bucketKey][weekdayKey], outcomeKey);
@@ -359,14 +440,14 @@ function buildLayer1AssetResearch(config, checker) {
       evaluationDate,
       weekdayKey,
       directionKey,
-      directionRaw: row?.stored?.direction || row?.checker?.direction || null,
+      directionRaw: rawDirection || null,
       confidencePct,
       bucketKey,
       entryPrice: adrInputs.entryPrice,
-      entryKind: adrInputs.entryKind,
       adr20: Number(adrInputs.adr20.toFixed(8)),
       targetDistance: Number(adrInputs.targetDistance.toFixed(8)),
-      dayOpen: Number.isFinite(adrInputs.evaluationRecord.open) ? adrInputs.evaluationRecord.open : null,
+      requiredTarget: Number(reach.requiredTarget.toFixed(8)),
+      dayOpen: adrInputs.evaluationRecord.open,
       dayHigh: adrInputs.evaluationRecord.high,
       dayLow: adrInputs.evaluationRecord.low,
       dayClose: adrInputs.evaluationRecord.close,
@@ -401,19 +482,24 @@ function buildLayer1AssetResearch(config, checker) {
     available: true,
     status: "AVAILABLE",
     blocker: null,
-    ohlcSourceLabel: config.ohlcSourceLabel,
-    ohlcSourcePath: path.relative(path.resolve(__dirname, "../.."), config.ohlcSourcePath).replace(/\\/g, "/"),
-    referencePricePolicy: "Use evaluation-day open when OHLC open exists; otherwise use previous close.",
+    ohlcSourceLabel: source.label,
+    ohlcSourceKind: source.kind,
+    ohlcInstrument: source.instrument,
+    ohlcSourcePath: path.relative(path.resolve(__dirname, "../.."), source.path).replace(/\\/g, "/"),
+    referencePricePolicy: REFERENCE_PRICE_POLICY,
     sourceCoverage: {
       startDate: context.coverageStart,
       endDate: context.coverageEnd,
       rowCount: context.records.length,
-      weekendRowCount: context.weekendRowCount
+      weekendRowCount: context.weekendRowCount,
+      incompleteRowsExcluded: context.incompleteRowsExcluded,
+      weekendRowsDropped: context.weekendRowsDropped
     },
     summaryRowsChecked: Number(checker?.summary?.rows_checked || 0),
     totalCheckerRows: rows.length,
     evaluatedRows,
     skippedCounts,
+    diagnostics: buildDiagnostics(skippedCounts),
     summary: {
       evaluatedCalls: dayTotals.total,
       adrReachWins: dayTotals.wins,
@@ -428,6 +514,19 @@ function buildLayer1AssetResearch(config, checker) {
     bucketTotals,
     bucketMatrix,
     dayTotals
+  };
+}
+
+function buildPairDiagnostics(skippedCounts = {}) {
+  return {
+    missingUsdSnapshotRows: Number(skippedCounts.missing_usd_snapshot || 0),
+    noTradeRows:
+      Number(skippedCounts.unsupported_target_direction || 0)
+      + Number(skippedCounts.unsupported_usd_direction || 0),
+    sameDirectionConflicts: Number(skippedCounts.same_direction_conflict || 0),
+    missingCombinedConfidenceRows: Number(skippedCounts.missing_combined_confidence || 0),
+    missingTargetAdrSupportRows: Number(skippedCounts.missing_target_adr_support || 0),
+    skippedCounts
   };
 }
 
@@ -463,7 +562,8 @@ function buildLayer2PairResearch(config, layer1ByAssetCode, checkers) {
       bucketMatrix: Object.fromEntries(CONFIDENCE_BUCKETS.map(bucket => [bucket.key, buildCellMap(config.weekdayKeys)])),
       dayTotals: summarizeOutcomeCell(createOutcomeCell()),
       tradableRows: [],
-      skippedCounts: {}
+      skippedCounts: {},
+      diagnostics: buildPairDiagnostics({})
     };
   }
 
@@ -576,7 +676,8 @@ function buildLayer2PairResearch(config, layer1ByAssetCode, checkers) {
     bucketMatrix,
     dayTotals,
     tradableRows,
-    skippedCounts
+    skippedCounts,
+    diagnostics: buildPairDiagnostics(skippedCounts)
   };
 }
 
@@ -616,11 +717,26 @@ function validateAvailableAsset(asset, errors) {
     if (Math.abs(row.targetDistance - (row.adr20 * 0.5)) > 0.000001) {
       errors.push(`${asset.assetCode} row ${index + 1}: threshold did not equal 50% ADR20`);
     }
-    if (row.directionKey === "BULLISH" && row.reachedVia !== "high") {
-      errors.push(`${asset.assetCode} row ${index + 1}: bullish reach was not evaluated against the session high`);
+    if (row.entryPrice !== row.dayOpen) {
+      errors.push(`${asset.assetCode} row ${index + 1}: entry price was not the call day's open`);
     }
-    if (row.directionKey === "BEARISH" && row.reachedVia !== "low") {
-      errors.push(`${asset.assetCode} row ${index + 1}: bearish reach was not evaluated against the session low`);
+    if (row.directionKey === "BULLISH") {
+      if (row.reachedVia !== "high") {
+        errors.push(`${asset.assetCode} row ${index + 1}: bullish reach was not evaluated against the session high`);
+      }
+      const shouldWin = row.dayHigh >= (row.entryPrice + row.targetDistance) - 0.000001;
+      if ((row.outcomeKey === "WIN") !== shouldWin) {
+        errors.push(`${asset.assetCode} row ${index + 1}: bullish outcome did not match the intraday touch definition`);
+      }
+    }
+    if (row.directionKey === "BEARISH") {
+      if (row.reachedVia !== "low") {
+        errors.push(`${asset.assetCode} row ${index + 1}: bearish reach was not evaluated against the session low`);
+      }
+      const shouldWin = row.dayLow <= (row.entryPrice - row.targetDistance) + 0.000001;
+      if ((row.outcomeKey === "WIN") !== shouldWin) {
+        errors.push(`${asset.assetCode} row ${index + 1}: bearish outcome did not match the intraday touch definition`);
+      }
     }
   });
 
@@ -681,13 +797,35 @@ function buildOutput(layer1Assets, layer2Pairs) {
       evaluation_window: "following 24hrs",
       adr_window_sessions: ADR_WINDOW_SESSIONS,
       adr_threshold_pct: ADR_THRESHOLD_PCT,
-      reference_price_policy: "Use evaluation-day open when OHLC open exists; otherwise previous close. Unsupported assets stay unavailable rather than estimated."
+      l2l_definition: `L2L target distance = ${ADR_THRESHOLD_PCT}% of the rolling ADR(${ADR_WINDOW_SESSIONS}) computed from the ${ADR_WINDOW_SESSIONS} completed sessions before the evaluation day.`,
+      win_definition: "WIN when the day's high (bullish/long) or low (bearish/short) touches open +/- the L2L target distance at any point inside the evaluation day. The close is ignored; this is intraday reach, not close-to-close accuracy.",
+      reference_price_policy: REFERENCE_PRICE_POLICY,
+      diagnostics: {
+        unsupportedInstruments: layer1Assets
+          .filter(asset => !asset.available)
+          .map(asset => ({ assetCode: asset.assetCode, blocker: asset.blocker })),
+        layer1: Object.fromEntries(layer1Assets.map(asset => [asset.assetCode, {
+          missingOhlcRows: asset.diagnostics.missingOhlcRows,
+          missingL2lDistanceRows: asset.diagnostics.missingL2lDistanceRows,
+          noTradeRows: asset.diagnostics.noTradeRows,
+          otherSkippedRows: asset.diagnostics.otherSkippedRows
+        }])),
+        layer2: Object.fromEntries(layer2Pairs.map(pair => [pair.pairCode, {
+          missingUsdSnapshotRows: pair.diagnostics.missingUsdSnapshotRows,
+          noTradeRows: pair.diagnostics.noTradeRows,
+          sameDirectionConflicts: pair.diagnostics.sameDirectionConflicts,
+          missingCombinedConfidenceRows: pair.diagnostics.missingCombinedConfidenceRows,
+          missingTargetAdrSupportRows: pair.diagnostics.missingTargetAdrSupportRows
+        }]))
+      }
     },
     source_audit: layer1Assets.map(asset => ({
       assetCode: asset.assetCode,
       assetLabel: asset.assetLabel,
       available: asset.available,
       ohlcSourceLabel: asset.ohlcSourceLabel,
+      ohlcSourceKind: asset.ohlcSourceKind || null,
+      ohlcInstrument: asset.ohlcInstrument || null,
       ohlcSourcePath: asset.ohlcSourcePath || null,
       sourceCoverage: asset.sourceCoverage || null,
       referencePricePolicy: asset.referencePricePolicy,
@@ -713,6 +851,7 @@ function buildOutput(layer1Assets, layer2Pairs) {
         blocker: asset.blocker || null,
         weekdayKeys: asset.weekdayKeys,
         summary: asset.summary,
+        diagnostics: asset.diagnostics,
         bucketSummaryRows: asset.bucketSummaryRows,
         dayTotals: asset.dayTotals,
         weekdayTotals: asset.weekdayTotals,
@@ -742,6 +881,7 @@ function buildOutput(layer1Assets, layer2Pairs) {
         blocker: pair.blocker || null,
         weekdayKeys: pair.weekdayKeys,
         summary: pair.summary,
+        diagnostics: pair.diagnostics,
         bucketSummaryRows: pair.bucketSummaryRows,
         dayTotals: pair.dayTotals,
         weekdayTotals: pair.weekdayTotals,
@@ -786,6 +926,7 @@ function main() {
     layer2_summary: output.layer2.summary_rows,
     available_layer1_assets: layer1Assets.filter(asset => asset.available).map(asset => asset.assetCode),
     available_layer2_pairs: layer2Pairs.filter(pair => pair.available).map(pair => pair.pairCode),
+    diagnostics: output.meta.diagnostics,
     errors
   }, null, 2));
 
