@@ -1,5 +1,10 @@
-const layer1Url = "./data/layer1.json";
-const layer2Url = "./data/layer2.json";
+// The shared n8n pipeline (Dashboard Writer / Layer 2 agent / Master Orchestrator)
+// publishes live runtime artifacts into the original repo only, so this clone reads
+// layer1/layer2/workflow-status cross-origin from that repo's Pages site. Research
+// artifacts stay repo-local; Supabase research views are already a shared live source.
+const liveDataBase = "https://kevincreedycars-debug.github.io/trading-agent-dashboard/data";
+const layer1Url = `${liveDataBase}/layer1.json`;
+const layer2Url = `${liveDataBase}/layer2.json`;
 const workflowControlUrl = "./data/workflow-control.json";
 const checkerDataUrls = {
   USD: "./data/backtester-checker-usd-24h-2024-01.json?v=20260629-usd-flatband-010",
