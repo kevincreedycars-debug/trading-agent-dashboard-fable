@@ -48,6 +48,48 @@ async function run() {
     });
 
     await page.goto("http://127.0.0.1:4173/", { waitUntil: "networkidle" });
+
+    const browserPairContract = await page.evaluate(() => {
+      const result = globalThis.Layer2PairLogic.deriveLayer2PairSignal({
+        instrument: "TEST/USD",
+        targetDirection: "BEARISH",
+        usdDirection: "BULLISH",
+        targetConfidence: 42,
+        usdConfidence: 86
+      });
+
+      return {
+        tradable: result.tradable,
+        direction: result.direction,
+        combinedConfidence: result.combinedConfidence,
+        strengthBucket: result.strengthBucket,
+        strengthBucketKey: result.strengthBucketKey
+      };
+    });
+
+    if (
+      browserPairContract.tradable !== true
+      || browserPairContract.direction !== "SELL"
+      || browserPairContract.combinedConfidence !== 42
+      || browserPairContract.strengthBucketKey !== "WEAK"
+      || browserPairContract.strengthBucket !== "Weak"
+    ) {
+      throw new Error(`Browser Layer 2 pair contract failed.\n${JSON.stringify(browserPairContract, null, 2)}`);
+    }
+
+    await page.getByRole("button", { name: "Pair Analysis" }).click();
+    await page.waitForSelector("text=Layer 2 Trade Selection", { timeout: 15000 });
+    const layer2Text = await page.locator("#layer2View").innerText();
+    const normalizedLayer2Text = layer2Text.toLowerCase();
+
+    if (!normalizedLayer2Text.includes("combined confidence is always the lower layer 1 confidence")) {
+      throw new Error(`Layer 2 live summary did not render the min-confidence invariant.\n${layer2Text}`);
+    }
+
+    if (!normalizedLayer2Text.includes("no trade") || !normalizedLayer2Text.includes("target 24h signal is non-directional")) {
+      throw new Error(`Layer 2 live cards did not render expected tradable/no-trade state.\n${layer2Text}`);
+    }
+
     await page.getByRole("button", { name: "Backtest / Accuracy" }).click();
     await page.getByRole("button", { name: "Accuracy Tables" }).click();
 

@@ -12,9 +12,14 @@ const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260703-adr-reach
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 const headlineConfidenceLib = globalThis.HeadlineConfidence;
+const layer2PairLogicLib = globalThis.Layer2PairLogic;
 
 if (!headlineConfidenceLib) {
   throw new Error("HeadlineConfidence shared helper is required before loading script.js");
+}
+
+if (!layer2PairLogicLib) {
+  throw new Error("Layer2PairLogic shared helper is required before loading script.js");
 }
 
 const labels = {
@@ -1864,9 +1869,8 @@ function renderAgentDetail(agentName) {
 }
 
 function confidenceLabel(value) {
-  if (value >= 80) return "High confidence";
-  if (value >= 65) return "Moderate confidence";
-  return "Low confidence";
+  const bucket = layer2PairLogicLib.confidenceBucketFromValue(value);
+  return bucket ? bucket.label : "Awaiting selection";
 }
 
 function rankLabel(rank) {
@@ -1879,6 +1883,7 @@ function rankLabel(rank) {
 function renderTradeOpportunityCard(opportunity, label = "") {
   const direction = opportunity.direction || "NO TRADE";
   const confidence = opportunity.confidence ?? null;
+  const strengthLabel = opportunity.strengthBucket || (confidence === null ? "Awaiting selection" : confidenceLabel(Number(confidence)));
 
   return `
     <article class="trade-opportunity-card ${directionClass(direction)}">
@@ -1892,7 +1897,7 @@ function renderTradeOpportunityCard(opportunity, label = "") {
       <div class="trade-confidence">
         <span>Confidence</span>
         <b>${formatConviction(confidence)}</b>
-        <small>${confidence === null ? "Awaiting selection" : escapeHtml(confidenceLabel(Number(confidence)))}</small>
+        <small>${escapeHtml(strengthLabel)}</small>
       </div>
       <p class="trade-reason">${escapeHtml(opportunity.reason || "No reason supplied.")}</p>
     </article>
@@ -1913,6 +1918,70 @@ function renderAvoidCard(item) {
   `;
 }
 
+function deriveLiveLayer2Dashboard() {
+  const rawTradeOpportunities = Array.isArray(layer2Data?.trade_opportunities) ? layer2Data.trade_opportunities : [];
+  const rawAvoidToday = Array.isArray(layer2Data?.avoid_today) ? layer2Data.avoid_today : [];
+
+  if (!Array.isArray(layer1Data?.agents) || !layer1Data.agents.length) {
+    return {
+      tradeOpportunities: rawTradeOpportunities,
+      avoidToday: rawAvoidToday
+    };
+  }
+
+  const usdAgent = layer1Data.agents.find((agent) => agent?.agent === "USD") || null;
+  const opportunities = [];
+  const avoided = [];
+
+  pairTradeResearchConfigs.forEach((config) => {
+    const targetAgent = layer1Data.agents.find((agent) => agent?.agent === config.targetAssetCode) || null;
+    const targetCall = getCall(targetAgent, "24h");
+    const usdCall = getCall(usdAgent, "24h");
+    const targetDirection = layer2PairLogicLib.normalizeDirectionalSignalKey(targetCall?.direction);
+    const usdDirection = layer2PairLogicLib.normalizeDirectionalSignalKey(usdCall?.direction);
+    const targetConfidence = confidenceValue(targetCall, targetAgent, "24h");
+    const usdConfidence = confidenceValue(usdCall, usdAgent, "24h");
+    const pairSignal = layer2PairLogicLib.deriveLayer2PairSignal({
+      instrument: config.pairLabel,
+      targetDirection,
+      usdDirection,
+      targetConfidence,
+      usdConfidence
+    });
+
+    if (pairSignal.tradable) {
+      opportunities.push({
+        instrument: config.pairLabel,
+        direction: pairSignal.direction,
+        confidence: pairSignal.combinedConfidence,
+        strengthBucket: pairSignal.strengthBucket,
+        reason: `${config.targetAssetCode} is independently ${targetDirection.toLowerCase()} while USD is independently ${usdDirection.toLowerCase()} during today's session.`
+      });
+      return;
+    }
+
+    avoided.push({
+      instrument: config.pairLabel,
+      reason: pairSignal.reason
+    });
+  });
+
+  opportunities.sort((a, b) => {
+    const confidenceDelta = Number(b.confidence || 0) - Number(a.confidence || 0);
+    if (confidenceDelta !== 0) return confidenceDelta;
+    return String(a.instrument || "").localeCompare(String(b.instrument || ""));
+  });
+
+  opportunities.forEach((opportunity, index) => {
+    opportunity.rank = index + 1;
+  });
+
+  return {
+    tradeOpportunities: opportunities,
+    avoidToday: avoided
+  };
+}
+
 function renderLayer2(data = {}) {
   const layer2Updated = document.getElementById("layer2Updated");
   if (layer2Updated) {
@@ -1923,15 +1992,16 @@ function renderLayer2(data = {}) {
     overviewLayer2Updated.textContent = `Last updated: ${formatDashboardTime(data.dashboard_meta?.last_updated_et)}`;
   }
 
-  const opportunities = Array.isArray(data.trade_opportunities) ? data.trade_opportunities : [];
-  const avoided = Array.isArray(data.avoid_today) ? data.avoid_today : [];
+  const derivedLayer2 = deriveLiveLayer2Dashboard();
+  const opportunities = derivedLayer2.tradeOpportunities;
+  const avoided = derivedLayer2.avoidToday;
   const html = `
     <div class="layer2-summary trade-layer-summary">
       <div>
         <p class="eyebrow">Pair Analysis</p>
         <h3>Layer 2 Trade Selection</h3>
       </div>
-      <p class="summary">Layer 2 displays trade selections produced by the Layer 2 agent. The browser only renders the supplied output.</p>
+      <p class="summary">Layer 2 derives live pair trades from 24H Layer 1 headline confidence and direction state. Tradable pairs require opposite directional target/USD signals, and combined confidence is always the lower Layer 1 confidence.</p>
     </div>
     <div class="trade-grid">
       ${opportunities.length
