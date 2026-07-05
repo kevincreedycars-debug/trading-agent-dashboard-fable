@@ -7,13 +7,17 @@ const {
   ADR_WINDOW_SESSIONS,
   ADR_THRESHOLD_PCT,
   RANGE_AVAILABILITY_NOTE,
+  DIRECTIONAL_MOVE_NOTE,
   CONFIDENCE_BUCKETS,
   normalizeReachDirection,
   computeAdrFromSessions,
   resolveL2lDistance,
   evaluateL2lRangeAvailability,
+  evaluateL2lDirectionalMove,
   bucketKeyFromConfidence
 } = require("../lib/l2l_range_logic");
+
+const MIN_HOURLY_CANDLES_PER_DAY = 6;
 
 const WEEKDAY_KEYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 const CHECKER_PATHS = {
@@ -58,6 +62,14 @@ const ASSET_CONFIGS = [
         instrument: "EUR/USD (Alpha Vantage)"
       }
     ],
+    hourlySources: [
+      {
+        path: path.resolve(CACHE_DIR, "eur_usd_h1_oanda.csv"),
+        label: "EUR/USD H1 OHLC from OANDA v20 EUR_USD mid candles",
+        kind: "oanda",
+        instrument: "EUR_USD"
+      }
+    ],
     unavailableBlocker: "No EUR/USD daily OHLC source is staged."
   },
   {
@@ -70,6 +82,14 @@ const ASSET_CONFIGS = [
       {
         path: path.resolve(CACHE_DIR, "xau_usd_daily_oanda.csv"),
         label: "XAU/USD daily OHLC from OANDA v20 XAU_USD mid candles",
+        kind: "oanda",
+        instrument: "XAU_USD"
+      }
+    ],
+    hourlySources: [
+      {
+        path: path.resolve(CACHE_DIR, "xau_usd_h1_oanda.csv"),
+        label: "XAU/USD H1 OHLC from OANDA v20 XAU_USD mid candles",
         kind: "oanda",
         instrument: "XAU_USD"
       }
@@ -96,6 +116,14 @@ const ASSET_CONFIGS = [
         instrument: "QQQ (proxy for NAS100)"
       }
     ],
+    hourlySources: [
+      {
+        path: path.resolve(CACHE_DIR, "nas100_usd_h1_oanda.csv"),
+        label: "NAS100 H1 OHLC from OANDA v20 NAS100_USD mid candles",
+        kind: "oanda",
+        instrument: "NAS100_USD"
+      }
+    ],
     unavailableBlocker: "No NQ daily OHLC source is staged. Stage the OANDA NAS100_USD cache via backtester/importers/oanda/download_oanda_daily_ohlc.js."
   },
   {
@@ -118,6 +146,14 @@ const ASSET_CONFIGS = [
         instrument: "BTC-USD (Coinbase)"
       }
     ],
+    hourlySources: [
+      {
+        path: path.resolve(CACHE_DIR, "btcusdt_h1_binance.csv"),
+        label: "BTC/USDT 1h OHLC from Binance Spot GET /api/v3/klines",
+        kind: "binance",
+        instrument: "BTCUSDT"
+      }
+    ],
     unavailableBlocker: "No BTC daily OHLC source is staged."
   },
   {
@@ -127,6 +163,7 @@ const ASSET_CONFIGS = [
     checkerPath: CHECKER_PATHS.USD,
     allowWeekends: false,
     sources: [],
+    hourlySources: [],
     unavailableBlocker: "No supportable DXY/USD-index daily OHLC source is staged. If the OANDA account exposes a USD index instrument, stage it via backtester/importers/oanda/download_oanda_daily_ohlc.js --instrument=<name> and add it to this builder. Close-to-close research views remain unacceptable for intraday reach evidence."
   }
 ];
@@ -291,6 +328,53 @@ function loadCsvOhlc(source, allowWeekends) {
   };
 }
 
+// Hourly candles grouped by UTC date. Weekend-dated stubs stay in the map but
+// are never queried for weekday-only markets because evaluation dates come
+// from the weekday-filtered daily calendar.
+function loadHourlyOhlc(source) {
+  const rows = parseDelimited(fs.readFileSync(source.path, "utf8"));
+  let incompleteRowsExcluded = 0;
+  const byDate = new Map();
+  let rowCount = 0;
+  let coverageStart = null;
+  let coverageEnd = null;
+
+  rows.forEach((row) => {
+    if (String(row.complete || "").trim().toLowerCase() === "false") {
+      incompleteRowsExcluded += 1;
+      return;
+    }
+    const time = String(row.time || "").trim();
+    const date = String(row.date || "").trim();
+    const candle = {
+      time,
+      open: Number(row.open),
+      high: Number(row.high),
+      low: Number(row.low),
+      close: Number(row.close)
+    };
+    if (
+      !time
+      || !date
+      || !Number.isFinite(candle.open)
+      || !Number.isFinite(candle.high)
+      || !Number.isFinite(candle.low)
+      || !Number.isFinite(candle.close)
+    ) {
+      return;
+    }
+    if (!byDate.has(date)) byDate.set(date, []);
+    byDate.get(date).push(candle);
+    rowCount += 1;
+    if (!coverageStart || date < coverageStart) coverageStart = date;
+    if (!coverageEnd || date > coverageEnd) coverageEnd = date;
+  });
+
+  byDate.forEach((candles) => candles.sort((a, b) => a.time.localeCompare(b.time)));
+
+  return { byDate, rowCount, coverageStart, coverageEnd, incompleteRowsExcluded };
+}
+
 function computeAdrInputs(context, evaluationDate) {
   const index = context.indexByDate.get(evaluationDate);
   if (!Number.isInteger(index)) {
@@ -324,6 +408,9 @@ function buildDiagnostics(skippedCounts = {}) {
       + Number(skippedCounts.missing_high_low || 0)
       + Number(skippedCounts.invalid_range || 0),
     missingL2lDistanceRows: Number(skippedCounts.insufficient_previous_sessions || 0),
+    missingIntradayRows:
+      Number(skippedCounts.missing_intraday_ohlc || 0)
+      + Number(skippedCounts.insufficient_intraday_coverage || 0),
     noTradeRows: Number(skippedCounts.no_trade_non_directional || 0),
     otherSkippedRows:
       Number(skippedCounts.missing_confidence_bucket || 0)
@@ -374,11 +461,19 @@ function buildUnavailableAsset(config, checker) {
 
 function buildLayer1AssetResearch(config, checker) {
   const source = resolveSource(config);
-  if (!source) {
+  const hourlySource = (config.hourlySources || []).find((candidate) => fs.existsSync(candidate.path)) || null;
+  if (!source || !hourlySource) {
+    if (source && !hourlySource) {
+      return buildUnavailableAsset({
+        ...config,
+        unavailableBlocker: `Daily OHLC is staged but the hourly cache is missing. Stage ${config.hourlySources?.[0]?.path ? path.basename(config.hourlySources[0].path) : "the H1 cache"} via the importer, then rebuild.`
+      }, checker);
+    }
     return buildUnavailableAsset(config, checker);
   }
 
   const context = loadCsvOhlc(source, config.allowWeekends);
+  const hourlyContext = loadHourlyOhlc(hourlySource);
   const rows = Array.isArray(checker?.rows) ? checker.rows : [];
   const weekdayTotals = buildCellMap(config.weekdayKeys);
   const bucketTotals = buildCellMap(CONFIDENCE_BUCKETS.map(bucket => bucket.key));
@@ -414,18 +509,40 @@ function buildLayer1AssetResearch(config, checker) {
       return;
     }
 
-    const reach = evaluateL2lRangeAvailability({
+    const hourlyCandles = hourlyContext.byDate.get(evaluationDate) || [];
+    if (!hourlyCandles.length) {
+      skippedCounts.missing_intraday_ohlc = (skippedCounts.missing_intraday_ohlc || 0) + 1;
+      return;
+    }
+    if (hourlyCandles.length < MIN_HOURLY_CANDLES_PER_DAY) {
+      skippedCounts.insufficient_intraday_coverage = (skippedCounts.insufficient_intraday_coverage || 0) + 1;
+      return;
+    }
+
+    const move = evaluateL2lDirectionalMove({
+      direction: directionKey,
+      candles: hourlyCandles,
+      l2lDistance: adrInputs.targetDistance
+    });
+    if (move.status !== "MOVED" && move.status !== "NOT_MOVED") {
+      skippedCounts[move.reason || "invalid_move_inputs"] = (skippedCounts[move.reason || "invalid_move_inputs"] || 0) + 1;
+      return;
+    }
+
+    const range = evaluateL2lRangeAvailability({
       direction: directionKey,
       high: adrInputs.evaluationRecord.high,
       low: adrInputs.evaluationRecord.low,
       l2lDistance: adrInputs.targetDistance
     });
-    if (reach.status !== "AVAILABLE" && reach.status !== "NOT_AVAILABLE") {
-      skippedCounts[reach.reason || "invalid_reach_inputs"] = (skippedCounts[reach.reason || "invalid_reach_inputs"] || 0) + 1;
-      return;
-    }
+    let intradayHigh = -Infinity;
+    let intradayLow = Infinity;
+    hourlyCandles.forEach((candle) => {
+      if (candle.high > intradayHigh) intradayHigh = candle.high;
+      if (candle.low < intradayLow) intradayLow = candle.low;
+    });
 
-    const outcomeKey = reach.rangeAvailable ? "WIN" : "LOSS";
+    const outcomeKey = move.moveAchieved ? "WIN" : "LOSS";
     addOutcome(weekdayTotals[weekdayKey], outcomeKey);
     addOutcome(bucketTotals[bucketKey], outcomeKey);
     addOutcome(bucketMatrix[bucketKey][weekdayKey], outcomeKey);
@@ -447,11 +564,17 @@ function buildLayer1AssetResearch(config, checker) {
       high: adrInputs.evaluationRecord.high,
       low: adrInputs.evaluationRecord.low,
       close: adrInputs.evaluationRecord.close,
-      dayRange: Number(reach.dayRange.toFixed(8)),
+      dayRange: Number((adrInputs.evaluationRecord.high - adrInputs.evaluationRecord.low).toFixed(8)),
       adr20: Number(adrInputs.adr20.toFixed(8)),
       l2lDistance: Number(adrInputs.targetDistance.toFixed(8)),
-      rangeAvailable: reach.rangeAvailable,
-      rangeMargin: Number(reach.rangeMargin.toFixed(8)),
+      maxDirectionalMove: Number(move.maxDirectionalMove.toFixed(8)),
+      moveAchieved: move.moveAchieved,
+      moveMargin: Number(move.moveMargin.toFixed(8)),
+      hourlyCandleCount: move.candlesUsed,
+      intradayHigh,
+      intradayLow,
+      rangeAvailable: range.rangeAvailable === true,
+      rangeMargin: Number.isFinite(range.rangeMargin) ? Number(range.rangeMargin.toFixed(8)) : null,
       prev20FirstDate: adrInputs.previousSessions[0]?.date || null,
       prev20LastDate: adrInputs.previousSessions[ADR_WINDOW_SESSIONS - 1]?.date || null,
       prev20Count: adrInputs.previousSessions.length,
@@ -486,6 +609,8 @@ function buildLayer1AssetResearch(config, checker) {
     ohlcSourceKind: source.kind,
     ohlcInstrument: source.instrument,
     ohlcSourcePath: path.relative(path.resolve(__dirname, "../.."), source.path).replace(/\\/g, "/"),
+    hourlySourceLabel: hourlySource.label,
+    hourlySourcePath: path.relative(path.resolve(__dirname, "../.."), hourlySource.path).replace(/\\/g, "/"),
     referencePricePolicy: REFERENCE_PRICE_POLICY,
     sourceCoverage: {
       startDate: context.coverageStart,
@@ -493,7 +618,11 @@ function buildLayer1AssetResearch(config, checker) {
       rowCount: context.records.length,
       weekendRowCount: context.weekendRowCount,
       incompleteRowsExcluded: context.incompleteRowsExcluded,
-      weekendRowsDropped: context.weekendRowsDropped
+      weekendRowsDropped: context.weekendRowsDropped,
+      hourlyRowCount: hourlyContext.rowCount,
+      hourlyCoverageStart: hourlyContext.coverageStart,
+      hourlyCoverageEnd: hourlyContext.coverageEnd,
+      hourlyIncompleteRowsExcluded: hourlyContext.incompleteRowsExcluded
     },
     summaryRowsChecked: Number(checker?.summary?.rows_checked || 0),
     totalCheckerRows: rows.length,
@@ -646,6 +775,10 @@ function buildLayer2PairResearch(config, layer1ByAssetCode, checkers) {
       close: evaluatedTargetRow.close,
       dayRange: evaluatedTargetRow.dayRange,
       l2lDistance: evaluatedTargetRow.l2lDistance,
+      maxDirectionalMove: evaluatedTargetRow.maxDirectionalMove,
+      moveAchieved: evaluatedTargetRow.moveAchieved,
+      moveMargin: evaluatedTargetRow.moveMargin,
+      hourlyCandleCount: evaluatedTargetRow.hourlyCandleCount,
       rangeAvailable: evaluatedTargetRow.rangeAvailable,
       rangeMargin: evaluatedTargetRow.rangeMargin,
       outcomeKey: evaluatedTargetRow.outcomeKey
@@ -736,12 +869,26 @@ function validateAvailableAsset(asset, errors) {
     if (Math.abs(row.dayRange - (row.high - row.low)) > 0.000001) {
       errors.push(`${asset.assetCode} row ${index + 1}: day range did not equal high - low`);
     }
-    if (Math.abs(row.rangeMargin - (row.dayRange - row.l2lDistance)) > 0.000001) {
-      errors.push(`${asset.assetCode} row ${index + 1}: range margin did not equal day range - L2L distance`);
+    const shouldHaveMoved = row.maxDirectionalMove >= row.l2lDistance - 0.000001;
+    if (row.moveAchieved !== shouldHaveMoved || (row.outcomeKey === "WIN") !== shouldHaveMoved) {
+      errors.push(`${asset.assetCode} row ${index + 1}: outcome did not match the L2L directional move definition`);
     }
-    const shouldBeAvailable = (row.high - row.low) >= row.l2lDistance - 0.000001;
-    if (row.rangeAvailable !== shouldBeAvailable || (row.outcomeKey === "WIN") !== shouldBeAvailable) {
-      errors.push(`${asset.assetCode} row ${index + 1}: outcome did not match the L2L range availability definition`);
+    if (Math.abs(row.moveMargin - (row.maxDirectionalMove - row.l2lDistance)) > 0.000001) {
+      errors.push(`${asset.assetCode} row ${index + 1}: move margin did not equal directional move - L2L distance`);
+    }
+    if (row.hourlyCandleCount < MIN_HOURLY_CANDLES_PER_DAY) {
+      errors.push(`${asset.assetCode} row ${index + 1}: evaluated with insufficient hourly coverage`);
+    }
+    // The guaranteed move can never exceed the day's range (0.2% tolerance for
+    // mid-price rounding between the daily and hourly feeds).
+    if (row.maxDirectionalMove > row.dayRange * 1.002 + 0.000001) {
+      errors.push(`${asset.assetCode} row ${index + 1}: directional move exceeded the day's range`);
+    }
+    if (row.outcomeKey === "WIN" && !row.rangeAvailable && row.dayRange < row.l2lDistance * 0.998) {
+      errors.push(`${asset.assetCode} row ${index + 1}: directional win without the day range containing the L2L distance`);
+    }
+    if (row.intradayHigh > row.high * 1.002 || row.intradayLow < row.low * 0.998) {
+      errors.push(`${asset.assetCode} row ${index + 1}: hourly extremes fell outside the daily range tolerance`);
     }
     if (row.callDirection !== "BULLISH" && row.callDirection !== "BEARISH") {
       errors.push(`${asset.assetCode} row ${index + 1}: non-directional row leaked into evaluated results`);
@@ -806,7 +953,9 @@ function buildOutput(layer1Assets, layer2Pairs) {
       adr_window_sessions: ADR_WINDOW_SESSIONS,
       adr_threshold_pct: ADR_THRESHOLD_PCT,
       l2l_definition: `L2L distance = ${ADR_THRESHOLD_PCT}% of the rolling ADR(${ADR_WINDOW_SESSIONS}) computed from the ${ADR_WINDOW_SESSIONS} completed sessions before the evaluation day.`,
-      win_definition: "L2L Range Available when the day's high-low range (available_range = high - low) is at least the L2L distance. The call direction only categorizes the row; the range calculation is identical for bullish/long and bearish/short. Open is diagnostic context only, close is irrelevant. This is not open-to-target reach and not close-to-close accuracy.",
+      win_definition: "L2L Move: a call wins when price made a complete move of at least the L2L distance in the direction of the call at some point during the trading day, verified from 1-hour candles. A midday swing counts even if the day trends the other way before and after it; sub-L2L swings in the call direction never count. The close is irrelevant and the day's open is diagnostic context only. Day range availability (high - low >= L2L) is kept per row as context; it is necessary but not sufficient for a win.",
+      intraday_granularity: "H1",
+      directional_move_note: DIRECTIONAL_MOVE_NOTE,
       range_availability_note: RANGE_AVAILABILITY_NOTE,
       reference_price_policy: REFERENCE_PRICE_POLICY,
       diagnostics: {
@@ -816,6 +965,7 @@ function buildOutput(layer1Assets, layer2Pairs) {
         layer1: Object.fromEntries(layer1Assets.map(asset => [asset.assetCode, {
           missingOhlcRows: asset.diagnostics.missingOhlcRows,
           missingL2lDistanceRows: asset.diagnostics.missingL2lDistanceRows,
+          missingIntradayRows: asset.diagnostics.missingIntradayRows,
           noTradeRows: asset.diagnostics.noTradeRows,
           otherSkippedRows: asset.diagnostics.otherSkippedRows
         }])),
@@ -836,6 +986,8 @@ function buildOutput(layer1Assets, layer2Pairs) {
       ohlcSourceKind: asset.ohlcSourceKind || null,
       ohlcInstrument: asset.ohlcInstrument || null,
       ohlcSourcePath: asset.ohlcSourcePath || null,
+      hourlySourceLabel: asset.hourlySourceLabel || null,
+      hourlySourcePath: asset.hourlySourcePath || null,
       sourceCoverage: asset.sourceCoverage || null,
       referencePricePolicy: asset.referencePricePolicy,
       blocker: asset.blocker || null

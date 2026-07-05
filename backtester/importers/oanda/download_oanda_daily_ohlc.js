@@ -9,8 +9,12 @@ const DEFAULT_END = new Date().toISOString().slice(0, 10);
 const DEFAULT_INSTRUMENTS = ["EUR_USD", "XAU_USD", "NAS100_USD"];
 const OUTPUT_DIR = path.resolve(__dirname, "../../cache/ohlc");
 const MAX_CANDLES_PER_REQUEST = 5000;
-const CHUNK_DAYS = 2000;
 const DAY_MS = 86400000;
+// H1 chunks stay well under the 5000-candle response cap (180d * 24h = 4320).
+const GRANULARITIES = {
+  D: { chunkDays: 2000, fileTag: "daily" },
+  H1: { chunkDays: 180, fileTag: "h1" }
+};
 
 const HOSTS = {
   practice: "https://api-fxpractice.oanda.com",
@@ -103,17 +107,18 @@ function addDays(dateString, days) {
   return cursor.toISOString().slice(0, 10);
 }
 
-async function downloadInstrument(host, token, instrument, startDate, endDate, alignment) {
-  const byDate = new Map();
+async function downloadInstrument(host, token, instrument, startDate, endDate, alignment, granularity) {
+  const chunkDays = GRANULARITIES[granularity].chunkDays;
+  const byKey = new Map();
   let cursor = startDate;
 
   while (cursor <= endDate) {
-    const chunkEnd = addDays(cursor, CHUNK_DAYS) < endDate ? addDays(cursor, CHUNK_DAYS) : endDate;
+    const chunkEnd = addDays(cursor, chunkDays) < endDate ? addDays(cursor, chunkDays) : endDate;
     // OANDA rejects "to" values in the future, so cap the final chunk at now.
     const toMs = Math.min(Date.parse(`${addDays(chunkEnd, 1)}T00:00:00Z`), Date.now());
     const payload = await oandaGet(host, token, `/v3/instruments/${instrument}/candles`, {
       price: "M",
-      granularity: "D",
+      granularity,
       from: `${cursor}T00:00:00Z`,
       to: new Date(toMs).toISOString(),
       ...alignmentParams(alignment)
@@ -121,12 +126,14 @@ async function downloadInstrument(host, token, instrument, startDate, endDate, a
 
     const candles = payload?.candles || [];
     if (candles.length >= MAX_CANDLES_PER_REQUEST) {
-      throw new Error(`OANDA returned ${candles.length} candles for one chunk; narrow CHUNK_DAYS.`);
+      throw new Error(`OANDA returned ${candles.length} candles for one chunk; narrow the chunk size.`);
     }
 
     candles.forEach((candle) => {
-      const date = labelDate(candle.time, alignment);
+      const time = new Date(Date.parse(candle.time)).toISOString();
+      const date = granularity === "D" ? labelDate(candle.time, alignment) : time.slice(0, 10);
       const row = {
+        time,
         date,
         open: Number(candle?.mid?.o),
         high: Number(candle?.mid?.h),
@@ -143,31 +150,33 @@ async function downloadInstrument(host, token, instrument, startDate, endDate, a
         && Number.isFinite(row.low)
         && Number.isFinite(row.close)
       ) {
-        byDate.set(date, row);
+        byKey.set(granularity === "D" ? date : time, row);
       }
     });
 
     cursor = addDays(chunkEnd, 1);
   }
 
-  return Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+  return Array.from(byKey.values()).sort((a, b) => (a.time || a.date).localeCompare(b.time || b.date));
 }
 
 function quoteCsv(value) {
   return `"${String(value ?? "").replace(/"/g, "\"\"")}"`;
 }
 
-function toCsv(instrument, alignment, rows) {
-  const header = ["instrument", "date", "open", "high", "low", "close", "volume", "source", "complete"];
+function toCsv(instrument, alignment, granularity, rows) {
+  const includeTime = granularity !== "D";
+  const header = ["instrument", ...(includeTime ? ["time"] : []), "date", "open", "high", "low", "close", "volume", "source", "complete"];
   const body = rows.map((row) => [
     instrument,
+    ...(includeTime ? [row.time] : []),
     row.date,
     row.open,
     row.high,
     row.low,
     row.close,
     row.volume,
-    `oanda_v20_mid_${alignment}`,
+    `oanda_v20_mid_${granularity.toLowerCase()}_${alignment}`,
     row.complete ? "true" : "false"
   ].map(quoteCsv).join(","));
   return `${header.map(quoteCsv).join(",")}\n${body.join("\n")}\n`;
@@ -189,6 +198,13 @@ async function main() {
   if (!["utc", "ny17"].includes(alignment)) {
     throw new Error(`Unknown alignment "${alignment}". Use utc or ny17.`);
   }
+  const granularity = String(args.granularity || "D").toUpperCase();
+  if (!GRANULARITIES[granularity]) {
+    throw new Error(`Unknown granularity "${granularity}". Use D or H1.`);
+  }
+  if (granularity !== "D" && alignment !== "utc") {
+    throw new Error("Intraday granularities support only --alignment=utc.");
+  }
 
   assertDate(startDate, "start");
   assertDate(endDate, "end");
@@ -199,14 +215,14 @@ async function main() {
 
   const results = [];
   for (const instrument of instruments) {
-    const rows = await downloadInstrument(host, token, instrument, startDate, endDate, alignment);
+    const rows = await downloadInstrument(host, token, instrument, startDate, endDate, alignment, granularity);
     if (!rows.length) {
-      throw new Error(`No ${instrument} daily candles were returned for the requested range.`);
+      throw new Error(`No ${instrument} ${granularity} candles were returned for the requested range.`);
     }
 
-    const outputPath = path.resolve(OUTPUT_DIR, `${instrument.toLowerCase()}_daily_oanda.csv`);
+    const outputPath = path.resolve(OUTPUT_DIR, `${instrument.toLowerCase()}_${GRANULARITIES[granularity].fileTag}_oanda.csv`);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, toCsv(instrument, alignment, rows), "utf8");
+    fs.writeFileSync(outputPath, toCsv(instrument, alignment, granularity, rows), "utf8");
 
     results.push({
       instrument,
@@ -220,9 +236,10 @@ async function main() {
 
   console.log(JSON.stringify({
     status: "PASS",
-    source: "OANDA v20 GET /v3/instruments/{instrument}/candles (mid, granularity D)",
+    source: `OANDA v20 GET /v3/instruments/{instrument}/candles (mid, granularity ${granularity})`,
     oanda_env: env,
     alignment,
+    granularity,
     results
   }, null, 2));
 }

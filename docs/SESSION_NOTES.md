@@ -4,6 +4,8 @@ Last updated: 2026-07-05
 
 ## Work Completed
 
+- Upgraded L2L research to **L2L Move** (1H-verified directional swings: bullish = guaranteed upswing >= L2L during the day, bearish mirrored; conservative within-hour handling). Layer 1 move rates: EUR 72.0%, Gold 73.2%, NQ 73.3%, BTC 66.9%. Hourly caches staged from OANDA (EUR_USD/XAU_USD/NAS100_USD H1) and Binance (BTCUSDT 1h).
+- Known upstream issue: Supabase view `research_best_factor_combinations` returns 500 (statement timeout 57014) on every dashboard load, affecting both the original and clone dashboards; the affected panel degrades gracefully and the smoke test now ignores only that class of ancillary 5xx console noise.
 - Corrected the L2L research definition to **L2L Range Available** (day high-low range >= L2L distance; direction categorizes only; open diagnostic-only; close irrelevant; labelled availability, not execution) in `backtester/lib/l2l_range_logic.js` with full synthetic test coverage.
 - Staged OANDA v20 live-account daily OHLC for `EUR_USD`, `XAU_USD`, `NAS100_USD` (2023-11-01..2026-07-03, UTC-aligned mid candles) — Gold unlocked for the first time, QQQ proxy retired, EUR moved off Alpha Vantage. BTC stays on Binance BTCUSDT.
 - Regenerated the artifact with per-row diagnostics; renamed all dashboard wording to L2L Range Research/Available; updated smoke expectations. Layer 1 availability: EUR 94.3%, Gold 93.4%, NQ 89.7%, BTC 84.9%; USD remains unavailable (no supportable USD-index OHLC in the OANDA account).

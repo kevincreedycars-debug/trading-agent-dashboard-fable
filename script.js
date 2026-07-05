@@ -13,7 +13,7 @@ const checkerDataUrls = {
   NQ: "./data/backtester-checker-nq-24h-2024-2026.json?v=20260702-nq-qqq-proxy-dashboard",
   BTC: "./data/backtester-checker-btc-24h-2024-2026.json?v=20260702-btc-benchmark-dashboard"
 };
-const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260705-l2l-range-available";
+const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260705-l2l-directional-move";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 const headlineConfidenceLib = globalThis.HeadlineConfidence;
@@ -4197,10 +4197,10 @@ function renderAdrReachUnavailablePanel(title, blocker, dataAttribute = "", data
   return `
     <article class="detail-panel wide-panel research-secondary-panel"${attributeMarkup}>
       <div class="panel-head">
-        <p class="eyebrow">L2L Range Research</p>
+        <p class="eyebrow">L2L Move Research</p>
         <h3>${escapeHtml(title)}</h3>
       </div>
-      <div class="empty-state matrix-evidence-empty">${escapeHtml(blocker || "Required OHLC history is unavailable for this L2L range section.")}</div>
+      <div class="empty-state matrix-evidence-empty">${escapeHtml(blocker || "Required OHLC history is unavailable for this L2L move section.")}</div>
     </article>
   `;
 }
@@ -4252,7 +4252,7 @@ function renderAdrReachDayTotals(item = {}, options = {}) {
   const weekdayKeys = Array.isArray(item.weekdayKeys) ? item.weekdayKeys : [];
   const weekdayHeaders = weekdayKeys.map(weekdayKey => `<th>${escapeHtml(weekdayBreakdownLabels[weekdayKey] || weekdayKey)}</th>`).join("");
   const cells = weekdayKeys.map(weekdayKey => `<td>${escapeHtml(formatAdrReachWeekdayCell(item.weekdayTotals?.[weekdayKey]))}</td>`).join("");
-  const title = options.title || `${item.assetLabel || item.pairLabel || "L2L Range"} weekday totals across all confidence buckets`;
+  const title = options.title || `${item.assetLabel || item.pairLabel || "L2L Move"} weekday totals across all confidence buckets`;
   const dataAttribute = options.dataAttribute ? ` ${options.dataAttribute}="${escapeHtml(options.dataValue || "")}"` : "";
 
   return `
@@ -4295,7 +4295,7 @@ function renderAdrReachWeekdayBreakdown(item = {}, options = {}) {
       </tr>
     `;
   }).join("");
-  const title = options.title || `${item.assetLabel || item.pairLabel || "L2L Range"} by confidence bucket and weekday`;
+  const title = options.title || `${item.assetLabel || item.pairLabel || "L2L Move"} by confidence bucket and weekday`;
   const dataAttribute = options.dataAttribute ? ` ${options.dataAttribute}="${escapeHtml(options.dataValue || "")}"` : "";
 
   return `
@@ -4330,14 +4330,14 @@ function renderAdrReachLayer1Asset(asset = {}) {
     <section class="research-section">
       <div class="research-section-head">
         <div>
-          <h3>${escapeHtml(asset.assetLabel)} L2L range from Layer 1 checker artifacts</h3>
+          <h3>${escapeHtml(asset.assetLabel)} L2L move from Layer 1 checker artifacts</h3>
         </div>
-        <p class="research-panel-copy">The day's open is diagnostic context only, never an anchor. This section stays downstream of the stored checker artifact and evaluates only whether the day's high-low range contained the L2L distance.</p>
+        <p class="research-panel-copy">This section stays downstream of the stored checker artifact and evaluates only whether a complete L2L-sized move occurred in the call direction during the day, verified from 1-hour candles. The open is diagnostic context only and the close is irrelevant.</p>
       </div>
       ${renderResearchBreakdownTable(`${asset.assetLabel} confidence buckets`, "Confidence Breakdown", asset.bucketSummaryRows || [], [
         { label: "Bucket", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.bucketLabel, "", { className: "adr-table-tight-cell" }) },
         { label: "Outcomes", className: "adr-col-metric", render: row => renderAdrCompactTextCell(`${row.wins}W / ${row.losses}L / ${row.total}T`, "", { className: "adr-table-tight-cell" }) },
-        { label: "L2L Range Available %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) }
+        { label: "L2L Move %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) }
       ], {
         tableClass: "adr-summary-table adr-confidence-table",
         scrollClass: "adr-summary-scroll"
@@ -4365,12 +4365,12 @@ function renderAdrReachLayer2Pair(pair = {}) {
         <div>
           <h3>${escapeHtml(pair.pairLabel)} from existing Pair Trade Research signal selection</h3>
         </div>
-        <p class="research-panel-copy">This section reuses the existing Layer 2 pair-trade eligibility logic. Only actual tradable pair signals are included, and L2L range availability is measured on the target asset without recalculating combined confidence.</p>
+        <p class="research-panel-copy">This section reuses the existing Layer 2 pair-trade eligibility logic. Only actual tradable pair signals are included, and the L2L directional move is measured on the target asset without recalculating combined confidence.</p>
       </div>
       ${renderResearchBreakdownTable(`${pair.pairLabel} confidence buckets`, "Confidence Breakdown", pair.bucketSummaryRows || [], [
         { label: "Bucket", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.bucketLabel, "", { className: "adr-table-tight-cell" }) },
         { label: "Outcomes", className: "adr-col-metric", render: row => renderAdrCompactTextCell(`${row.wins}W / ${row.losses}L / ${row.total}T`, "", { className: "adr-table-tight-cell" }) },
-        { label: "L2L Range Available %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) }
+        { label: "L2L Move %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) }
       ], {
         tableClass: "adr-summary-table adr-confidence-table",
         scrollClass: "adr-summary-scroll"
@@ -4401,8 +4401,8 @@ function renderResearchAdrReach(data = {}) {
     return `
       <div class="backtest-report">
         <article class="detail-panel wide-panel research-secondary-panel">
-          <h3>L2L range research unavailable</h3>
-          <div class="empty-state matrix-evidence-empty">The downstream L2L range artifact could not be loaded.</div>
+          <h3>L2L move research unavailable</h3>
+          <div class="empty-state matrix-evidence-empty">The downstream L2L move artifact could not be loaded.</div>
         </article>
       </div>
     `;
@@ -4414,18 +4414,18 @@ function renderResearchAdrReach(data = {}) {
       <section class="research-section" data-adr-reach-layer1-summary="true">
         <div class="research-section-head">
           <div>
-            <h3>L2L intraday range research from existing checker artifacts</h3>
+            <h3>L2L directional move research from existing checker artifacts</h3>
           </div>
-          <p class="research-panel-copy">This measures whether the day's high-low range was large enough to contain the L2L move in the call direction. Daily OHLC cannot prove execution sequence.</p>
+          <p class="research-panel-copy">This measures whether price made a complete move of at least the L2L distance in the direction of the call at some point during the trading day. Daily OHLC alone cannot prove execution sequence, so moves are verified from 1-hour candles.</p>
         </div>
         <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-intro-panel">
-          <p class="research-panel-copy">A call counts as "L2L Range Available" when the day's high-low range is at least the L2L distance (50% of rolling ADR20 from the previous 20 completed sessions, never the current day). The open is diagnostic context only and the close is irrelevant: daily OHLC confirms range availability, not intraday execution sequence. Where repo evidence lacks supportable High/Low history, the asset or pair stays explicitly unavailable instead of estimated.</p>
+          <p class="research-panel-copy">A call counts as an "L2L Move" when a complete move of at least the L2L distance (50% of rolling ADR20 from the previous 20 completed sessions, never the current day) occurred in the call direction at some point during the trading day. A midday swing counts even if the day trends the other way before and after it; sub-L2L swings never count. Moves are verified from 1-hour candles without assuming any within-hour sequence, so wins are proven and misses are worst-case. The close is irrelevant and the open is diagnostic context only. Where repo evidence lacks supportable intraday history, the asset or pair stays explicitly unavailable instead of estimated.</p>
         </article>
         ${renderResearchBreakdownTable("L2L OHLC source audit", "Warehouse Audit", sourceAuditRows, [
           { label: "Asset", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.assetLabel, "", { className: "adr-table-tight-cell" }) },
           { label: "Status", className: "adr-col-status", render: row => renderAdrCompactTextCell(row.available ? "Available" : "Unavailable", "", { className: "adr-table-tight-cell" }) },
           { label: "Source", className: "adr-col-source", render: row => renderAdrCompactTextCell(row.available ? (row.ohlcSourceLabel || displayDash()) : displayDash(), row.available ? formatAdrAuditCoverage(row) : "", { className: "adr-table-tight-cell adr-source-cell" }) },
-          { label: "Reference", className: "adr-col-reference", render: row => renderAdrCompactTextCell(row.available ? "Range = high - low" : displayDash(), row.available ? "Open diagnostic only" : "", { className: "adr-table-tight-cell" }) }
+          { label: "Reference", className: "adr-col-reference", render: row => renderAdrCompactTextCell(row.available ? "1H-verified move" : displayDash(), row.available ? "Open diagnostic only" : "", { className: "adr-table-tight-cell" }) }
         ], {
           tableClass: "adr-summary-table adr-audit-table",
           scrollClass: "adr-summary-scroll"
@@ -4437,15 +4437,15 @@ function renderResearchAdrReach(data = {}) {
       <section class="research-section" data-adr-reach-layer2-summary="true">
         <div class="research-section-head">
           <div>
-            <h3>Layer 1 L2L Range Summary</h3>
+            <h3>Layer 1 L2L Move Summary</h3>
           </div>
-          <p class="research-panel-copy">Layer 1 rows use stored displayed headline confidence and directional calls from the canonical checker artifacts. Lean signals remain directional for Layer 1 range measurement.</p>
+          <p class="research-panel-copy">Layer 1 rows use stored displayed headline confidence and directional calls from the canonical checker artifacts. Lean signals remain directional for Layer 1 move measurement.</p>
         </div>
-        ${renderResearchBreakdownTable("Layer 1 L2L Range Summary", "Summary", layer1SummaryRows, [
+        ${renderResearchBreakdownTable("Layer 1 L2L Move Summary", "Summary", layer1SummaryRows, [
           { label: "Asset", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.assetLabel, "", { className: "adr-table-tight-cell" }) },
           { label: "Status", className: "adr-col-status", render: row => renderAdrCompactTextCell(row.available ? "Available" : "Unavailable", "", { className: "adr-table-tight-cell" }) },
           { label: "Evaluated", className: "adr-col-metric", render: row => renderAdrCompactTextCell(renderAdrCompactSummaryValue(row, "evaluatedCalls", "adrReachWins", "adrReachLosses"), "", { className: "adr-table-tight-cell" }) },
-          { label: "Range Available", className: "adr-col-rate", render: row => renderAdrCompactTextCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) },
+          { label: "L2L Move %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) },
           { label: "Strong+", className: "adr-col-strongplus", render: row => renderAdrCompactTextCell(renderAdrCompactStrongPlusValue(row, "strongPlusCalls", "strongPlusAdrReachWinPct"), "", { className: "adr-table-tight-cell" }) }
         ], {
           tableClass: "adr-summary-table adr-layer1-summary-table",
@@ -4458,15 +4458,15 @@ function renderResearchAdrReach(data = {}) {
       <section class="research-section">
         <div class="research-section-head">
           <div>
-            <h3>Layer 2 L2L Range Summary</h3>
+            <h3>Layer 2 L2L Move Summary</h3>
           </div>
           <p class="research-panel-copy">Layer 2 rows reuse the existing Pair Trade Research signal-selection rules. Only actual tradable pair signals are evaluated, while conflict, no-trade, and neutral setups stay excluded.</p>
         </div>
-        ${renderResearchBreakdownTable("Layer 2 L2L Range Summary", "Summary", layer2SummaryRows, [
+        ${renderResearchBreakdownTable("Layer 2 L2L Move Summary", "Summary", layer2SummaryRows, [
           { label: "Pair", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.pairLabel, "", { className: "adr-table-tight-cell" }) },
           { label: "Status", className: "adr-col-status", render: row => renderAdrCompactTextCell(row.available ? "Available" : "Unavailable", "", { className: "adr-table-tight-cell" }) },
           { label: "Tradable", className: "adr-col-metric", render: row => renderAdrCompactTextCell(renderAdrCompactSummaryValue(row, "tradableSignals", "adrReachWins", "adrReachLosses"), "", { className: "adr-table-tight-cell" }) },
-          { label: "Range Available", className: "adr-col-rate", render: row => renderAdrCompactTextCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) },
+          { label: "L2L Move %", className: "adr-col-rate", render: row => renderAdrCompactTextCell(row.available && metricAvailable(row.adrReachWinPct) ? percentValue(row.adrReachWinPct) : displayDash(), "", { className: "adr-table-tight-cell" }) },
           { label: "Strong+", className: "adr-col-strongplus", render: row => renderAdrCompactTextCell(renderAdrCompactStrongPlusValue(row, "strongPlusSignals", "strongPlusAdrReachWinPct"), "", { className: "adr-table-tight-cell" }) }
         ], {
           tableClass: "adr-summary-table adr-layer2-summary-table",

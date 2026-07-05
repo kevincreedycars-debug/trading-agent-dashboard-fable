@@ -20,6 +20,7 @@
 const ADR_WINDOW_SESSIONS = 20;
 const ADR_THRESHOLD_PCT = 50;
 const RANGE_AVAILABILITY_NOTE = "daily OHLC confirms range availability, not intraday sequence";
+const DIRECTIONAL_MOVE_NOTE = "directional moves are verified from 1-hour candles without assuming any within-hour sequence; reported moves are guaranteed lower bounds, so misses are conservative";
 
 const CONFIDENCE_BUCKETS = [
   { key: "WEAK", label: "Weak", min: 0, max: 49 },
@@ -108,6 +109,81 @@ function evaluateL2lRangeAvailability({ direction, high, low, l2lDistance } = {}
   };
 }
 
+// Largest price move PROVABLE from a chronologically ordered list of intraday
+// candles, per direction. Sequence facts used, and nothing more:
+// - within one candle: open trades first and close trades last, so
+//   high - open and close - low are guaranteed upswings, and
+//   open - low and high - close are guaranteed downswings;
+// - across candles: any price in an earlier candle precedes any price in a
+//   later candle, so a later high minus an earlier low is a guaranteed upswing
+//   (and vice versa for downswings).
+// The high/low order INSIDE a single candle is never assumed, so the returned
+// values are lower bounds on the true maximum excursion in each direction.
+function computeGuaranteedDirectionalMoves(candles = []) {
+  let maxUp = 0;
+  let maxDown = 0;
+  let minLowBefore = null;
+  let maxHighBefore = null;
+  let candlesUsed = 0;
+
+  for (const candle of Array.isArray(candles) ? candles : []) {
+    const open = toFiniteNumber(candle?.open);
+    const high = toFiniteNumber(candle?.high);
+    const low = toFiniteNumber(candle?.low);
+    const close = toFiniteNumber(candle?.close);
+    if (open === null || high === null || low === null || close === null || high < low) continue;
+
+    candlesUsed += 1;
+    maxUp = Math.max(maxUp, high - open, close - low);
+    maxDown = Math.max(maxDown, open - low, high - close);
+    if (minLowBefore !== null) maxUp = Math.max(maxUp, high - minLowBefore);
+    if (maxHighBefore !== null) maxDown = Math.max(maxDown, maxHighBefore - low);
+    minLowBefore = minLowBefore === null ? low : Math.min(minLowBefore, low);
+    maxHighBefore = maxHighBefore === null ? high : Math.max(maxHighBefore, high);
+  }
+
+  if (!candlesUsed) {
+    return { maxUp: null, maxDown: null, candlesUsed: 0 };
+  }
+
+  return { maxUp, maxDown, candlesUsed };
+}
+
+// Did price make a complete move of at least the L2L distance in the call
+// direction at some point during the day? Returns one of:
+// - { status: "NO_TRADE", reason: "non_directional" }
+// - { status: "INVALID", reason: "missing_intraday_ohlc" | "missing_l2l_distance" }
+// - { status: "MOVED" | "NOT_MOVED", direction, maxDirectionalMove, moveAchieved, moveMargin, candlesUsed, note }
+function evaluateL2lDirectionalMove({ direction, candles, l2lDistance } = {}) {
+  const normalizedDirection = normalizeReachDirection(direction);
+  if (!normalizedDirection) {
+    return { status: "NO_TRADE", reason: "non_directional" };
+  }
+
+  const numericDistance = toFiniteNumber(l2lDistance);
+  if (numericDistance === null || numericDistance <= 0) {
+    return { status: "INVALID", reason: "missing_l2l_distance" };
+  }
+
+  const moves = computeGuaranteedDirectionalMoves(candles);
+  if (!moves.candlesUsed) {
+    return { status: "INVALID", reason: "missing_intraday_ohlc" };
+  }
+
+  const maxDirectionalMove = normalizedDirection === "BULLISH" ? moves.maxUp : moves.maxDown;
+  const moveAchieved = maxDirectionalMove >= numericDistance;
+
+  return {
+    status: moveAchieved ? "MOVED" : "NOT_MOVED",
+    direction: normalizedDirection,
+    maxDirectionalMove,
+    moveAchieved,
+    moveMargin: maxDirectionalMove - numericDistance,
+    candlesUsed: moves.candlesUsed,
+    note: DIRECTIONAL_MOVE_NOTE
+  };
+}
+
 function bucketKeyFromConfidence(confidence) {
   const numeric = toFiniteNumber(confidence);
   if (numeric === null) return null;
@@ -123,11 +199,14 @@ module.exports = {
   ADR_WINDOW_SESSIONS,
   ADR_THRESHOLD_PCT,
   RANGE_AVAILABILITY_NOTE,
+  DIRECTIONAL_MOVE_NOTE,
   CONFIDENCE_BUCKETS,
   normalizeReachDirection,
   computeAdrFromSessions,
   resolveL2lDistance,
   evaluateL2lRangeAvailability,
+  computeGuaranteedDirectionalMoves,
+  evaluateL2lDirectionalMove,
   bucketKeyFromConfidence,
   bucketLabelFromKey
 };
