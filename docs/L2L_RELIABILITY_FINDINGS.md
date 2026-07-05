@@ -72,12 +72,35 @@ Caveat: flats are excluded (BTC has 312 flat rows of 794), so these are accuraci
 on days the market subsequently moved beyond the flat band — a trader cannot know in
 advance which days those are.
 
+## Lean calls and per-direction splits (follow-up, same session)
+
+The research folds `BULLISH_LEAN`/`BEARISH_LEAN` into bullish/bearish, and leans
+dominate the samples (BTC 86% leans, Gold 72%). Close-direction accuracy by raw
+call type (ex-flat):
+
+- **BTC**: edge holds for every call type — bull lean 57.5% (266), bear lean 65.7%
+  (143), full bull 65.9% (41), full bear 64.5% (31). Leans are fully tradable.
+- **GOLD**: the edge is one-sided. Bullish full 70.4% (71) and bullish lean 66.9%
+  (121) are strong; bearish full 55.3% (47) is thin; **bearish lean is 42.4% (151)**
+  — it lost more than it won. (Against the conditional down-day base rate of ~38.7%
+  it still nudges above no-skill, but at face value a trader taking gold bearish
+  leans lost money.) Practical rule: take Gold bullish calls only.
+- **NQ**: full bearish 34.5% (116); bullish 58.8% vs a 60.5% up-day base rate
+  (pure drift-riding). Confirms no-take.
+- **EUR**: 47.5-54.5% across all call types. No edge anywhere.
+
+Layer 2 note: pair logic accepts only exact BULLISH/BEARISH, so **pair signals
+never fire on leans** — the NQ/USD and BTC/USD historical results are full-calls-only
+by construction, and no lean-handling rule is needed at Layer 2.
+
 ## Practical daily guidance (historical evidence only)
 
 Signals with defensible historical directional value:
 
-1. **BTC Layer 1 24H call** — 61% close-direction accuracy vs 50% null. Strongest.
-2. **Gold Layer 1 24H call** — 57% close-direction accuracy. Real but thinner.
+1. **BTC Layer 1 24H call** (full or lean, either direction) — 61% close-direction
+   accuracy vs 50% null. Strongest.
+2. **Gold Layer 1 24H call, BULLISH side only** (full or lean) — 67-70%
+   close-direction accuracy. Gold bearish leans were 42.4% and should be skipped.
 3. **NQ/USD Layer 2 tradable signal** — 62.5% correct on direction-decisive L2L days.
 4. **BTC/USD Layer 2 tradable signal** — promising (69%) but only 29 decisive days.
 
