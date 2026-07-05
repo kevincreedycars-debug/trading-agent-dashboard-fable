@@ -1,5 +1,23 @@
 # Handoff Brief: Trading Agent Dashboard
 
+## 0. Addendum — state as of 2026-07-05 (read this first)
+
+This brief was originally written on 2026-07-04 in the upstream repo. It now lives in the Fable clone (`kevincreedycars-debug/trading-agent-dashboard-fable`), which is the repo you are working in. `docs/CHANGELOG.md` and `docs/SESSION_NOTES.md` are always more current than this file. What changed since the sections below were written:
+
+1. **This repo is a full clone with its own GitHub Pages site** (`https://kevincreedycars-debug.github.io/trading-agent-dashboard-fable/`). The shared n8n pipeline still publishes live runtime artifacts (`data/layer1.json`, `data/layer2.json`, `data/workflow-status.json`) only to the ORIGINAL repo, so this clone's `script.js` fetches those three cross-origin from the original Pages site (see `liveDataBase` at the top of `script.js`). All other data is repo-local. The dashboard trigger button fires the same shared n8n webhook, and both dashboards see the same run status.
+
+2. **"ADR Reach Research" was redefined and is now "L2L Move Research".** Current definition: a directional Layer 1/Layer 2 call wins when price made a complete move of at least the L2L distance (50% of rolling ADR20 from the prior 20 completed sessions) in the call direction at some point during the trading day, verified from 1-hour candles as guaranteed lower bounds (within-hour sequence is never assumed, so wins are proven and misses are worst-case). The close is irrelevant; the open is diagnostic context only. Day-range availability (`high - low >= L2L`) is retained per row as context — necessary but not sufficient for a win. Semantics live in `backtester/lib/l2l_range_logic.js`; the builder is still named `backtester/scripts/validate_adr_reach_research.js` and the artifact is still `data/adr-reach-research.json` with legacy JSON keys (`adrReachWins`, etc.) kept for renderer compatibility. Every evaluated call and tradable pair signal carries per-row diagnostics in the artifact (OHLC, day range, L2L distance, max directional move, margins, hourly coverage).
+
+3. **Real instrument data replaced proxies.** Tracked caches under `backtester/cache/ohlc/`: OANDA v20 live-account daily + H1 mid candles for `EUR_USD`, `XAU_USD`, `NAS100_USD` (UTC-aligned), and Binance `BTCUSDT` daily + 1h klines, all from 2023-11-01. Gold research is AVAILABLE for the first time; the QQQ proxy and Alpha Vantage EUR fallbacks were retired. `USD` remains unavailable (the OANDA account exposes no USD-index instrument). Importers: `backtester/importers/oanda/download_oanda_daily_ohlc.js` (needs `OANDA_API_TOKEN` with `OANDA_ENV=live` — ask the user; never store the token on disk) and `backtester/importers/binance/download_btcusdt_daily_ohlc_binance.js` (public, no key).
+
+4. **Current L2L Move rates** (evaluated calls, 1H-verified): Layer 1 — EUR 72.0% (571), Gold 73.2% (571), NQ 73.3% (561), BTC 66.9% (794). Layer 2 — EUR/USD 70.4% (324), XAU/USD 68.0% (150), NQ/USD 75.7% (321), BTC/USD 74.7% (75).
+
+5. **New known issue:** the shared Supabase view `research_best_factor_combinations` returns HTTP 500 (Postgres statement timeout 57014) on every dashboard load, for both dashboards. The affected panel degrades gracefully; the Playwright smoke test tolerates only that class of ancillary 5xx console noise and still fails on any other console error.
+
+Where any section below contradicts this addendum, the addendum (and the changelog) wins.
+
+---
+
 ## 1. Project Purpose
 
 This repository is an AI-assisted trading research and monitoring dashboard for a directional prediction system.
@@ -348,14 +366,18 @@ Key current research modules visible in the UI:
 2. Backtest Checker
 3. Weekday Breakdown
 4. Pair Trade Research
-5. ADR Reach Research
+5. L2L Move Research (formerly ADR Reach Research — see addendum)
 
 Important supporting code and data:
 
 - `backtester/lib/headline_confidence.js`
 - `backtester/lib/layer2_pair_logic.js`
+- `backtester/lib/l2l_range_logic.js`
 - `backtester/scripts/validate_layer2_pairing_analysis.js`
 - `backtester/scripts/validate_adr_reach_research.js`
+- `backtester/importers/oanda/download_oanda_daily_ohlc.js`
+- `backtester/importers/binance/download_btcusdt_daily_ohlc_binance.js`
+- `backtester/cache/ohlc/` (tracked OANDA/Binance daily + hourly candle caches)
 - `playwright-dashboard-smoke.js`
 
 Checked-in research artifacts:
@@ -456,17 +478,17 @@ Why:
 
 This is one of the most important downstream design choices, and it recently had to be enforced explicitly in the live dashboard because upstream Layer 2 output was too permissive.
 
-### G. ADR Reach Research refuses fake coverage
+### G. L2L Move Research refuses fake coverage
 
 Why:
 
-- The project does not want close-to-close estimates masquerading as intraday reach evidence.
+- The project does not want close-to-close estimates masquerading as intraday evidence.
 - If supportable OHLC data does not exist, the asset/pair stays explicitly unavailable.
 
-This is why:
+Current state (post-OANDA integration; see addendum):
 
-- `EUR`, `NQ`, `BTC`, `EUR/USD`, `NQ/USD`, `BTC/USD` are supported in ADR Reach Research
-- `Gold`, `XAU/USD`, and `USD` remain unavailable there
+- `EUR`, `Gold`, `NQ`, `BTC` and all four pairs are supported with real account-traded instrument data
+- `USD` remains unavailable (no supportable USD-index OHLC source; the OANDA account has no such instrument)
 
 ### H. Things tried and abandoned or constrained
 
@@ -506,25 +528,17 @@ This is why:
    - Backtest Checker
    - Weekday Breakdown
    - Pair Trade Research
-   - ADR Reach Research
+   - L2L Move Research
 6. Eco Events duplicate insert issue was fixed in the live workflow.
 7. Layer 2 live dashboard confidence is now browser-enforced to match Pair Trade Research semantics.
 
 ### Partially complete / in progress
 
-1. ADR Reach Research OHLC expansion
-   - shipped and partially expanded
-   - supported:
-     - `EUR`
-     - `NQ`
-     - `BTC`
-     - `EUR/USD`
-     - `NQ/USD`
-     - `BTC/USD`
-   - unsupported:
-     - `Gold`
-     - `XAU/USD`
-     - `USD`
+1. L2L Move Research OHLC expansion
+   - COMPLETE as of 2026-07-05 for `EUR`, `Gold`, `NQ`, `BTC` and all four pairs
+     (OANDA daily + H1 for EUR_USD / XAU_USD / NAS100_USD, Binance daily + 1h for BTCUSDT)
+   - still unsupported:
+     - `USD` (no USD-index instrument in the OANDA account)
 
 2. Workflow documentation coverage
    - exports are present
@@ -577,8 +591,13 @@ This is why:
      - `script.js`
      - `backtester/lib/layer2_pair_logic.js`
 
-4. ADR Reach Research missing support for `Gold`, `XAU/USD`, and `USD`
-   - Blocked by lack of supportable repo-local true `XAU/USD` OHLC and `DXY` OHLC.
+4. L2L Move Research missing support for `USD` only
+   - `Gold` and `XAU/USD` were unlocked on 2026-07-05 via OANDA XAU_USD data.
+   - `USD` remains blocked: no supportable USD-index OHLC source exists (the OANDA account has no such instrument).
+
+5. Shared Supabase view `research_best_factor_combinations` times out
+   - Returns HTTP 500 (Postgres 57014 statement timeout) on every dashboard load, for both dashboards.
+   - The panel degrades gracefully; the underlying view/query needs a performance fix in the shared warehouse SQL.
 
 ### Open questions / uncertainty
 
@@ -630,17 +649,14 @@ Meaningful improvement would be:
 - same-direction and non-directional cases are encoded explicitly as no-trade/conflict
 - browser no longer needs to compensate for semantic drift
 
-### Priority 2: Expand supportable OHLC coverage for ADR Reach Research
+### Priority 2: Expand supportable OHLC coverage for L2L Move Research
 
-Why:
+Status: essentially DONE as of 2026-07-05 (see addendum). OANDA live-account data
+unlocked Gold/XAU_USD and replaced the NQ proxy; hourly candles now verify
+directional moves. What remains:
 
-- This is the active unfinished milestone.
-- It unlocks missing research coverage without changing live production logic.
-
-Concrete target:
-
-- find supportable true `XAU/USD` OHLC history
-- optionally find supportable `DXY` OHLC history
+- optionally find a supportable USD-index OHLC source to unlock `USD`
+- fix the `research_best_factor_combinations` Supabase view timeout
 - keep unsupported assets explicitly unavailable until the source is defensible
 
 ### Priority 3: Close the loop on known workflow drift
@@ -709,23 +725,23 @@ If a clone only looks nicer but muddies those distinctions, it is worse, not bet
 
 If starting fresh with no other context, read these in this order:
 
-1. `CODEX_STARTUP.md`
-2. `docs/CURRENT_STATE.md`
-3. `docs/CURRENT_TASK.md`
-4. `docs/ACTIVE_MILESTONE.md`
-5. `docs/SESSION_NOTES.md`
+1. The addendum at the top of this file
+2. `docs/CHANGELOG.md`
+3. `docs/SESSION_NOTES.md`
+4. `docs/CURRENT_STATE.md`
+5. `docs/CURRENT_TASK.md` and `docs/ACTIVE_MILESTONE.md`
 6. `script.js`
 7. `index.html`
 8. `exports/master_orchestrator.json`
 9. `exports/dashboard_writer.json`
 10. `exports/layer2_trade_selection_agent.json`
-11. `data/layer1.json`
-12. `data/layer2.json`
-13. `data/workflow-status.json`
-14. `backtester/lib/headline_confidence.js`
-15. `backtester/lib/layer2_pair_logic.js`
-16. `backtester/scripts/validate_layer2_pairing_analysis.js`
-17. `backtester/scripts/validate_adr_reach_research.js`
+11. `data/layer1.json`, `data/layer2.json`, `data/workflow-status.json` (live copies come from the original repo's Pages site; see addendum)
+12. `backtester/lib/headline_confidence.js`
+13. `backtester/lib/layer2_pair_logic.js`
+14. `backtester/lib/l2l_range_logic.js`
+15. `backtester/scripts/validate_layer2_pairing_analysis.js`
+16. `backtester/scripts/validate_adr_reach_research.js`
+17. `backtester/tests/l2l_range_logic.test.js`
 18. `playwright-dashboard-smoke.js`
 
 That set will reveal most of the production architecture, current semantics, and active constraints without requiring prior chat history.
