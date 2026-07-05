@@ -14,6 +14,8 @@ This brief was originally written on 2026-07-04 in the upstream repo. It now liv
 
 5. **New known issue:** the shared Supabase view `research_best_factor_combinations` returns HTTP 500 (Postgres statement timeout 57014) on every dashboard load, for both dashboards. The affected panel degrades gracefully; the Playwright smoke test tolerates only that class of ancillary 5xx console noise and still fails on any other console error.
 
+6. **The ~70% L2L Move rates were audited and are volatility base rate, not directional skill** (see `docs/L2L_RELIABILITY_FINDINGS.md` and `backtester/scripts/analyze_l2l_directional_edge.js`). Both directions reach the L2L distance on ~52-54% of days; no Layer 1 asset beats a no-skill null and decisive-day accuracy is ≈ coin flip. Real, year-over-year-stable directional edges exist elsewhere: BTC close-to-close 61.1% (p<0.0001), Gold close-to-close 56.7% (p=0.007), NQ/USD Layer 2 decisive-day 62.5% (p=0.006). Confidence buckets do not calibrate to outcomes anywhere. Dashboard presentation changes to reflect this are proposed but not yet made.
+
 Where any section below contradicts this addendum, the addendum (and the changelog) wins.
 
 ---

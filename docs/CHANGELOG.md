@@ -2,6 +2,10 @@
 
 ## 2026-07-05
 
+### Added
+
+- Added `backtester/scripts/analyze_l2l_directional_edge.js`, a downstream-only reliability audit that recomputes guaranteed directional moves in BOTH directions for every evaluated L2L row and tests the model against no-skill baselines. Key result: the ~70% L2L Move win rates are volatility base rate, not directional skill (both directions reach L2L on ~52-54% of days; no Layer 1 asset beats its call-frequency-matched null; decisive-day accuracy is ≈ coin flip for all Layer 1 assets). Real directional edges found elsewhere: BTC close-to-close 61.1% vs 50.0% drift-matched null (z=4.89), Gold close-to-close 56.7% vs 49.8% (z=2.70), and NQ/USD Layer 2 decisive-day accuracy 62.5% (z=2.74) — all stable across 2024/2025/2026. Confidence buckets do not calibrate to outcomes anywhere. Full findings in `docs/L2L_RELIABILITY_FINDINGS.md`; no artifacts, semantics, or dashboard behavior changed.
+
 ### Changed
 
 - Upgraded the L2L research definition once more, from range availability to **L2L Move**: a call wins when price made a complete move of at least the L2L distance in the call direction at some point during the trading day, verified from 1-hour candles. A midday swing counts even if the day trends the other way before and after it; sub-L2L swings never count. Moves are computed as guaranteed lower bounds (within-hour sequence never assumed: only high-open / close-low upswings, open-low / high-close downswings, and earlier-low-to-later-high cross-candle swings are credited), so wins are proven and misses are worst-case.
