@@ -1,14 +1,25 @@
 "use strict";
 
-// Shared ADR/L2L intraday reach semantics for backtester research.
+// Shared L2L Range Available semantics for backtester research.
 //
-// A reach WIN is defined purely intraday: starting from the call day's open,
-// price must travel at least the L2L target distance in the called direction
-// at some point inside that day's high/low range. The close is ignored.
-// This is deliberately not close-to-close accuracy.
+// This is NOT open-anchored target reach and NOT close-to-close accuracy.
+// With daily OHLC we cannot know the intraday sequence, so the question is
+// only: did the day's high-low range contain enough directional movement for
+// an L2L setup to be available at some point during that trading day?
+//
+//   available_range = high - low
+//   range_available = available_range >= l2l_distance
+//
+// The call direction categorizes the row (bullish/long vs bearish/short); it
+// never changes the range calculation. The open is diagnostic context only,
+// never an anchor, and the close is irrelevant.
+//
+// Results must be labelled "L2L Range Available", not guaranteed executed:
+// daily OHLC confirms range availability, not intraday sequence.
 
 const ADR_WINDOW_SESSIONS = 20;
 const ADR_THRESHOLD_PCT = 50;
+const RANGE_AVAILABILITY_NOTE = "daily OHLC confirms range availability, not intraday sequence";
 
 const CONFIDENCE_BUCKETS = [
   { key: "WEAK", label: "Weak", min: 0, max: 49 },
@@ -18,7 +29,7 @@ const CONFIDENCE_BUCKETS = [
 ];
 
 // Number(null) and Number("") are 0, so absent inputs must be rejected before
-// numeric conversion or a missing open would silently evaluate as a 0 price.
+// numeric conversion or a missing high/low could silently evaluate as 0.
 function toFiniteNumber(value) {
   if (value === null || value === undefined || value === "") return null;
   const numeric = Number(value);
@@ -57,55 +68,49 @@ function resolveL2lDistance(adr, thresholdPct = ADR_THRESHOLD_PCT) {
   return numericAdr * (numericPct / 100);
 }
 
-// Core win definition. Returns one of:
+// Core L2L range availability. Returns one of:
 // - { status: "NO_TRADE", reason: "non_directional" }
-// - { status: "INVALID", reason: "missing_open" | "missing_high_low" | "missing_l2l_distance" }
-// - { status: "WIN" | "MISS", direction, requiredTarget, reachedVia }
+// - { status: "INVALID", reason: "missing_high_low" | "invalid_range" | "missing_l2l_distance" }
+// - { status: "AVAILABLE" | "NOT_AVAILABLE", direction, dayRange, rangeAvailable, rangeMargin, note }
 //
-// Touching the target exactly counts as reached. The close never participates.
-function evaluateIntradayReach({ direction, open, high, low, l2lDistance } = {}) {
+// The open and close play no part in the result; open may be passed for
+// diagnostics but is ignored here. Direction only categorizes the call.
+function evaluateL2lRangeAvailability({ direction, high, low, l2lDistance } = {}) {
   const normalizedDirection = normalizeReachDirection(direction);
   if (!normalizedDirection) {
     return { status: "NO_TRADE", reason: "non_directional" };
   }
 
-  const numericOpen = toFiniteNumber(open);
   const numericHigh = toFiniteNumber(high);
   const numericLow = toFiniteNumber(low);
   const numericDistance = toFiniteNumber(l2lDistance);
 
-  if (numericOpen === null) {
-    return { status: "INVALID", reason: "missing_open" };
-  }
   if (numericHigh === null || numericLow === null) {
     return { status: "INVALID", reason: "missing_high_low" };
+  }
+  if (numericHigh < numericLow) {
+    return { status: "INVALID", reason: "invalid_range" };
   }
   if (numericDistance === null || numericDistance <= 0) {
     return { status: "INVALID", reason: "missing_l2l_distance" };
   }
 
-  if (normalizedDirection === "BULLISH") {
-    const requiredTarget = numericOpen + numericDistance;
-    return {
-      status: numericHigh >= requiredTarget ? "WIN" : "MISS",
-      direction: normalizedDirection,
-      requiredTarget,
-      reachedVia: "high"
-    };
-  }
+  const dayRange = numericHigh - numericLow;
+  const rangeAvailable = dayRange >= numericDistance;
 
-  const requiredTarget = numericOpen - numericDistance;
   return {
-    status: numericLow <= requiredTarget ? "WIN" : "MISS",
+    status: rangeAvailable ? "AVAILABLE" : "NOT_AVAILABLE",
     direction: normalizedDirection,
-    requiredTarget,
-    reachedVia: "low"
+    dayRange,
+    rangeAvailable,
+    rangeMargin: dayRange - numericDistance,
+    note: RANGE_AVAILABILITY_NOTE
   };
 }
 
 function bucketKeyFromConfidence(confidence) {
-  const numeric = Number(confidence);
-  if (!Number.isFinite(numeric)) return null;
+  const numeric = toFiniteNumber(confidence);
+  if (numeric === null) return null;
   const clamped = Math.max(0, Math.min(100, numeric));
   return CONFIDENCE_BUCKETS.find((bucket) => clamped >= bucket.min && clamped <= bucket.max)?.key || null;
 }
@@ -117,11 +122,12 @@ function bucketLabelFromKey(bucketKey) {
 module.exports = {
   ADR_WINDOW_SESSIONS,
   ADR_THRESHOLD_PCT,
+  RANGE_AVAILABILITY_NOTE,
   CONFIDENCE_BUCKETS,
   normalizeReachDirection,
   computeAdrFromSessions,
   resolveL2lDistance,
-  evaluateIntradayReach,
+  evaluateL2lRangeAvailability,
   bucketKeyFromConfidence,
   bucketLabelFromKey
 };

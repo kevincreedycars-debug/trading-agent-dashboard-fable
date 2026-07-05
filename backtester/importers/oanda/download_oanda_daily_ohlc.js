@@ -109,11 +109,13 @@ async function downloadInstrument(host, token, instrument, startDate, endDate, a
 
   while (cursor <= endDate) {
     const chunkEnd = addDays(cursor, CHUNK_DAYS) < endDate ? addDays(cursor, CHUNK_DAYS) : endDate;
+    // OANDA rejects "to" values in the future, so cap the final chunk at now.
+    const toMs = Math.min(Date.parse(`${addDays(chunkEnd, 1)}T00:00:00Z`), Date.now());
     const payload = await oandaGet(host, token, `/v3/instruments/${instrument}/candles`, {
       price: "M",
       granularity: "D",
       from: `${cursor}T00:00:00Z`,
-      to: `${addDays(chunkEnd, 1)}T00:00:00Z`,
+      to: new Date(toMs).toISOString(),
       ...alignmentParams(alignment)
     });
 

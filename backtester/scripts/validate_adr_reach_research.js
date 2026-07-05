@@ -6,13 +6,14 @@ const { parseArgs, parseDelimited } = require("../lib/historical_common");
 const {
   ADR_WINDOW_SESSIONS,
   ADR_THRESHOLD_PCT,
+  RANGE_AVAILABILITY_NOTE,
   CONFIDENCE_BUCKETS,
   normalizeReachDirection,
   computeAdrFromSessions,
   resolveL2lDistance,
-  evaluateIntradayReach,
+  evaluateL2lRangeAvailability,
   bucketKeyFromConfidence
-} = require("../lib/adr_reach_logic");
+} = require("../lib/l2l_range_logic");
 
 const WEEKDAY_KEYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 const CHECKER_PATHS = {
@@ -136,7 +137,7 @@ const PAIR_CONFIGS = [
   { targetAssetCode: "BTC", pairCode: "BTC_USD", pairLabel: "BTC/USD", weekdayKeys: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"] }
 ];
 const OUTPUT_PATH = path.resolve(__dirname, "../../data/adr-reach-research.json");
-const REFERENCE_PRICE_POLICY = "Use the call day's open as the entry price. Rows without a usable same-day open are excluded and counted in diagnostics; there is no previous-close fallback.";
+const REFERENCE_PRICE_POLICY = "The day's open is recorded as diagnostic context only; it is never an anchor. Availability is measured purely on the day's high-low range vs the L2L distance.";
 
 function parseConfidenceCandidate(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -300,10 +301,6 @@ function computeAdrInputs(context, evaluationDate) {
   }
 
   const evaluationRecord = context.records[index];
-  if (!Number.isFinite(evaluationRecord.open)) {
-    return { ok: false, reason: "missing_day_open" };
-  }
-
   const previousSessions = context.records.slice(index - ADR_WINDOW_SESSIONS, index);
   const adr20 = computeAdrFromSessions(previousSessions, ADR_WINDOW_SESSIONS);
   const targetDistance = resolveL2lDistance(adr20, ADR_THRESHOLD_PCT);
@@ -313,7 +310,6 @@ function computeAdrInputs(context, evaluationDate) {
 
   return {
     ok: true,
-    entryPrice: evaluationRecord.open,
     evaluationRecord,
     previousSessions,
     adr20,
@@ -325,7 +321,8 @@ function buildDiagnostics(skippedCounts = {}) {
   return {
     missingOhlcRows:
       Number(skippedCounts.missing_evaluation_day_ohlc || 0)
-      + Number(skippedCounts.missing_day_open || 0),
+      + Number(skippedCounts.missing_high_low || 0)
+      + Number(skippedCounts.invalid_range || 0),
     missingL2lDistanceRows: Number(skippedCounts.insufficient_previous_sessions || 0),
     noTradeRows: Number(skippedCounts.no_trade_non_directional || 0),
     otherSkippedRows:
@@ -417,19 +414,18 @@ function buildLayer1AssetResearch(config, checker) {
       return;
     }
 
-    const reach = evaluateIntradayReach({
+    const reach = evaluateL2lRangeAvailability({
       direction: directionKey,
-      open: adrInputs.entryPrice,
       high: adrInputs.evaluationRecord.high,
       low: adrInputs.evaluationRecord.low,
       l2lDistance: adrInputs.targetDistance
     });
-    if (reach.status !== "WIN" && reach.status !== "MISS") {
+    if (reach.status !== "AVAILABLE" && reach.status !== "NOT_AVAILABLE") {
       skippedCounts[reach.reason || "invalid_reach_inputs"] = (skippedCounts[reach.reason || "invalid_reach_inputs"] || 0) + 1;
       return;
     }
 
-    const outcomeKey = reach.status === "WIN" ? "WIN" : "LOSS";
+    const outcomeKey = reach.rangeAvailable ? "WIN" : "LOSS";
     addOutcome(weekdayTotals[weekdayKey], outcomeKey);
     addOutcome(bucketTotals[bucketKey], outcomeKey);
     addOutcome(bucketMatrix[bucketKey][weekdayKey], outcomeKey);
@@ -437,26 +433,30 @@ function buildLayer1AssetResearch(config, checker) {
     evaluatedRows.push({
       predictionId: row?.prediction_id || null,
       snapshotDate: row?.snapshot_date || "",
-      evaluationDate,
+      date: evaluationDate,
+      asset: config.assetCode,
+      layer: "layer1",
       weekdayKey,
-      directionKey,
+      callDirection: directionKey,
       directionRaw: rawDirection || null,
       confidencePct,
       bucketKey,
-      entryPrice: adrInputs.entryPrice,
+      ohlcSource: source.kind,
+      ohlcInstrument: source.instrument,
+      open: Number.isFinite(adrInputs.evaluationRecord.open) ? adrInputs.evaluationRecord.open : null,
+      high: adrInputs.evaluationRecord.high,
+      low: adrInputs.evaluationRecord.low,
+      close: adrInputs.evaluationRecord.close,
+      dayRange: Number(reach.dayRange.toFixed(8)),
       adr20: Number(adrInputs.adr20.toFixed(8)),
-      targetDistance: Number(adrInputs.targetDistance.toFixed(8)),
-      requiredTarget: Number(reach.requiredTarget.toFixed(8)),
-      dayOpen: adrInputs.evaluationRecord.open,
-      dayHigh: adrInputs.evaluationRecord.high,
-      dayLow: adrInputs.evaluationRecord.low,
-      dayClose: adrInputs.evaluationRecord.close,
+      l2lDistance: Number(adrInputs.targetDistance.toFixed(8)),
+      rangeAvailable: reach.rangeAvailable,
+      rangeMargin: Number(reach.rangeMargin.toFixed(8)),
       prev20FirstDate: adrInputs.previousSessions[0]?.date || null,
       prev20LastDate: adrInputs.previousSessions[ADR_WINDOW_SESSIONS - 1]?.date || null,
       prev20Count: adrInputs.previousSessions.length,
       thresholdPct: ADR_THRESHOLD_PCT,
       outcomeKey,
-      reachedVia: reach.reachedVia,
       checkerResult: row?.stored?.evaluation_result || row?.checker?.evaluation_result || null
     });
   });
@@ -629,12 +629,25 @@ function buildLayer2PairResearch(config, layer1ByAssetCode, checkers) {
     tradableRows.push({
       predictionId: targetRow?.prediction_id || null,
       snapshotDate,
-      evaluationDate: evaluatedTargetRow.evaluationDate,
+      date: evaluatedTargetRow.date,
+      pair: config.pairCode,
+      layer: "layer2",
       weekdayKey,
       targetDirection,
       usdDirection,
+      callDirection: targetDirection,
       combinedConfidencePct,
       bucketKey,
+      ohlcSource: evaluatedTargetRow.ohlcSource,
+      ohlcInstrument: evaluatedTargetRow.ohlcInstrument,
+      open: evaluatedTargetRow.open,
+      high: evaluatedTargetRow.high,
+      low: evaluatedTargetRow.low,
+      close: evaluatedTargetRow.close,
+      dayRange: evaluatedTargetRow.dayRange,
+      l2lDistance: evaluatedTargetRow.l2lDistance,
+      rangeAvailable: evaluatedTargetRow.rangeAvailable,
+      rangeMargin: evaluatedTargetRow.rangeMargin,
       outcomeKey: evaluatedTargetRow.outcomeKey
     });
   });
@@ -711,32 +724,27 @@ function validateAvailableAsset(asset, errors) {
     if (row.prev20Count !== ADR_WINDOW_SESSIONS) {
       errors.push(`${asset.assetCode} row ${index + 1}: previous 20 sessions were not used`);
     }
-    if (!row.prev20LastDate || row.prev20LastDate >= row.evaluationDate) {
+    if (!row.prev20LastDate || row.prev20LastDate >= row.date) {
       errors.push(`${asset.assetCode} row ${index + 1}: ADR window included look-ahead data`);
     }
-    if (Math.abs(row.targetDistance - (row.adr20 * 0.5)) > 0.000001) {
-      errors.push(`${asset.assetCode} row ${index + 1}: threshold did not equal 50% ADR20`);
+    if (Math.abs(row.l2lDistance - (row.adr20 * 0.5)) > 0.000001) {
+      errors.push(`${asset.assetCode} row ${index + 1}: L2L distance did not equal 50% ADR20`);
     }
-    if (row.entryPrice !== row.dayOpen) {
-      errors.push(`${asset.assetCode} row ${index + 1}: entry price was not the call day's open`);
+    if (row.high < row.low) {
+      errors.push(`${asset.assetCode} row ${index + 1}: day high was below day low`);
     }
-    if (row.directionKey === "BULLISH") {
-      if (row.reachedVia !== "high") {
-        errors.push(`${asset.assetCode} row ${index + 1}: bullish reach was not evaluated against the session high`);
-      }
-      const shouldWin = row.dayHigh >= (row.entryPrice + row.targetDistance) - 0.000001;
-      if ((row.outcomeKey === "WIN") !== shouldWin) {
-        errors.push(`${asset.assetCode} row ${index + 1}: bullish outcome did not match the intraday touch definition`);
-      }
+    if (Math.abs(row.dayRange - (row.high - row.low)) > 0.000001) {
+      errors.push(`${asset.assetCode} row ${index + 1}: day range did not equal high - low`);
     }
-    if (row.directionKey === "BEARISH") {
-      if (row.reachedVia !== "low") {
-        errors.push(`${asset.assetCode} row ${index + 1}: bearish reach was not evaluated against the session low`);
-      }
-      const shouldWin = row.dayLow <= (row.entryPrice - row.targetDistance) + 0.000001;
-      if ((row.outcomeKey === "WIN") !== shouldWin) {
-        errors.push(`${asset.assetCode} row ${index + 1}: bearish outcome did not match the intraday touch definition`);
-      }
+    if (Math.abs(row.rangeMargin - (row.dayRange - row.l2lDistance)) > 0.000001) {
+      errors.push(`${asset.assetCode} row ${index + 1}: range margin did not equal day range - L2L distance`);
+    }
+    const shouldBeAvailable = (row.high - row.low) >= row.l2lDistance - 0.000001;
+    if (row.rangeAvailable !== shouldBeAvailable || (row.outcomeKey === "WIN") !== shouldBeAvailable) {
+      errors.push(`${asset.assetCode} row ${index + 1}: outcome did not match the L2L range availability definition`);
+    }
+    if (row.callDirection !== "BULLISH" && row.callDirection !== "BEARISH") {
+      errors.push(`${asset.assetCode} row ${index + 1}: non-directional row leaked into evaluated results`);
     }
   });
 
@@ -797,8 +805,9 @@ function buildOutput(layer1Assets, layer2Pairs) {
       evaluation_window: "following 24hrs",
       adr_window_sessions: ADR_WINDOW_SESSIONS,
       adr_threshold_pct: ADR_THRESHOLD_PCT,
-      l2l_definition: `L2L target distance = ${ADR_THRESHOLD_PCT}% of the rolling ADR(${ADR_WINDOW_SESSIONS}) computed from the ${ADR_WINDOW_SESSIONS} completed sessions before the evaluation day.`,
-      win_definition: "WIN when the day's high (bullish/long) or low (bearish/short) touches open +/- the L2L target distance at any point inside the evaluation day. The close is ignored; this is intraday reach, not close-to-close accuracy.",
+      l2l_definition: `L2L distance = ${ADR_THRESHOLD_PCT}% of the rolling ADR(${ADR_WINDOW_SESSIONS}) computed from the ${ADR_WINDOW_SESSIONS} completed sessions before the evaluation day.`,
+      win_definition: "L2L Range Available when the day's high-low range (available_range = high - low) is at least the L2L distance. The call direction only categorizes the row; the range calculation is identical for bullish/long and bearish/short. Open is diagnostic context only, close is irrelevant. This is not open-to-target reach and not close-to-close accuracy.",
+      range_availability_note: RANGE_AVAILABILITY_NOTE,
       reference_price_policy: REFERENCE_PRICE_POLICY,
       diagnostics: {
         unsupportedInstruments: layer1Assets
@@ -856,7 +865,8 @@ function buildOutput(layer1Assets, layer2Pairs) {
         dayTotals: asset.dayTotals,
         weekdayTotals: asset.weekdayTotals,
         bucketTotals: asset.bucketTotals,
-        bucketMatrix: asset.bucketMatrix
+        bucketMatrix: asset.bucketMatrix,
+        evaluatedRows: asset.evaluatedRows
       }))
     },
     layer2: {
@@ -886,7 +896,8 @@ function buildOutput(layer1Assets, layer2Pairs) {
         dayTotals: pair.dayTotals,
         weekdayTotals: pair.weekdayTotals,
         bucketTotals: pair.bucketTotals,
-        bucketMatrix: pair.bucketMatrix
+        bucketMatrix: pair.bucketMatrix,
+        tradableRows: pair.tradableRows
       }))
     }
   };

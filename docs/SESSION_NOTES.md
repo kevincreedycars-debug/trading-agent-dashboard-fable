@@ -1,8 +1,13 @@
 # Session Notes
 
-Last updated: 2026-07-04
+Last updated: 2026-07-05
 
 ## Work Completed
+
+- Corrected the L2L research definition to **L2L Range Available** (day high-low range >= L2L distance; direction categorizes only; open diagnostic-only; close irrelevant; labelled availability, not execution) in `backtester/lib/l2l_range_logic.js` with full synthetic test coverage.
+- Staged OANDA v20 live-account daily OHLC for `EUR_USD`, `XAU_USD`, `NAS100_USD` (2023-11-01..2026-07-03, UTC-aligned mid candles) — Gold unlocked for the first time, QQQ proxy retired, EUR moved off Alpha Vantage. BTC stays on Binance BTCUSDT.
+- Regenerated the artifact with per-row diagnostics; renamed all dashboard wording to L2L Range Research/Available; updated smoke expectations. Layer 1 availability: EUR 94.3%, Gold 93.4%, NQ 89.7%, BTC 84.9%; USD remains unavailable (no supportable USD-index OHLC in the OANDA account).
+- Validation: `node --check script.js` clean, backtester suite 33/34 (pre-existing Supabase-linked failure only), Playwright smoke PASS, artifact validator PASS. No live Layer 1 / Layer 2 trading logic touched.
 
 - Fixed the ADR/L2L reach definition end-to-end: reach is intraday touch of `open +/- L2L distance` against the day's high/low, close ignored, strict day-open entry (previous-close fallback removed), no-trade rows separated from losses.
 - Extracted the semantics into `backtester/lib/adr_reach_logic.js` and covered them with unit + contract tests (`backtester/tests/adr_reach_logic.test.js`), including a guard against `Number(null) === 0` silently turning a missing open into an entry price of 0.

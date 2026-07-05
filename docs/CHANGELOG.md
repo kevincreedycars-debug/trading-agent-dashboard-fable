@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-05
+
+### Changed
+
+- Corrected the L2L research definition from open-anchored target touch to **L2L Range Available**: `available_range = high - low`; a call counts as available when the day's range is at least the L2L distance (50% of rolling ADR20). The call direction only categorizes rows; the range calculation is identical for bullish/long and bearish/short. The open is diagnostic context only and the close is irrelevant. Results are labelled "L2L Range Available", never guaranteed executed, because daily OHLC confirms range availability, not intraday sequence.
+- Replaced `backtester/lib/adr_reach_logic.js` with `backtester/lib/l2l_range_logic.js` and rewrote the synthetic tests (`backtester/tests/l2l_range_logic.test.js`): high 105 / low 100 / L2L 5 = available, high 104.99 = not available, both directions win on the same range, close and open never affect the result.
+- Staged account-verified OANDA v20 daily OHLC caches (live account, mid candles, UTC alignment) for `EUR_USD`, `XAU_USD`, and `NAS100_USD` under `backtester/cache/ohlc/`. Gold ADR/L2L research is now AVAILABLE for the first time, the QQQ proxy for NQ is retired in favor of real NAS100_USD data, and EUR switched from Alpha Vantage to OANDA. Sunday stub candles from UTC alignment are dropped at load and counted (`weekendRowsDropped`).
+- Regenerated `data/adr-reach-research.json` with per-row diagnostics for every evaluated call and tradable pair signal (date, asset/pair, layer, call direction, strength bucket, OHLC source/instrument, OHLC values, day_range, L2L distance, range_available, range_margin).
+- Renamed all dashboard wording from "ADR Reach" to "L2L Range Research" / "L2L Range Available" with the caveat copy: "This measures whether the day's high-low range was large enough to contain the L2L move in the call direction. Daily OHLC cannot prove execution sequence." Smoke-test expectations updated, including Gold/XAU_USD now asserting as available.
+- Fixed the OANDA importer to cap the candles `to` parameter at now (the API rejects future timestamps).
+- JSON artifact keys (`adrReachWins`, `adrReachWinPct`, data attributes, subtab id) intentionally keep their legacy names for renderer compatibility; all user-facing wording is L2L Range Available.
+
 ## 2026-07-04
 
 ### Added

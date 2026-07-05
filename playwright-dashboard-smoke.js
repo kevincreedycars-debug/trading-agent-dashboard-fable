@@ -249,60 +249,65 @@ async function run() {
       throw new Error(`BTC/USD pair trade breakdown did not include weekend columns.\n${pairTradeBtcHeaders.join(" | ")}`);
     }
 
-    await page.getByRole("button", { name: "ADR Reach Research" }).click();
+    await page.getByRole("button", { name: "L2L Range Research" }).click();
     await page.waitForSelector("[data-adr-reach-layer1-summary='true']", { timeout: 15000 });
     const adrReachText = await page.locator("#backtestPanel").innerText();
     const normalizedAdrReachText = adrReachText.toLowerCase();
 
-    if (!adrReachText.includes("Intraday target-reach research from existing checker artifacts")) {
-      throw new Error(`ADR Reach Research tab header did not render.\n${adrReachText}`);
+    if (!adrReachText.includes("L2L intraday range research from existing checker artifacts")) {
+      throw new Error(`L2L Range Research tab header did not render.\n${adrReachText}`);
     }
 
-    if (!normalizedAdrReachText.includes("layer 1 adr reach summary") || !normalizedAdrReachText.includes("layer 2 adr reach summary")) {
-      throw new Error(`ADR Reach Research summary tables did not render.\n${adrReachText}`);
+    if (!normalizedAdrReachText.includes("layer 1 l2l range summary") || !normalizedAdrReachText.includes("layer 2 l2l range summary")) {
+      throw new Error(`L2L Range Research summary tables did not render.\n${adrReachText}`);
     }
 
-    if (!normalizedAdrReachText.includes("50% rolling adr20 target in the predicted direction")) {
-      throw new Error(`ADR Reach Research did not render the expected research note copy.\n${adrReachText}`);
+    if (!normalizedAdrReachText.includes("high-low range was large enough to contain the l2l move")) {
+      throw new Error(`L2L Range Research did not render the expected research note copy.\n${adrReachText}`);
     }
 
-    if (!normalizedAdrReachText.includes("nq adr reach from layer 1 checker artifacts") || !normalizedAdrReachText.includes("nq/usd from existing pair trade research signal selection")) {
-      throw new Error(`ADR Reach Research did not render the supported NQ detail sections.\n${adrReachText}`);
+    if (!normalizedAdrReachText.includes("daily ohlc cannot prove execution sequence")) {
+      throw new Error(`L2L Range Research did not render the execution-sequence caveat.\n${adrReachText}`);
+    }
+
+    if (!normalizedAdrReachText.includes("nq l2l range from layer 1 checker artifacts") || !normalizedAdrReachText.includes("nq/usd from existing pair trade research signal selection")) {
+      throw new Error(`L2L Range Research did not render the supported NQ detail sections.\n${adrReachText}`);
     }
 
     if (!normalizedAdrReachText.includes("confidence breakdown") || !normalizedAdrReachText.includes("weekday totals across all confidence buckets") || !normalizedAdrReachText.includes("by confidence bucket and weekday")) {
-      throw new Error(`ADR Reach Research did not render the required detail tables.\n${adrReachText}`);
+      throw new Error(`L2L Range Research did not render the required detail tables.\n${adrReachText}`);
     }
 
     for (const expectedAvailableText of [
-      "eur adr reach from layer 1 checker artifacts",
-      "nq adr reach from layer 1 checker artifacts",
-      "btc adr reach from layer 1 checker artifacts",
+      "eur l2l range from layer 1 checker artifacts",
+      "gold l2l range from layer 1 checker artifacts",
+      "nq l2l range from layer 1 checker artifacts",
+      "btc l2l range from layer 1 checker artifacts",
       "eur/usd from existing pair trade research signal selection",
+      "xau/usd from existing pair trade research signal selection",
       "nq/usd from existing pair trade research signal selection",
       "btc/usd from existing pair trade research signal selection"
     ]) {
       if (!normalizedAdrReachText.includes(expectedAvailableText)) {
-        throw new Error(`ADR Reach Research did not render expected available section: ${expectedAvailableText}\n${adrReachText}`);
+        throw new Error(`L2L Range Research did not render expected available section: ${expectedAvailableText}\n${adrReachText}`);
       }
     }
 
     for (const expectedUnavailableText of [
       "layer 1 unavailable reasons",
-      "layer 2 unavailable reasons",
-      "adr unavailable source blockers"
+      "l2l unavailable source blockers"
     ]) {
       if (!normalizedAdrReachText.includes(expectedUnavailableText)) {
-        throw new Error(`ADR Reach Research did not preserve expected unavailable section: ${expectedUnavailableText}\n${adrReachText}`);
+        throw new Error(`L2L Range Research did not preserve expected unavailable section: ${expectedUnavailableText}\n${adrReachText}`);
       }
     }
 
     const adrUnavailableAuditText = (await page.locator("[data-adr-unavailable-audit='true']").textContent() || "").toLowerCase();
     if (!adrUnavailableAuditText.includes("no supportable dxy/usd-index daily ohlc source is staged")) {
-      throw new Error(`ADR unavailable audit details did not preserve the USD/DXY blocker.\n${adrUnavailableAuditText}`);
+      throw new Error(`L2L unavailable audit details did not preserve the USD/DXY blocker.\n${adrUnavailableAuditText}`);
     }
-    if (!adrUnavailableAuditText.includes("oanda xau_usd daily ohlc cache is not staged")) {
-      throw new Error(`ADR unavailable audit details did not preserve the Gold/OANDA blocker.\n${adrUnavailableAuditText}`);
+    if (adrUnavailableAuditText.includes("xau_usd")) {
+      throw new Error(`Gold still appeared in the unavailable audit even though the OANDA XAU_USD cache is staged.\n${adrUnavailableAuditText}`);
     }
 
     if (normalizedAdrReachText.includes("no repo-local eurusd ohlc source") || normalizedAdrReachText.includes("repository evidence only includes eurusd close-only lineage")) {
@@ -315,13 +320,18 @@ async function run() {
 
     const adrAuditText = (await page.locator("[data-adr-reach-layer1-summary='true']").innerText()).toLowerCase();
     for (const expectedAuditText of [
-      "eur/usd daily ohlc csv from alpha vantage fx_daily",
-      "btc/usdt daily ohlc from binance spot",
-      "qqq daily ohlc proxy (yahoo)"
+      "eur/usd daily ohlc from oanda v20 eur_usd mid candles",
+      "xau/usd daily ohlc from oanda v20 xau_usd mid candles",
+      "nas100 daily ohlc from oanda v20 nas100_usd mid candles",
+      "btc/usdt daily ohlc from binance spot"
     ]) {
       if (!adrAuditText.includes(expectedAuditText)) {
         throw new Error(`Warehouse Audit did not render current OHLC source text: ${expectedAuditText}\n${adrAuditText}`);
       }
+    }
+
+    if (adrAuditText.includes("qqq daily ohlc proxy")) {
+      throw new Error(`Warehouse Audit still showed the retired QQQ proxy source.\n${adrAuditText}`);
     }
 
     const adrSummaryTableText = (await page.locator(".adr-summary-table").allInnerTexts()).join("\n").toLowerCase();
