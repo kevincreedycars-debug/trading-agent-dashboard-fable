@@ -135,11 +135,14 @@ direction (how often that swing happens with no call at all):
   34.5% correct on the close — down-swings happen, then the index closes back up.
   Good for level-to-level shorts, bad for hold-to-close shorts.
 
-## What needs fixing (proposed, not yet done)
+## What needs fixing
 
-1. **Dashboard honesty**: the L2L Move Research tab shows raw win % with no base-rate
-   context. It should display the no-skill baseline and decisive-day accuracy beside
-   every win rate, and label EUR/NQ Layer 1 as "no directional edge demonstrated".
+1. **Dashboard honesty**: DONE 2026-07-05 — the new "L2L Trade Gate" and
+   "Directional Call Trust" sub-tabs (artifact `data/l2l-trade-gate.json`, builder
+   `backtester/scripts/build_l2l_trade_gate.js`) show every call type's hit rate
+   beside its any-day base rate and added edge, plus >60% trust verdicts at the 55%
+   threshold and close-direction trust verdicts. The older L2L Move Research tab
+   still shows raw win % without base-rate context.
 2. **Confidence recalibration**: headline confidence needs to be studied against
    outcomes before it is displayed as call quality for trade decisions.
 3. **Statistical caveats**: ~12 tests were run; BTC close (p<0.0001) survives any

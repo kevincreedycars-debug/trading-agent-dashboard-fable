@@ -860,6 +860,29 @@ h3 {
   color: var(--neutral);
 }
 
+.gate-verdict {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gate-verdict.trust { color: var(--green); }
+.gate-verdict.skip { color: var(--red); }
+
+.gate-edge {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gate-edge.positive { color: var(--green); }
+.gate-edge.negative { color: var(--red); }
+.gate-edge.neutral { color: var(--neutral); }
+
+.gate-small-sample {
+  display: block;
+  color: var(--neutral);
+  font-size: 0.72rem;
+}
+
 .direction.lean,
 .direction.lean-bullish,
 .direction.lean-bearish,

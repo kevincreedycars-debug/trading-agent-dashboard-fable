@@ -14,6 +14,7 @@ const checkerDataUrls = {
   BTC: "./data/backtester-checker-btc-24h-2024-2026.json?v=20260702-btc-benchmark-dashboard"
 };
 const adrReachResearchUrl = "./data/adr-reach-research.json?v=20260705-l2l-directional-move";
+const l2lTradeGateUrl = "./data/l2l-trade-gate.json?v=20260705-trade-gate-1";
 const researchSupabaseUrl = "https://eaolqbrlywczinfordvg.supabase.co/rest/v1";
 const researchSupabaseKey = "sb_publishable_k6YbEuuk3GyB9GVTQDtNVA_J1gCRYaY";
 const headlineConfidenceLib = globalThis.HeadlineConfidence;
@@ -4482,6 +4483,224 @@ function renderResearchAdrReach(data = {}) {
   `;
 }
 
+function formatGateThresholdTriple(values = {}) {
+  const parts = ["50", "55", "60"].map(key => (metricAvailable(values?.[key]) ? `${values[key]}%` : displayDash()));
+  return parts.join(" / ");
+}
+
+function formatGateBaseTriple(baseRates = {}, direction = "BULLISH") {
+  const sideKey = direction === "BULLISH" ? "up" : "down";
+  const parts = ["50", "55", "60"].map(key => {
+    const value = baseRates?.[key]?.[sideKey];
+    return metricAvailable(value) ? `${value}%` : displayDash();
+  });
+  return parts.join(" / ");
+}
+
+function renderGateEdgeCell(edgeValue) {
+  if (!metricAvailable(edgeValue)) return displayDash();
+  const numeric = Number(edgeValue);
+  const edgeClass = numeric >= 5 ? "positive" : (numeric <= -5 ? "negative" : "neutral");
+  const sign = numeric > 0 ? "+" : "";
+  return `<span class="gate-edge ${edgeClass}">${sign}${escapeHtml(String(edgeValue))} pts</span>`;
+}
+
+function renderGateVerdictCell(trusted, smallSample) {
+  const verdict = trusted
+    ? `<span class="gate-verdict trust">&#10003; Trusted</span>`
+    : `<span class="gate-verdict skip">&#10007; Not trusted</span>`;
+  const caveat = smallSample ? ` <small class="gate-small-sample">small sample</small>` : "";
+  return `${verdict}${caveat}`;
+}
+
+function renderGateIntroPanel(eyebrow, title, paragraphs = []) {
+  return `
+    <article class="detail-panel wide-panel research-secondary-panel weekday-breakdown-intro-panel">
+      <div class="panel-head">
+        <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+        <h3>${escapeHtml(title)}</h3>
+      </div>
+      ${paragraphs.map(text => `<p class="research-panel-copy">${escapeHtml(text)}</p>`).join("")}
+    </article>
+  `;
+}
+
+function renderGateConfidenceCaveatPanel(meta = {}) {
+  return renderGateIntroPanel(
+    "Signal Strength Caveat",
+    "Confidence / strength is currently unreliable here",
+    [meta.confidence_note || "At present the signal strength / confidence score is unreliable for this kind of directional confluence. Do not size or filter by it."]
+  );
+}
+
+function buildGateSplitRows(groups = [], groupLabelKey) {
+  const rows = [];
+  groups.forEach(group => {
+    (group.splits || []).forEach(split => {
+      rows.push({
+        groupLabel: group[groupLabelKey],
+        baseRates: group.baseRates,
+        ...split
+      });
+    });
+  });
+  return rows;
+}
+
+function renderResearchTradeGate(data = {}) {
+  const tradeGate = data.trade_gate || null;
+
+  if (!tradeGate || !Array.isArray(tradeGate.layer1) || !tradeGate.layer1.length) {
+    return `
+      <div class="backtest-report">
+        <article class="detail-panel wide-panel research-secondary-panel">
+          <h3>L2L trade gate unavailable</h3>
+          <div class="empty-state matrix-evidence-empty">The downstream L2L trade gate artifact could not be loaded. Run backtester/scripts/build_l2l_trade_gate.js and reload.</div>
+        </article>
+      </div>
+    `;
+  }
+
+  const meta = tradeGate.meta || {};
+  const layer1Rows = buildGateSplitRows(tradeGate.layer1, "assetLabel");
+  const layer2Rows = buildGateSplitRows(tradeGate.layer2, "pairLabel");
+  const bucketGroups = [
+    ...(tradeGate.layer1 || []).map(group => ({ label: `${group.assetLabel} Layer 1`, buckets: group.buckets || [] })),
+    ...(tradeGate.layer2 || []).map(group => ({ label: `${group.pairLabel} Layer 2`, buckets: group.buckets || [] }))
+  ];
+  const bucketKeys = ["WEAK", "MODERATE", "STRONG", "VERY_STRONG"];
+  const trustRows = Array.isArray(tradeGate.trustSummary) ? tradeGate.trustSummary : [];
+
+  const gateDetailColumns = [
+    { label: "Group", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.groupLabel, "", { className: "adr-table-tight-cell" }) },
+    { label: "Call Type", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.label, "", { className: "adr-table-tight-cell" }) },
+    { label: "Days", className: "adr-col-metric", render: row => renderAdrCompactTextCell(String(row.n), row.smallSample ? "small sample" : "", { className: "adr-table-tight-cell" }) },
+    { label: "Hit % (50 / 55 / 60)", className: "adr-col-metric", render: row => renderAdrCompactTextCell(formatGateThresholdTriple(row.hitPct), "", { className: "adr-table-tight-cell" }) },
+    { label: "Any-Day Base (same dir)", className: "adr-col-metric", render: row => renderAdrCompactTextCell(formatGateBaseTriple(row.baseRates, row.direction), "", { className: "adr-table-tight-cell" }) },
+    { label: "Edge @55", className: "adr-col-rate", render: row => renderGateEdgeCell(row.edgePct?.["55"]) }
+  ];
+
+  return `
+    <div class="backtest-report">
+      ${renderResearchStatusHeader(data)}
+      <section class="research-section" data-l2l-trade-gate="true">
+        <div class="research-section-head">
+          <div>
+            <h3>L2L trade gate: can the call fill a level-to-level move?</h3>
+          </div>
+          <p class="research-panel-copy">Hit = a guaranteed complete swing of at least 50 / 55 / 60% of ADR20 occurred in the call direction at some point during the trading day, verified from 1-hour candles as lower bounds. Leans are separated from clear calls.</p>
+        </div>
+        ${renderGateIntroPanel("How to read this", "Base rate vs added edge", [
+          meta.hit_definition || "",
+          meta.edge_definition || "",
+          "Swings of these sizes happen on most days in both directions, so a high hit rate alone is NOT proof the call added anything. The edge column is what the call adds over taking the same direction every day with no call at all."
+        ])}
+        ${renderResearchBreakdownTable("Layer 1 hit rates by call type", "L2L Trade Gate", layer1Rows, gateDetailColumns, {
+          tableClass: "adr-summary-table gate-detail-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+        ${renderResearchBreakdownTable("Layer 2 pair hit rates by signal side (pairs never fire on leans)", "L2L Trade Gate", layer2Rows, gateDetailColumns, {
+          tableClass: "adr-summary-table gate-detail-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+        ${renderResearchBreakdownTable("Does confidence / strength change the outcome? Hit % at the 55% threshold", "Confidence Check", bucketGroups, [
+          { label: "Group", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.label, "", { className: "adr-table-tight-cell" }) },
+          ...bucketKeys.map(bucketKey => ({
+            label: bucketKey === "VERY_STRONG" ? "Very Strong" : bucketKey.charAt(0) + bucketKey.slice(1).toLowerCase(),
+            className: "adr-col-metric",
+            render: row => {
+              const bucket = (row.buckets || []).find(item => item.bucketKey === bucketKey);
+              if (!bucket) return renderAdrCompactTextCell(displayDash(), "", { className: "adr-table-tight-cell" });
+              return renderAdrCompactTextCell(metricAvailable(bucket.hitPct?.["55"]) ? `${bucket.hitPct["55"]}%` : displayDash(), `${bucket.n} days`, { className: "adr-table-tight-cell" });
+            }
+          }))
+        ], {
+          tableClass: "adr-summary-table gate-bucket-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+        ${renderGateConfidenceCaveatPanel(meta)}
+        ${renderResearchBreakdownTable("Trust summary at the 55% threshold (trusted = hit rate above 60%)", "Trust Summary", trustRows, [
+          { label: "Signal", className: "adr-col-entity", render: row => renderAdrCompactTextCell(`${row.groupLabel} ${row.signalLabel}`, row.layer === "layer2" ? "Layer 2" : "Layer 1", { className: "adr-table-tight-cell" }) },
+          { label: "Days", className: "adr-col-metric", render: row => renderAdrCompactTextCell(String(row.n), "", { className: "adr-table-tight-cell" }) },
+          { label: "Hit % @55", className: "adr-col-metric", render: row => renderAdrCompactTextCell(metricAvailable(row.hitPctAtTrustThreshold) ? `${row.hitPctAtTrustThreshold}%` : displayDash(), "", { className: "adr-table-tight-cell" }) },
+          { label: "Edge @55", className: "adr-col-metric", render: row => renderGateEdgeCell(row.edgePctAtTrustThreshold) },
+          { label: "Verdict", className: "adr-col-rate", render: row => renderGateVerdictCell(row.trusted, row.smallSample) }
+        ], {
+          tableClass: "adr-summary-table gate-trust-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+      </section>
+    </div>
+  `;
+}
+
+function renderResearchDirectionalTrust(data = {}) {
+  const tradeGate = data.trade_gate || null;
+  const directional = tradeGate?.directional || null;
+
+  if (!directional || !Array.isArray(directional.layer1) || !directional.layer1.length) {
+    return `
+      <div class="backtest-report">
+        <article class="detail-panel wide-panel research-secondary-panel">
+          <h3>Directional call trust unavailable</h3>
+          <div class="empty-state matrix-evidence-empty">The downstream L2L trade gate artifact could not be loaded. Run backtester/scripts/build_l2l_trade_gate.js and reload.</div>
+        </article>
+      </div>
+    `;
+  }
+
+  const meta = tradeGate.meta || {};
+  const layer1Rows = [];
+  directional.layer1.forEach(group => {
+    (group.callTypes || []).forEach(callType => {
+      layer1Rows.push({ groupLabel: group.assetLabel, ...callType });
+    });
+  });
+  const layer2Rows = [];
+  (directional.layer2 || []).forEach(group => {
+    (group.sides || []).forEach(side => {
+      layer2Rows.push({ groupLabel: group.pairLabel, ...side });
+    });
+  });
+
+  const directionalColumns = [
+    { label: "Group", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.groupLabel, "", { className: "adr-table-tight-cell" }) },
+    { label: "Call Type", className: "adr-col-entity", render: row => renderAdrCompactTextCell(row.label, "", { className: "adr-table-tight-cell" }) },
+    { label: "Evaluable Days", className: "adr-col-metric", render: row => renderAdrCompactTextCell(String(row.evaluable), `${row.flat} flat excluded`, { className: "adr-table-tight-cell" }) },
+    { label: "Correct / Wrong", className: "adr-col-metric", render: row => renderAdrCompactTextCell(`${row.correct} / ${row.wrong}`, "", { className: "adr-table-tight-cell" }) },
+    { label: "Accuracy %", className: "adr-col-metric", render: row => renderAdrCompactTextCell(metricAvailable(row.accuracyPct) ? `${row.accuracyPct}%` : displayDash(), "", { className: "adr-table-tight-cell" }) },
+    { label: "Verdict", className: "adr-col-rate", render: row => renderGateVerdictCell(row.trusted, row.smallSample) }
+  ];
+
+  return `
+    <div class="backtest-report">
+      ${renderResearchStatusHeader(data)}
+      <section class="research-section" data-directional-call-trust="true">
+        <div class="research-section-head">
+          <div>
+            <h3>Directional call trust: was the 24H close-direction call right?</h3>
+          </div>
+          <p class="research-panel-copy">This measures the stored close-to-close checker verdict for each call type, with leans separated from clear calls. Flat and not-evaluable outcomes are excluded. Trusted = accuracy above 60%.</p>
+        </div>
+        ${renderGateIntroPanel("How to read this", "Close-direction accuracy is a different question from the L2L trade gate", [
+          "A call can be trusted for the level-to-level move but not for the close direction, and vice versa. NQ bearish calls are the clearest example: down-swings large enough for an L2L trade happen on those days, but the index often closes back up.",
+          "Layer 2 rows join each tradable pair signal back to the target asset's checker verdict for the same prediction. The pair instrument is the same instrument each Layer 1 asset is benchmarked against.",
+          "Flat days are excluded from accuracy, and a trader cannot know in advance which days will be flat."
+        ])}
+        ${renderResearchBreakdownTable("Layer 1 close-direction accuracy by call type", "Directional Call Trust", layer1Rows, directionalColumns, {
+          tableClass: "adr-summary-table gate-trust-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+        ${renderResearchBreakdownTable("Layer 2 pair close-direction accuracy by signal side", "Directional Call Trust", layer2Rows, directionalColumns, {
+          tableClass: "adr-summary-table gate-trust-table",
+          scrollClass: "adr-summary-scroll"
+        })}
+        ${renderGateConfidenceCaveatPanel(meta)}
+      </section>
+    </div>
+  `;
+}
+
 function formatPairTradeExFlatInline(cell = {}) {
   const summary = summarizeWeekdayBreakdownCell(cell);
   if (!summary.total) return displayDash();
@@ -5290,7 +5509,13 @@ function renderBacktest(data = {}) {
           ? renderResearchWeekdayBreakdown(data)
           : (activeBacktestTab === "pair-trade-research"
             ? renderResearchPairTrade(data)
-            : (activeBacktestTab === "adr-reach-research" ? renderResearchAdrReach(data) : renderResearchAccuracy(data)))));
+            : (activeBacktestTab === "adr-reach-research"
+              ? renderResearchAdrReach(data)
+              : (activeBacktestTab === "l2l-trade-gate"
+                ? renderResearchTradeGate(data)
+                : (activeBacktestTab === "directional-call-trust"
+                  ? renderResearchDirectionalTrust(data)
+                  : renderResearchAccuracy(data)))))));
     applyMatrixEvidenceFilter("all");
   } catch (err) {
     console.error("Backtest render failed", err);
@@ -5802,6 +6027,7 @@ async function fetchResearchDashboardData() {
   };
 
   const adrReachResearchPromise = resolveResearchTask("adr_reach_research", fetchLocalJson(adrReachResearchUrl), null);
+  const tradeGatePromise = resolveResearchTask("l2l_trade_gate", fetchLocalJson(l2lTradeGateUrl), null);
   const matrix24hRowsPromise = resolveResearchTask("research_prediction_usd_benchmark_summary", fetchResearchView("research_prediction_usd_benchmark_summary", {
     select: "snapshot_date,asset_code,timeframe,predicted_direction,agent_direction,agent_conviction,predicted_conviction,headline_confidence_pct,bull_case_pct,bear_case_pct,net_edge_pct,participation_pct,verdict_strength,combined_result,benchmark_market,open_price,close_price,pct_change",
     order: "timeframe.asc,predicted_direction.asc,verdict_strength.asc",
@@ -5896,7 +6122,8 @@ async function fetchResearchDashboardData() {
     goldCheckerData,
     nqCheckerData,
     btcCheckerData,
-    adrReachResearchData
+    adrReachResearchData,
+    tradeGateData
   ] = await Promise.all([
     resolveResearchTask("research_overall_win_rate", fetchResearchView("research_overall_win_rate"), []),
     resolveResearchTask("research_usd_24h_direction_accuracy", fetchResearchView("research_usd_24h_direction_accuracy"), []),
@@ -5931,7 +6158,8 @@ async function fetchResearchDashboardData() {
     goldCheckerDataPromise,
     nqCheckerDataPromise,
     btcCheckerDataPromise,
-    adrReachResearchPromise
+    adrReachResearchPromise,
+    tradeGatePromise
   ]);
 
   const resolvedEurMatrix24hRows = eurCheckerData?.rows?.length
@@ -5987,6 +6215,7 @@ async function fetchResearchDashboardData() {
     },
     infrastructure: infrastructureRows[0] || {},
     adr_reach: adrReachResearchData,
+    trade_gate: tradeGateData,
     checker: usdCheckerData,
     checkers: {
       USD: usdCheckerData,

@@ -398,13 +398,59 @@ async function run() {
       throw new Error(`ADR summary last column padding is too small.\nPaddingRight: ${adrSummaryLastCellPadding}`);
     }
 
+    await page.getByRole("button", { name: "L2L Trade Gate" }).click();
+    await page.waitForSelector("[data-l2l-trade-gate='true']", { timeout: 15000 });
+    const tradeGateText = await page.locator("[data-l2l-trade-gate='true']").innerText();
+    const normalizedTradeGateText = tradeGateText.toLowerCase();
+
+    if (!normalizedTradeGateText.includes("trust summary at the 55% threshold")) {
+      throw new Error(`L2L Trade Gate did not render the 55% trust summary.\n${tradeGateText}`);
+    }
+    if (!normalizedTradeGateText.includes("any-day base")) {
+      throw new Error(`L2L Trade Gate did not render the any-day base rate context.\n${tradeGateText}`);
+    }
+    if (!normalizedTradeGateText.includes("bullish lean") || !normalizedTradeGateText.includes("bearish lean")) {
+      throw new Error(`L2L Trade Gate did not separate lean call types.\n${tradeGateText}`);
+    }
+    if (!normalizedTradeGateText.includes("unreliable")) {
+      throw new Error(`L2L Trade Gate did not render the confidence caveat.\n${tradeGateText}`);
+    }
+    ["eur/usd", "xau/usd", "nq/usd", "btc/usd"].forEach((pairLabel) => {
+      if (!normalizedTradeGateText.includes(pairLabel)) {
+        throw new Error(`L2L Trade Gate confidence table is missing ${pairLabel}.\n${tradeGateText}`);
+      }
+    });
+    const tradeGateVerdictCount = await page.locator("[data-l2l-trade-gate='true'] .gate-verdict").count();
+    if (tradeGateVerdictCount < 20) {
+      throw new Error(`L2L Trade Gate rendered too few trust verdicts: ${tradeGateVerdictCount}`);
+    }
+
+    await page.getByRole("button", { name: "Directional Call Trust" }).click();
+    await page.waitForSelector("[data-directional-call-trust='true']", { timeout: 15000 });
+    const directionalTrustText = await page.locator("[data-directional-call-trust='true']").innerText();
+    const normalizedDirectionalTrustText = directionalTrustText.toLowerCase();
+
+    if (!normalizedDirectionalTrustText.includes("close-direction accuracy")) {
+      throw new Error(`Directional Call Trust did not render its accuracy tables.\n${directionalTrustText}`);
+    }
+    if (!normalizedDirectionalTrustText.includes("bearish lean") || !normalizedDirectionalTrustText.includes("bullish lean")) {
+      throw new Error(`Directional Call Trust did not separate lean call types.\n${directionalTrustText}`);
+    }
+    if (!normalizedDirectionalTrustText.includes("flat excluded")) {
+      throw new Error(`Directional Call Trust did not state the flat exclusion.\n${directionalTrustText}`);
+    }
+    const directionalVerdictCount = await page.locator("[data-directional-call-trust='true'] .gate-verdict").count();
+    if (directionalVerdictCount < 20) {
+      throw new Error(`Directional Call Trust rendered too few verdicts: ${directionalVerdictCount}`);
+    }
+
     if (consoleErrors.length) {
       throw new Error(`Console errors were emitted during dashboard smoke.\n${consoleErrors.join("\n")}`);
     }
 
     console.log(JSON.stringify({
       status: "PASS",
-      target: "Accuracy tables, checker, weekday, pair trade, and ADR reach research",
+      target: "Accuracy tables, checker, weekday, pair trade, ADR reach research, L2L trade gate, and directional call trust",
       matrix_summary_excerpt: summaryText,
       btc_weekday_headers: btcWeekdayHeaders,
       usd_weekday_headers: usdWeekdayHeaders,

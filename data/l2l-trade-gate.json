@@ -1,0 +1,1574 @@
+{
+  "meta": {
+    "generated_at": "2026-07-05T14:53:38.519Z",
+    "source": "backtester/scripts/build_l2l_trade_gate.js",
+    "upstream_artifact": "data/adr-reach-research.json",
+    "thresholds_pct_of_adr20": [
+      50,
+      55,
+      60
+    ],
+    "hit_definition": "A hit means a guaranteed complete swing of at least the threshold percentage of ADR20 occurred in the call direction at some point during the trading day, verified from 1-hour candles as lower bounds (within-hour sequence never assumed).",
+    "edge_definition": "Edge = hit rate minus the any-day base rate for the same direction over the same evaluated days: what the call adds over taking that direction with no call at all.",
+    "trust_rule": "Trusted = hit rate at the 55% of ADR20 threshold above 60%.",
+    "directional_trust_rule": "Trusted = close-to-close checker accuracy (ex-flat, ex-not-evaluable) above 60%.",
+    "confidence_note": "At present the signal strength / confidence score is unreliable for this kind of directional confluence: hit rates do not rise with confidence and Very Strong is the worst bucket in most groups. Do not size or filter by it.",
+    "small_sample_below": 30
+  },
+  "layer1": [
+    {
+      "assetCode": "EUR",
+      "assetLabel": "EUR",
+      "n": 571,
+      "baseRates": {
+        "50": {
+          "up": 73.4,
+          "down": 73.6
+        },
+        "55": {
+          "up": 66.4,
+          "down": 67.3
+        },
+        "60": {
+          "up": 60.1,
+          "down": 60.4
+        }
+      },
+      "splits": [
+        {
+          "key": "BULLISH",
+          "label": "Bullish (clear)",
+          "direction": "BULLISH",
+          "n": 330,
+          "smallSample": false,
+          "hitPct": {
+            "50": 74.8,
+            "55": 69.7,
+            "60": 62.1
+          },
+          "edgePct": {
+            "50": 1.4,
+            "55": 3.3,
+            "60": 2
+          },
+          "trusted": true
+        },
+        {
+          "key": "BULLISH_LEAN",
+          "label": "Bullish lean",
+          "direction": "BULLISH",
+          "n": 22,
+          "smallSample": true,
+          "hitPct": {
+            "50": 59.1,
+            "55": 40.9,
+            "60": 40.9
+          },
+          "edgePct": {
+            "50": -14.3,
+            "55": -25.5,
+            "60": -19.2
+          },
+          "trusted": false
+        },
+        {
+          "key": "BEARISH",
+          "label": "Bearish (clear)",
+          "direction": "BEARISH",
+          "n": 197,
+          "smallSample": false,
+          "hitPct": {
+            "50": 67.5,
+            "55": 64,
+            "60": 57.4
+          },
+          "edgePct": {
+            "50": -6.1,
+            "55": -3.3,
+            "60": -3
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH_LEAN",
+          "label": "Bearish lean",
+          "direction": "BEARISH",
+          "n": 22,
+          "smallSample": true,
+          "hitPct": {
+            "50": 81.8,
+            "55": 72.7,
+            "60": 59.1
+          },
+          "edgePct": {
+            "50": 8.2,
+            "55": 5.4,
+            "60": -1.3
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 381,
+          "hitPct": {
+            "50": 70.9,
+            "55": 65.9,
+            "60": 59.3
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 63,
+          "hitPct": {
+            "50": 71.4,
+            "55": 69.8,
+            "60": 58.7
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 98,
+          "hitPct": {
+            "50": 76.5,
+            "55": 69.4,
+            "60": 64.3
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 29,
+          "hitPct": {
+            "50": 72.4,
+            "55": 62.1,
+            "60": 48.3
+          }
+        }
+      ]
+    },
+    {
+      "assetCode": "GOLD",
+      "assetLabel": "Gold",
+      "n": 571,
+      "baseRates": {
+        "50": {
+          "up": 79.5,
+          "down": 68.5
+        },
+        "55": {
+          "up": 72.7,
+          "down": 61.8
+        },
+        "60": {
+          "up": 65.3,
+          "down": 55.3
+        }
+      },
+      "splits": [
+        {
+          "key": "BULLISH",
+          "label": "Bullish (clear)",
+          "direction": "BULLISH",
+          "n": 85,
+          "smallSample": false,
+          "hitPct": {
+            "50": 78.8,
+            "55": 74.1,
+            "60": 68.2
+          },
+          "edgePct": {
+            "50": -0.7,
+            "55": 1.4,
+            "60": 2.9
+          },
+          "trusted": true
+        },
+        {
+          "key": "BULLISH_LEAN",
+          "label": "Bullish lean",
+          "direction": "BULLISH",
+          "n": 186,
+          "smallSample": false,
+          "hitPct": {
+            "50": 81.2,
+            "55": 72.6,
+            "60": 61.8
+          },
+          "edgePct": {
+            "50": 1.7,
+            "55": -0.1,
+            "60": -3.5
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH",
+          "label": "Bearish (clear)",
+          "direction": "BEARISH",
+          "n": 77,
+          "smallSample": false,
+          "hitPct": {
+            "50": 58.4,
+            "55": 50.6,
+            "60": 45.5
+          },
+          "edgePct": {
+            "50": -10.1,
+            "55": -11.2,
+            "60": -9.8
+          },
+          "trusted": false
+        },
+        {
+          "key": "BEARISH_LEAN",
+          "label": "Bearish lean",
+          "direction": "BEARISH",
+          "n": 223,
+          "smallSample": false,
+          "hitPct": {
+            "50": 69.5,
+            "55": 61.9,
+            "60": 55.6
+          },
+          "edgePct": {
+            "50": 1,
+            "55": 0.1,
+            "60": 0.3
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 223,
+          "hitPct": {
+            "50": 74,
+            "55": 66.4,
+            "60": 59.6
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 93,
+          "hitPct": {
+            "50": 74.2,
+            "55": 65.6,
+            "60": 54.8
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 135,
+          "hitPct": {
+            "50": 75.6,
+            "55": 67.4,
+            "60": 63
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 120,
+          "hitPct": {
+            "50": 68.3,
+            "55": 62.5,
+            "60": 52.5
+          }
+        }
+      ]
+    },
+    {
+      "assetCode": "NQ",
+      "assetLabel": "NQ",
+      "n": 561,
+      "baseRates": {
+        "50": {
+          "up": 76.3,
+          "down": 68.1
+        },
+        "55": {
+          "up": 69.2,
+          "down": 62.2
+        },
+        "60": {
+          "up": 62.2,
+          "down": 55.6
+        }
+      },
+      "splits": [
+        {
+          "key": "BULLISH",
+          "label": "Bullish (clear)",
+          "direction": "BULLISH",
+          "n": 355,
+          "smallSample": false,
+          "hitPct": {
+            "50": 72.1,
+            "55": 62.8,
+            "60": 55.2
+          },
+          "edgePct": {
+            "50": -4.2,
+            "55": -6.4,
+            "60": -7
+          },
+          "trusted": true
+        },
+        {
+          "key": "BULLISH_LEAN",
+          "label": "Bullish lean",
+          "direction": "BULLISH",
+          "n": 20,
+          "smallSample": true,
+          "hitPct": {
+            "50": 80,
+            "55": 80,
+            "60": 75
+          },
+          "edgePct": {
+            "50": 3.7,
+            "55": 10.8,
+            "60": 12.8
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH",
+          "label": "Bearish (clear)",
+          "direction": "BEARISH",
+          "n": 164,
+          "smallSample": false,
+          "hitPct": {
+            "50": 76.2,
+            "55": 68.3,
+            "60": 59.1
+          },
+          "edgePct": {
+            "50": 8.1,
+            "55": 6.1,
+            "60": 3.5
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH_LEAN",
+          "label": "Bearish lean",
+          "direction": "BEARISH",
+          "n": 22,
+          "smallSample": true,
+          "hitPct": {
+            "50": 63.6,
+            "55": 63.6,
+            "60": 59.1
+          },
+          "edgePct": {
+            "50": -4.5,
+            "55": 1.4,
+            "60": 3.5
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 351,
+          "hitPct": {
+            "50": 73.5,
+            "55": 67,
+            "60": 58.4
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 49,
+          "hitPct": {
+            "50": 73.5,
+            "55": 63.3,
+            "60": 57.1
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 102,
+          "hitPct": {
+            "50": 77.5,
+            "55": 62.7,
+            "60": 56.9
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 59,
+          "hitPct": {
+            "50": 64.4,
+            "55": 59.3,
+            "60": 50.8
+          }
+        }
+      ]
+    },
+    {
+      "assetCode": "BTC",
+      "assetLabel": "BTC",
+      "n": 794,
+      "baseRates": {
+        "50": {
+          "up": 68,
+          "down": 68.3
+        },
+        "55": {
+          "up": 63.7,
+          "down": 62.2
+        },
+        "60": {
+          "up": 58.6,
+          "down": 56.9
+        }
+      },
+      "splits": [
+        {
+          "key": "BULLISH",
+          "label": "Bullish (clear)",
+          "direction": "BULLISH",
+          "n": 62,
+          "smallSample": false,
+          "hitPct": {
+            "50": 67.7,
+            "55": 62.9,
+            "60": 58.1
+          },
+          "edgePct": {
+            "50": -0.3,
+            "55": -0.8,
+            "60": -0.5
+          },
+          "trusted": true
+        },
+        {
+          "key": "BULLISH_LEAN",
+          "label": "Bullish lean",
+          "direction": "BULLISH",
+          "n": 457,
+          "smallSample": false,
+          "hitPct": {
+            "50": 63.7,
+            "55": 60.2,
+            "60": 54.9
+          },
+          "edgePct": {
+            "50": -4.3,
+            "55": -3.5,
+            "60": -3.7
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH",
+          "label": "Bearish (clear)",
+          "direction": "BEARISH",
+          "n": 48,
+          "smallSample": false,
+          "hitPct": {
+            "50": 79.2,
+            "55": 75,
+            "60": 64.6
+          },
+          "edgePct": {
+            "50": 10.9,
+            "55": 12.8,
+            "60": 7.7
+          },
+          "trusted": true
+        },
+        {
+          "key": "BEARISH_LEAN",
+          "label": "Bearish lean",
+          "direction": "BEARISH",
+          "n": 227,
+          "smallSample": false,
+          "hitPct": {
+            "50": 70.5,
+            "55": 65.2,
+            "60": 56.8
+          },
+          "edgePct": {
+            "50": 2.2,
+            "55": 3,
+            "60": -0.1
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 379,
+          "hitPct": {
+            "50": 66.8,
+            "55": 62.3,
+            "60": 55.9
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 185,
+          "hitPct": {
+            "50": 68.1,
+            "55": 65.4,
+            "60": 57.3
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 142,
+          "hitPct": {
+            "50": 69,
+            "55": 63.4,
+            "60": 57
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 88,
+          "hitPct": {
+            "50": 61.4,
+            "55": 58,
+            "60": 54.5
+          }
+        }
+      ]
+    }
+  ],
+  "layer2": [
+    {
+      "pairCode": "EUR_USD",
+      "pairLabel": "EUR/USD",
+      "targetAssetCode": "EUR",
+      "n": 324,
+      "baseRates": {
+        "50": {
+          "up": 72.8,
+          "down": 72.5
+        },
+        "55": {
+          "up": 67.6,
+          "down": 67
+        },
+        "60": {
+          "up": 60.5,
+          "down": 60.2
+        }
+      },
+      "splits": [
+        {
+          "key": "BUY",
+          "label": "Buy signal",
+          "direction": "BULLISH",
+          "n": 217,
+          "smallSample": false,
+          "hitPct": {
+            "50": 72.4,
+            "55": 68.2,
+            "60": 59.9
+          },
+          "edgePct": {
+            "50": -0.4,
+            "55": 0.6,
+            "60": -0.6
+          },
+          "trusted": true
+        },
+        {
+          "key": "SELL",
+          "label": "Sell signal",
+          "direction": "BEARISH",
+          "n": 107,
+          "smallSample": false,
+          "hitPct": {
+            "50": 66.4,
+            "55": 63.6,
+            "60": 57
+          },
+          "edgePct": {
+            "50": -6.1,
+            "55": -3.4,
+            "60": -3.2
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 225,
+          "hitPct": {
+            "50": 68.9,
+            "55": 65.3,
+            "60": 57.8
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 70,
+          "hitPct": {
+            "50": 70,
+            "55": 68.6,
+            "60": 61.4
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 26,
+          "hitPct": {
+            "50": 84.6,
+            "55": 76.9,
+            "60": 65.4
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 3,
+          "hitPct": {
+            "50": 66.7,
+            "55": 33.3,
+            "60": 33.3
+          }
+        }
+      ]
+    },
+    {
+      "pairCode": "XAU_USD",
+      "pairLabel": "XAU/USD",
+      "targetAssetCode": "GOLD",
+      "n": 150,
+      "baseRates": {
+        "50": {
+          "up": 80.7,
+          "down": 58.7
+        },
+        "55": {
+          "up": 73.3,
+          "down": 52
+        },
+        "60": {
+          "up": 66,
+          "down": 44.7
+        }
+      },
+      "splits": [
+        {
+          "key": "BUY",
+          "label": "Buy signal",
+          "direction": "BULLISH",
+          "n": 84,
+          "smallSample": false,
+          "hitPct": {
+            "50": 78.6,
+            "55": 73.8,
+            "60": 67.9
+          },
+          "edgePct": {
+            "50": -2.1,
+            "55": 0.5,
+            "60": 1.9
+          },
+          "trusted": true
+        },
+        {
+          "key": "SELL",
+          "label": "Sell signal",
+          "direction": "BEARISH",
+          "n": 66,
+          "smallSample": false,
+          "hitPct": {
+            "50": 54.5,
+            "55": 47,
+            "60": 40.9
+          },
+          "edgePct": {
+            "50": -4.2,
+            "55": -5,
+            "60": -3.8
+          },
+          "trusted": false
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 5,
+          "hitPct": {
+            "50": 60,
+            "55": 60,
+            "60": 40
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 38,
+          "hitPct": {
+            "50": 60.5,
+            "55": 55.3,
+            "60": 55.3
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 75,
+          "hitPct": {
+            "50": 74.7,
+            "55": 66.7,
+            "60": 64
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 32,
+          "hitPct": {
+            "50": 62.5,
+            "55": 59.4,
+            "60": 40.6
+          }
+        }
+      ]
+    },
+    {
+      "pairCode": "NQ_USD",
+      "pairLabel": "NQ/USD",
+      "targetAssetCode": "NQ",
+      "n": 321,
+      "baseRates": {
+        "50": {
+          "up": 77.6,
+          "down": 64.5
+        },
+        "55": {
+          "up": 68.5,
+          "down": 57.9
+        },
+        "60": {
+          "up": 61.4,
+          "down": 51.7
+        }
+      },
+      "splits": [
+        {
+          "key": "BUY",
+          "label": "Buy signal",
+          "direction": "BULLISH",
+          "n": 228,
+          "smallSample": false,
+          "hitPct": {
+            "50": 74.1,
+            "55": 63.2,
+            "60": 55.3
+          },
+          "edgePct": {
+            "50": -3.5,
+            "55": -5.3,
+            "60": -6.1
+          },
+          "trusted": true
+        },
+        {
+          "key": "SELL",
+          "label": "Sell signal",
+          "direction": "BEARISH",
+          "n": 93,
+          "smallSample": false,
+          "hitPct": {
+            "50": 79.6,
+            "55": 69.9,
+            "60": 61.3
+          },
+          "edgePct": {
+            "50": 15.1,
+            "55": 12,
+            "60": 9.6
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 224,
+          "hitPct": {
+            "50": 78.6,
+            "55": 68.8,
+            "60": 59.8
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 35,
+          "hitPct": {
+            "50": 74.3,
+            "55": 68.6,
+            "60": 60
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 40,
+          "hitPct": {
+            "50": 65,
+            "55": 42.5,
+            "60": 40
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 22,
+          "hitPct": {
+            "50": 68.2,
+            "55": 63.6,
+            "60": 54.5
+          }
+        }
+      ]
+    },
+    {
+      "pairCode": "BTC_USD",
+      "pairLabel": "BTC/USD",
+      "targetAssetCode": "BTC",
+      "n": 75,
+      "baseRates": {
+        "50": {
+          "up": 69.3,
+          "down": 65.3
+        },
+        "55": {
+          "up": 65.3,
+          "down": 57.3
+        },
+        "60": {
+          "up": 60,
+          "down": 52
+        }
+      },
+      "splits": [
+        {
+          "key": "BUY",
+          "label": "Buy signal",
+          "direction": "BULLISH",
+          "n": 47,
+          "smallSample": false,
+          "hitPct": {
+            "50": 68.1,
+            "55": 61.7,
+            "60": 57.4
+          },
+          "edgePct": {
+            "50": -1.2,
+            "55": -3.6,
+            "60": -2.6
+          },
+          "trusted": true
+        },
+        {
+          "key": "SELL",
+          "label": "Sell signal",
+          "direction": "BEARISH",
+          "n": 28,
+          "smallSample": true,
+          "hitPct": {
+            "50": 85.7,
+            "55": 82.1,
+            "60": 71.4
+          },
+          "edgePct": {
+            "50": 20.4,
+            "55": 24.8,
+            "60": 19.4
+          },
+          "trusted": true
+        }
+      ],
+      "buckets": [
+        {
+          "bucketKey": "WEAK",
+          "bucketLabel": "Weak",
+          "n": 9,
+          "hitPct": {
+            "50": 88.9,
+            "55": 88.9,
+            "60": 77.8
+          }
+        },
+        {
+          "bucketKey": "MODERATE",
+          "bucketLabel": "Moderate",
+          "n": 29,
+          "hitPct": {
+            "50": 82.8,
+            "55": 82.8,
+            "60": 72.4
+          }
+        },
+        {
+          "bucketKey": "STRONG",
+          "bucketLabel": "Strong",
+          "n": 18,
+          "hitPct": {
+            "50": 83.3,
+            "55": 61.1,
+            "60": 55.6
+          }
+        },
+        {
+          "bucketKey": "VERY_STRONG",
+          "bucketLabel": "Very Strong",
+          "n": 19,
+          "hitPct": {
+            "50": 47.4,
+            "55": 47.4,
+            "60": 47.4
+          }
+        }
+      ]
+    }
+  ],
+  "trustSummary": [
+    {
+      "layer": "layer1",
+      "groupLabel": "EUR",
+      "signalLabel": "Bullish (clear)",
+      "n": 330,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 69.7,
+      "edgePctAtTrustThreshold": 3.3,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "EUR",
+      "signalLabel": "Bullish lean",
+      "n": 22,
+      "smallSample": true,
+      "hitPctAtTrustThreshold": 40.9,
+      "edgePctAtTrustThreshold": -25.5,
+      "trusted": false
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "EUR",
+      "signalLabel": "Bearish (clear)",
+      "n": 197,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 64,
+      "edgePctAtTrustThreshold": -3.3,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "EUR",
+      "signalLabel": "Bearish lean",
+      "n": 22,
+      "smallSample": true,
+      "hitPctAtTrustThreshold": 72.7,
+      "edgePctAtTrustThreshold": 5.4,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "Gold",
+      "signalLabel": "Bullish (clear)",
+      "n": 85,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 74.1,
+      "edgePctAtTrustThreshold": 1.4,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "Gold",
+      "signalLabel": "Bullish lean",
+      "n": 186,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 72.6,
+      "edgePctAtTrustThreshold": -0.1,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "Gold",
+      "signalLabel": "Bearish (clear)",
+      "n": 77,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 50.6,
+      "edgePctAtTrustThreshold": -11.2,
+      "trusted": false
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "Gold",
+      "signalLabel": "Bearish lean",
+      "n": 223,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 61.9,
+      "edgePctAtTrustThreshold": 0.1,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "NQ",
+      "signalLabel": "Bullish (clear)",
+      "n": 355,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 62.8,
+      "edgePctAtTrustThreshold": -6.4,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "NQ",
+      "signalLabel": "Bullish lean",
+      "n": 20,
+      "smallSample": true,
+      "hitPctAtTrustThreshold": 80,
+      "edgePctAtTrustThreshold": 10.8,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "NQ",
+      "signalLabel": "Bearish (clear)",
+      "n": 164,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 68.3,
+      "edgePctAtTrustThreshold": 6.1,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "NQ",
+      "signalLabel": "Bearish lean",
+      "n": 22,
+      "smallSample": true,
+      "hitPctAtTrustThreshold": 63.6,
+      "edgePctAtTrustThreshold": 1.4,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "BTC",
+      "signalLabel": "Bullish (clear)",
+      "n": 62,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 62.9,
+      "edgePctAtTrustThreshold": -0.8,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "BTC",
+      "signalLabel": "Bullish lean",
+      "n": 457,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 60.2,
+      "edgePctAtTrustThreshold": -3.5,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "BTC",
+      "signalLabel": "Bearish (clear)",
+      "n": 48,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 75,
+      "edgePctAtTrustThreshold": 12.8,
+      "trusted": true
+    },
+    {
+      "layer": "layer1",
+      "groupLabel": "BTC",
+      "signalLabel": "Bearish lean",
+      "n": 227,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 65.2,
+      "edgePctAtTrustThreshold": 3,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "EUR/USD",
+      "signalLabel": "Buy signal",
+      "n": 217,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 68.2,
+      "edgePctAtTrustThreshold": 0.6,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "EUR/USD",
+      "signalLabel": "Sell signal",
+      "n": 107,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 63.6,
+      "edgePctAtTrustThreshold": -3.4,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "XAU/USD",
+      "signalLabel": "Buy signal",
+      "n": 84,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 73.8,
+      "edgePctAtTrustThreshold": 0.5,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "XAU/USD",
+      "signalLabel": "Sell signal",
+      "n": 66,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 47,
+      "edgePctAtTrustThreshold": -5,
+      "trusted": false
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "NQ/USD",
+      "signalLabel": "Buy signal",
+      "n": 228,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 63.2,
+      "edgePctAtTrustThreshold": -5.3,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "NQ/USD",
+      "signalLabel": "Sell signal",
+      "n": 93,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 69.9,
+      "edgePctAtTrustThreshold": 12,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "BTC/USD",
+      "signalLabel": "Buy signal",
+      "n": 47,
+      "smallSample": false,
+      "hitPctAtTrustThreshold": 61.7,
+      "edgePctAtTrustThreshold": -3.6,
+      "trusted": true
+    },
+    {
+      "layer": "layer2",
+      "groupLabel": "BTC/USD",
+      "signalLabel": "Sell signal",
+      "n": 28,
+      "smallSample": true,
+      "hitPctAtTrustThreshold": 82.1,
+      "edgePctAtTrustThreshold": 24.8,
+      "trusted": true
+    }
+  ],
+  "directional": {
+    "layer1": [
+      {
+        "assetCode": "EUR",
+        "assetLabel": "EUR",
+        "callTypes": [
+          {
+            "key": "BULLISH",
+            "label": "Bullish (clear)",
+            "direction": "BULLISH",
+            "evaluable": 211,
+            "correct": 102,
+            "wrong": 109,
+            "flat": 99,
+            "unmatched": 20,
+            "accuracyPct": 48.3,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BULLISH_LEAN",
+            "label": "Bullish lean",
+            "direction": "BULLISH",
+            "evaluable": 11,
+            "correct": 6,
+            "wrong": 5,
+            "flat": 10,
+            "unmatched": 1,
+            "accuracyPct": 54.5,
+            "smallSample": true,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH",
+            "label": "Bearish (clear)",
+            "direction": "BEARISH",
+            "evaluable": 120,
+            "correct": 57,
+            "wrong": 63,
+            "flat": 63,
+            "unmatched": 14,
+            "accuracyPct": 47.5,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH_LEAN",
+            "label": "Bearish lean",
+            "direction": "BEARISH",
+            "evaluable": 15,
+            "correct": 8,
+            "wrong": 7,
+            "flat": 7,
+            "unmatched": 0,
+            "accuracyPct": 53.3,
+            "smallSample": true,
+            "trusted": false
+          }
+        ]
+      },
+      {
+        "assetCode": "GOLD",
+        "assetLabel": "Gold",
+        "callTypes": [
+          {
+            "key": "BULLISH",
+            "label": "Bullish (clear)",
+            "direction": "BULLISH",
+            "evaluable": 71,
+            "correct": 50,
+            "wrong": 21,
+            "flat": 13,
+            "unmatched": 1,
+            "accuracyPct": 70.4,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "BULLISH_LEAN",
+            "label": "Bullish lean",
+            "direction": "BULLISH",
+            "evaluable": 121,
+            "correct": 81,
+            "wrong": 40,
+            "flat": 48,
+            "unmatched": 17,
+            "accuracyPct": 66.9,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "BEARISH",
+            "label": "Bearish (clear)",
+            "direction": "BEARISH",
+            "evaluable": 47,
+            "correct": 26,
+            "wrong": 21,
+            "flat": 23,
+            "unmatched": 7,
+            "accuracyPct": 55.3,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH_LEAN",
+            "label": "Bearish lean",
+            "direction": "BEARISH",
+            "evaluable": 151,
+            "correct": 64,
+            "wrong": 87,
+            "flat": 56,
+            "unmatched": 16,
+            "accuracyPct": 42.4,
+            "smallSample": false,
+            "trusted": false
+          }
+        ]
+      },
+      {
+        "assetCode": "NQ",
+        "assetLabel": "NQ",
+        "callTypes": [
+          {
+            "key": "BULLISH",
+            "label": "Bullish (clear)",
+            "direction": "BULLISH",
+            "evaluable": 211,
+            "correct": 124,
+            "wrong": 87,
+            "flat": 121,
+            "unmatched": 23,
+            "accuracyPct": 58.8,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BULLISH_LEAN",
+            "label": "Bullish lean",
+            "direction": "BULLISH",
+            "evaluable": 14,
+            "correct": 8,
+            "wrong": 6,
+            "flat": 6,
+            "unmatched": 0,
+            "accuracyPct": 57.1,
+            "smallSample": true,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH",
+            "label": "Bearish (clear)",
+            "direction": "BEARISH",
+            "evaluable": 116,
+            "correct": 40,
+            "wrong": 76,
+            "flat": 41,
+            "unmatched": 7,
+            "accuracyPct": 34.5,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH_LEAN",
+            "label": "Bearish lean",
+            "direction": "BEARISH",
+            "evaluable": 13,
+            "correct": 7,
+            "wrong": 6,
+            "flat": 9,
+            "unmatched": 0,
+            "accuracyPct": 53.8,
+            "smallSample": true,
+            "trusted": false
+          }
+        ]
+      },
+      {
+        "assetCode": "BTC",
+        "assetLabel": "BTC",
+        "callTypes": [
+          {
+            "key": "BULLISH",
+            "label": "Bullish (clear)",
+            "direction": "BULLISH",
+            "evaluable": 41,
+            "correct": 27,
+            "wrong": 14,
+            "flat": 21,
+            "unmatched": 0,
+            "accuracyPct": 65.9,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "BULLISH_LEAN",
+            "label": "Bullish lean",
+            "direction": "BULLISH",
+            "evaluable": 266,
+            "correct": 153,
+            "wrong": 113,
+            "flat": 190,
+            "unmatched": 1,
+            "accuracyPct": 57.5,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "BEARISH",
+            "label": "Bearish (clear)",
+            "direction": "BEARISH",
+            "evaluable": 31,
+            "correct": 20,
+            "wrong": 11,
+            "flat": 17,
+            "unmatched": 0,
+            "accuracyPct": 64.5,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "BEARISH_LEAN",
+            "label": "Bearish lean",
+            "direction": "BEARISH",
+            "evaluable": 143,
+            "correct": 94,
+            "wrong": 49,
+            "flat": 84,
+            "unmatched": 0,
+            "accuracyPct": 65.7,
+            "smallSample": false,
+            "trusted": true
+          }
+        ]
+      }
+    ],
+    "layer2": [
+      {
+        "pairCode": "EUR_USD",
+        "pairLabel": "EUR/USD",
+        "targetAssetCode": "EUR",
+        "sides": [
+          {
+            "key": "BUY",
+            "label": "Buy signal",
+            "direction": "BULLISH",
+            "evaluable": 137,
+            "correct": 64,
+            "wrong": 73,
+            "flat": 61,
+            "unmatched": 19,
+            "accuracyPct": 46.7,
+            "smallSample": false,
+            "trusted": false
+          },
+          {
+            "key": "SELL",
+            "label": "Sell signal",
+            "direction": "BEARISH",
+            "evaluable": 68,
+            "correct": 32,
+            "wrong": 36,
+            "flat": 37,
+            "unmatched": 2,
+            "accuracyPct": 47.1,
+            "smallSample": false,
+            "trusted": false
+          }
+        ]
+      },
+      {
+        "pairCode": "XAU_USD",
+        "pairLabel": "XAU/USD",
+        "targetAssetCode": "GOLD",
+        "sides": [
+          {
+            "key": "BUY",
+            "label": "Buy signal",
+            "direction": "BULLISH",
+            "evaluable": 71,
+            "correct": 50,
+            "wrong": 21,
+            "flat": 12,
+            "unmatched": 1,
+            "accuracyPct": 70.4,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "SELL",
+            "label": "Sell signal",
+            "direction": "BEARISH",
+            "evaluable": 40,
+            "correct": 26,
+            "wrong": 14,
+            "flat": 19,
+            "unmatched": 7,
+            "accuracyPct": 65,
+            "smallSample": false,
+            "trusted": true
+          }
+        ]
+      },
+      {
+        "pairCode": "NQ_USD",
+        "pairLabel": "NQ/USD",
+        "targetAssetCode": "NQ",
+        "sides": [
+          {
+            "key": "BUY",
+            "label": "Buy signal",
+            "direction": "BULLISH",
+            "evaluable": 134,
+            "correct": 84,
+            "wrong": 50,
+            "flat": 75,
+            "unmatched": 19,
+            "accuracyPct": 62.7,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "SELL",
+            "label": "Sell signal",
+            "direction": "BEARISH",
+            "evaluable": 72,
+            "correct": 30,
+            "wrong": 42,
+            "flat": 20,
+            "unmatched": 1,
+            "accuracyPct": 41.7,
+            "smallSample": false,
+            "trusted": false
+          }
+        ]
+      },
+      {
+        "pairCode": "BTC_USD",
+        "pairLabel": "BTC/USD",
+        "targetAssetCode": "BTC",
+        "sides": [
+          {
+            "key": "BUY",
+            "label": "Buy signal",
+            "direction": "BULLISH",
+            "evaluable": 33,
+            "correct": 23,
+            "wrong": 10,
+            "flat": 14,
+            "unmatched": 0,
+            "accuracyPct": 69.7,
+            "smallSample": false,
+            "trusted": true
+          },
+          {
+            "key": "SELL",
+            "label": "Sell signal",
+            "direction": "BEARISH",
+            "evaluable": 19,
+            "correct": 13,
+            "wrong": 6,
+            "flat": 9,
+            "unmatched": 0,
+            "accuracyPct": 68.4,
+            "smallSample": true,
+            "trusted": true
+          }
+        ]
+      }
+    ]
+  }
+}
