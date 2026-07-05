@@ -110,6 +110,31 @@ Signals with NO demonstrated directional value (treat as no-trade):
 - EUR/USD and XAU/USD Layer 2 pair signals
 - Any filtering/sizing based on the confidence score, at any strength bucket
 
+## L2L hit rates by call type at 50/55/60% of ADR20 (follow-up, same session)
+
+For the level-to-level trade model (enter at a level, exit at the directional level
+L2L away), hit = a guaranteed swing ≥ threshold × ADR20 in the call direction during
+the day. Each call type was compared against the any-day base rate for that same
+direction (how often that swing happens with no call at all):
+
+- **The system's only real L2L edge is on the SELL side.** Up-swings ≥ 50% ADR20
+  happen on 68-80% of all days (markets drift up), so no bullish call adds anything
+  (deltas -4 to +2 everywhere). Bearish calls that select genuinely bigger-down-swing
+  days: **NQ clear bearish +8.1 pts** (76.2% vs 68.1% base, n=164), **BTC clear
+  bearish +10.9** (79.2%, n=48), **NQ/USD sell +15.1** (79.6% vs 64.5%, n=93 —
+  best signal in the system, holds at 55/60%: +11.9/+9.6), **BTC/USD sell +20.4**
+  (85.7%, but only n=28).
+- Below-base call types to skip: EUR clear bearish (-6.0), Gold clear bearish
+  (-10.0), EUR/USD sell (-6.2), XAU/USD sell (54.5% absolute). EUR bullish lean
+  looks awful (-14 to -25) but is only n=22.
+- **Threshold cost**: moving the target from 50% to 60% of ADR20 costs roughly
+  13-16 points of hit rate across the board (e.g. NQ/USD sell 79.6 → 61.3).
+- **Confidence still doesn't help at any threshold**: Very Strong is the worst
+  bucket in most groups (BTC/USD Very Strong 47.4% vs Weak 88.9%).
+- Notable regime paradox: NQ clear bearish adds L2L edge intraday while being
+  34.5% correct on the close — down-swings happen, then the index closes back up.
+  Good for level-to-level shorts, bad for hold-to-close shorts.
+
 ## What needs fixing (proposed, not yet done)
 
 1. **Dashboard honesty**: the L2L Move Research tab shows raw win % with no base-rate
